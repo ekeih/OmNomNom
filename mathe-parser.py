@@ -1,20 +1,28 @@
 import os
 import sys
-import urllib
+import urllib.request
+
+dishes = []
 
 def main():
   if len(sys.argv) != 2:
-    print sys.argv[0] + " must have provided the date as argmuent."
+    print(sys.argv[0] + " must have provided the date as argmuent.")
     sys.exit(1)
 
+  global dishes
+
   pdf = "/tmp/MA-aktuell.pdf"
+  url = "http://personalkantine.personalabteilung.tu-berlin.de/pdf/MA-aktuell.pdf"
   menu = "/tmp/MA-aktuell.txt"
   date = sys.argv[1]
+
   SETLENGTH = 18
   SETSTART = 34
   DATESTART = 15
 
-  urllib.urlretrieve ("http://personalkantine.personalabteilung.tu-berlin.de/pdf/MA-aktuell.pdf", pdf)
+  specials = ["(s)", "(Sch)", "(M)", "(P)", "(G)", "(R)", "(F)", "(v)", "(1)", "(3)", "(5)", "(6)", "(14)"]
+
+  urllib.request.urlretrieve (url, pdf)
   os.system("pdftotext " + pdf)
 
   days = {  "Montag" : 0,
@@ -36,13 +44,13 @@ def main():
           offset = days[before];
           break
         else:
-          print "Date found but at wrong position."
+          print("Date found but at wrong position.")
           sys.exit(2)
       else:
         before = line[:-1]
 
     if offset == -1:
-      print "Date not found."
+      print("Date not found.")
       sys.exit(3)
 
     # jump back to start of file
@@ -62,15 +70,28 @@ def main():
       j = i - curset + 1
 
       if (j <= 4) or (j == 13):
+        for reg in specials:
+          line = line.replace(reg, "")
+        line = line.replace("  ", " ")
         dishes.append(line)
       if (j >= 6) and (j <= 9):
-        dishes[i - curset -5] = dishes[i - curset -5] + " (" + line + " Euro)"
+        dishes[i - curset -5] = dishes[i - curset -5] + ": " + line + " €"
       if j == 15:
-        dishes[4] = dishes[4] + " (" + line + " Euro)"
+        dishes[4] = dishes[4] + ": " + line + " €"
 
-    print str(dishes)
   # cleanup
   os.system("rm " + pdf + " " + menu)
 
-if __name__ == "__main__":
+def get_menue():
   main()
+  menue = ""
+  for dish in dishes:
+    menue = menue + dish + "\n"
+  menue = menue.rstrip()
+  return menue
+
+if __name__ == "__main__":
+    menue = get_menue()
+    print(menue)
+
+#vim:set ft=vim et sw=2 sts=2
