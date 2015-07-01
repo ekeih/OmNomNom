@@ -140,12 +140,16 @@ def get_menu_studentenwerk(url):
       text = text + name+ ': ' + price + '€\n'
   return text
 
+def get_menu_makantine():
+  text = matheparser.get_menue(time.strftime('%d.%m.%y'))
+  return text
+
 def get_menu(mensa_id):
   mensa = MENSA_DIC[mensa_id]
   if mensa.get_type() == 'studentenwerk':
     menu = get_menu_studentenwerk(mensa.get_feed())
   elif mensa.get_type() == 'makantine':
-    menu = matheparser.get_menue(time.strftime('%d.%m.%y'))
+    menu = get_menu_makantine()
   else:
     menu = 'Dieser Speiseplan ist in deinem Land nicht verfügbar.\n' + mensa.get_link()
   return menu
