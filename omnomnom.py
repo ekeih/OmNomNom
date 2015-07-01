@@ -23,6 +23,8 @@ import json
 import feedparser
 import sys
 from bs4 import BeautifulSoup
+import matheparser
+import time
 
 API_URL_BASE = 'https://api.telegram.org/bot'
 API_URL = API_URL_BASE + config.AUTH_TOKEN
@@ -48,7 +50,7 @@ MENSA = [
   {
     'id'    : 'personalkantine',
     'title' : 'Personalkantine',
-    'type'  : 'nofeed',
+    'type'  : 'makantine',
     'names' : ['ma-kantine', 'personalkantine', 'ma-oben'],
     'link'  : 'http://personalkantine.personalabteilung.tu-berlin.de/pdf/MA-aktuell.pdf',
     'feed'  : False
@@ -138,10 +140,16 @@ def get_menu_studentenwerk(url):
       text = text + name+ ': ' + price + '€\n'
   return text
 
+def get_menu_makantine():
+  text = matheparser.get_menue(time.strftime('%d.%m.%y'))
+  return text
+
 def get_menu(mensa_id):
   mensa = MENSA_DIC[mensa_id]
   if mensa.get_type() == 'studentenwerk':
     menu = get_menu_studentenwerk(mensa.get_feed())
+  elif mensa.get_type() == 'makantine':
+    menu = get_menu_makantine()
   else:
     menu = 'Dieser Speiseplan ist in deinem Land nicht verfügbar.\n' + mensa.get_link()
   return menu
