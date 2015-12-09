@@ -36,7 +36,7 @@ def main(date):
         before = line[:-1]
 
     if offset == -1:
-      return "Date (" + date + ") not found."
+      return ["Date (" + date + ") not found."]
 
     # jump back to start of file
     search.seek(0, 0)
