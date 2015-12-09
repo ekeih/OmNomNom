@@ -9,8 +9,8 @@ def main(date):
   pdf = "/tmp/MA-aktuell.pdf"
   url = "http://personalkantine.personalabteilung.tu-berlin.de/pdf/MA-aktuell.pdf"
   menu = "/tmp/MA-aktuell.txt"
-  blocksPerDay = 2
-  blockSizePerDay = [4, 1]
+  blocksPerDay = 1
+  blockSizePerDay = [ 6 ]
 
   urllib.request.urlretrieve (url, pdf)
   os.system("pdftotext " + pdf)
@@ -23,11 +23,15 @@ def main(date):
             "Freitag" : 4
   }
   offset = -1
+  header_end_line = -1
 
-  # find current date and save offset
+  # find current date, offset and header line numbers
   with open(menu) as search:
+    # jump to start of file
+    search.seek(0, 0)
     for i, line in enumerate(search):
       line = line.rstrip()
+      # current date + offset handling
       if line == date:
         if before in days:
           offset = days[before];
@@ -35,21 +39,32 @@ def main(date):
       else:
         before = line[:-1]
 
-    if offset == -1:
-      return "Date (" + date + ") not found."
-
     # jump back to start of file
     search.seek(0, 0)
+    # handle header
+    for i, line in enumerate(search):
+      line = line.rstrip()
+      if line == "MwSt. enthalten":
+        header_end_line = i
+        break
+
+    if offset == -1:
+      return ["Date (" + date + ") not found."]
+
+    if header_end_line == -1:
+      return ["Header unexpected!"]
 
     dishes = []
     blockcount = 0
     linecount = 0
-    for i, line in enumerate(search):
-      # skip date header
-      if i < 10:
-          continue
 
+    # jump back to start of file
+    search.seek(0, 0)
+    for i, line in enumerate(search):
       line = line.rstrip()
+
+      if i <= header_end_line:
+        continue
 
       if line == "€":
         blockcount = blockcount + 1
@@ -65,8 +80,11 @@ def main(date):
         continue
 
       inblockcount = blockcount - offset * blocksPerDay
+
+      # read dish
       if linecount < blockSizePerDay[inblockcount]:
         dishes.append(line)
+      # read price
       else:
         pos = linecount - blockSizePerDay[inblockcount];
         for k in range(0, inblockcount):
@@ -89,6 +107,7 @@ def get_menue(date):
 
 def prepare_menu(f):
   new_menue = []
+  before = ""
   with open(f, 'r') as menu:
     head = 1
     for line in menu:
@@ -100,8 +119,10 @@ def prepare_menu(f):
           continue
 
       # remove footer
-      if line == "Änderungen bleiben vorbehalten\n":
-          break
+      if line == "€\n" and before == "€\n":
+        break
+      else:
+        before = line[:-1]
 
       # remove indregend hints (e.g. '(Sch)')
       exp = re.compile('\([\w +]+\)')
@@ -117,4 +138,4 @@ def prepare_menu(f):
   with open(f, 'w') as menu:
     menu.writelines(new_menue)
 
-#vim:set ft=vim et sw=2 sts=2
+# vim:set ft et sw=2 sts=2:
