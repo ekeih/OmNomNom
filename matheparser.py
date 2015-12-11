@@ -1,6 +1,7 @@
 import os
 import sys
 import urllib.request
+import datetime
 import time
 import re
 import itertools
@@ -18,6 +19,8 @@ def main(date):
   # find current date, offset and header line numbers
   with open(menu) as f:
     date_found = 0
+    startline = -1
+    endline = -1
     # jump to start of file
     f.seek(0, 0)
     for i, line in enumerate(f):
@@ -43,6 +46,10 @@ def main(date):
         date_found = 1
 
     f.seek(0, 0)
+
+    if startline == -1 or endline == -1:
+      return ["Date not found"]
+
     lines = itertools.islice(f, startline, endline)
     for line in lines:
       line = line.rstrip()
@@ -99,7 +106,8 @@ def prepare_menu(f):
 
   with open(f, 'w') as menu:
     menu.writelines(new_menue)
+
 if __name__ == '__main__':
-  print( get_menue("11.12.15"))
+  print( get_menue( datetime.date.today().strftime("%d.%m.%y")))
 
 # vim:set ft et sw=2 sts=2:
