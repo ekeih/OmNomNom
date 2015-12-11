@@ -59,6 +59,10 @@ def main(date):
       exp = re.compile('^vegetarisch')
       line = exp.sub('(veg)', line)
 
+      # use common price tag design
+      exp = re.compile(' +(\d,\d+) +€$')
+      line = exp.sub(': \g<1>€', line)
+
       dishes.append(line)
 
   # cleanup
@@ -95,5 +99,7 @@ def prepare_menu(f):
 
   with open(f, 'w') as menu:
     menu.writelines(new_menue)
+if __name__ == '__main__':
+  print( get_menue("11.12.15"))
 
 # vim:set ft et sw=2 sts=2:
