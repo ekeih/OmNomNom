@@ -3,95 +3,63 @@ import sys
 import urllib.request
 import time
 import re
+import itertools
 
 def main(date):
   dishes = []
   pdf = "/tmp/MA-aktuell.pdf"
   url = "http://personalkantine.personalabteilung.tu-berlin.de/pdf/MA-aktuell.pdf"
   menu = "/tmp/MA-aktuell.txt"
-  blocksPerDay = 1
-  blockSizePerDay = [ 6 ]
 
   urllib.request.urlretrieve (url, pdf)
-  os.system("pdftotext " + pdf)
+  os.system("pdftotext -layout -nopgbrk " + pdf + " " + menu)
   prepare_menu(menu)
 
-  days = {  "Montag" : 0,
-            "Dienstag" : 1,
-            "Mittwoch" : 2,
-            "Donnerstag" : 3,
-            "Freitag" : 4
-  }
-  offset = -1
-  header_end_line = -1
-
   # find current date, offset and header line numbers
-  with open(menu) as search:
+  with open(menu) as f:
+    date_found = 0
     # jump to start of file
-    search.seek(0, 0)
-    for i, line in enumerate(search):
-      line = line.rstrip()
-      # current date + offset handling
-      if line == date:
-        if before in days:
-          offset = days[before];
-          break
-      else:
-        before = line[:-1]
-
-    # jump back to start of file
-    search.seek(0, 0)
-    # handle header
-    for i, line in enumerate(search):
-      line = line.rstrip()
-      if line == "MwSt. enthalten":
-        header_end_line = i
-        break
-
-    if offset == -1:
-      return ["Date (" + date + ") not found."]
-
-    if header_end_line == -1:
-      return ["Header unexpected!"]
-
-    dishes = []
-    blockcount = 0
-    linecount = 0
-
-    # jump back to start of file
-    search.seek(0, 0)
-    for i, line in enumerate(search):
+    f.seek(0, 0)
+    for i, line in enumerate(f):
+      dishes = []
       line = line.rstrip()
 
-      if i <= header_end_line:
-        continue
+      # check for not price finished line (occurs after friday)
+      if date_found == 1:
+        if not line.endswith("€"):
+          endline = i
+          date_found = 0
 
-      if line == "€":
-        blockcount = blockcount + 1
-        linecount = 0
-        continue
+      # check for next date
+      if date_found == 1:
+        exp = re.compile('^\d\d\.\d\d\.\d\d ')
+        if exp.match(line):
+          endline = i-1
+          date_found = 0
 
-      # finished after block
-      if blockcount >= (offset + 1) * blocksPerDay:
-          break
+      # find start line (MUST be after checking for next date)
+      if line.startswith( date ):
+        startline = i-1
+        date_found = 1
 
-      # still not current block
-      if blockcount < offset * blocksPerDay:
-        continue
+    f.seek(0, 0)
+    lines = itertools.islice(f, startline, endline)
+    for line in lines:
+      line = line.rstrip()
 
-      inblockcount = blockcount - offset * blocksPerDay
+      # remove date tag
+      exp = re.compile('^\d\d\.\d\d\.\d\d ')
+      line = exp.sub('', line)
 
-      # read dish
-      if linecount < blockSizePerDay[inblockcount]:
-        dishes.append(line)
-      # read price
-      else:
-        pos = linecount - blockSizePerDay[inblockcount];
-        for k in range(0, inblockcount):
-          pos = pos + blockSizePerDay[k]
-        dishes[pos] = dishes[pos] + ": " + line + " €"
+      # remove day tag
+      exp = re.compile('^(Montag|Dienstag|Mittwoch|Donnerstag|Freitag), ')
+      line = exp.sub('', line)
 
-      linecount = linecount + 1
+      # replave "vegetarisch" durch "(veg)"
+      exp = re.compile('^vegetarisch')
+      line = exp.sub('(veg)', line)
+
+      dishes.append(line)
 
   # cleanup
   os.system("rm " + pdf + " " + menu)
@@ -107,23 +75,8 @@ def get_menue(date):
 
 def prepare_menu(f):
   new_menue = []
-  before = ""
   with open(f, 'r') as menu:
-    head = 1
     for line in menu:
-      # remove header
-      if head:
-        if line == "Montag,\n":
-          head = 0
-        else:
-          continue
-
-      # remove footer
-      if line == "€\n" and before == "€\n":
-        break
-      else:
-        before = line[:-1]
-
       # remove indregend hints (e.g. '(Sch)')
       exp = re.compile('\([\w +]+\)')
       line = exp.sub('', line)
@@ -132,6 +85,11 @@ def prepare_menu(f):
       exp = re.compile('[ \t]+')
       line = exp.sub(' ', line)
 
+      # remove leading whitespace
+      exp = re.compile('^ ')
+      line = exp.sub('', line)
+
+      # remove empty lines
       if line.strip():
         new_menue.append(line)
 
