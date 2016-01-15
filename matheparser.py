@@ -70,9 +70,9 @@ def main(date):
       exp = re.compile('^(Montag|Dienstag|Mittwoch|Donnerstag|Freitag), ')
       line = exp.sub('', line)
 
-      # replave "vegetarisch" durch "(veg)"
+      # replace "vegetarisch" with "(v)"
       exp = re.compile('^vegetarisch')
-      line = exp.sub('(veg)', line)
+      line = exp.sub('(v)', line)
 
       # use common price tag design
       exp = re.compile(' +(\d,\d+) +€$')
