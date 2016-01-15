@@ -12,15 +12,17 @@ def main(date):
   url = "http://personalkantine.personalabteilung.tu-berlin.de/pdf/MA-aktuell.pdf"
   menu = "/tmp/MA-aktuell.txt"
 
-  urllib.request.urlretrieve (url, pdf)
+  urllib.request.urlretrieve(url, pdf)
   os.system("pdftotext -layout -nopgbrk " + pdf + " " + menu)
   prepare_menu(menu)
 
   # find current date, offset and header line numbers
   with open(menu) as f:
-    date_found = 0
+    in_date_range = False
+    wrapped = False
     startline = -1
     endline = -1
+
     # jump to start of file
     f.seek(0, 0)
     for i, line in enumerate(f):
@@ -28,22 +30,28 @@ def main(date):
       line = line.rstrip()
 
       # check for not price finished line (occurs after friday)
-      if date_found == 1:
+      if in_date_range:
         if not line.endswith("€"):
-          endline = i
-          date_found = 0
+          if not wrapped:
+            wrapped = True
+          else:
+            endline = i-1
+            in_date_range = False
+        else:
+          if wrapped:
+            wrapped = False
 
       # check for next date
-      if date_found == 1:
+      if not wrapped and in_date_range:
         exp = re.compile('^\d\d\.\d\d\.\d\d ')
         if exp.match(line):
           endline = i-1
-          date_found = 0
+          in_date_range = False
 
       # find start line (MUST be after checking for next date)
       if line.startswith( date ):
         startline = i-1
-        date_found = 1
+        in_date_range = True
 
     f.seek(0, 0)
 
