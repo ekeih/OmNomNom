@@ -141,7 +141,7 @@ def get_menu_studentenwerk(url):
   return text
 
 def get_menu_makantine():
-  text = matheparser.get_menue(time.strftime('%d.%m.%y'))
+  text = matheparser.get_menue(time.strftime('%d.%m.%Y'))
   return text
 
 def get_menu(mensa_id):
