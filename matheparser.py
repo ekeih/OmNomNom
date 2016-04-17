@@ -23,6 +23,9 @@ def main(date):
             this_dish = _format( this_dish )
             dishes.append( this_dish )
 
+  if not dishes:
+    dishes = ["Food is like black humor, not everybody gets it."]
+
   return dishes
 
 def _format(line):
