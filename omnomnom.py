@@ -165,7 +165,7 @@ def parse_message(message):
     chat_id = chat['id']
   if 'text' in message:
     print(message['text'])
-    action,data = parse_text(message['text'].replace(config.BOT_USERNAME,'').strip())
+    action,data = parse_text(message['text'].replace('@' + config.BOT_USERNAME,'').strip())
     if action and data:
       data['chat_id'] = chat_id
       api(action,data)
