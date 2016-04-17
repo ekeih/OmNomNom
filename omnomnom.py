@@ -127,7 +127,7 @@ def get_help():
 def get_menu_studentenwerk(url):
   feed = feedparser.parse(url)
   summary = feed['entries'][0]['summary_detail']['value']
-  soup = BeautifulSoup(summary)
+  soup = BeautifulSoup(summary, "html.parser")
   text = ""
   tables = soup.find_all('table', attrs={'class':"mensa_day_speise"})
   for table in tables:
