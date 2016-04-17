@@ -6,7 +6,6 @@ import re
 import urllib.request
 from bs4 import BeautifulSoup
 
-
 def main(date):
   dishes = []
   url = "http://personalkantine.personalabteilung.tu-berlin.de/"
@@ -24,12 +23,15 @@ def main(date):
             this_dish = _format( this_dish )
             dishes.append( this_dish )
 
+  if not dishes:
+    dishes = ["Food is like black humor, not everybody gets it."]
+
   return dishes
 
 def _format(line):
   line = line.strip()
 
-  # remove indregended hints
+  # remove indregend hints
   exp = re.compile('\([\w\s+]+\)')
   line = exp.sub('', line)
 
