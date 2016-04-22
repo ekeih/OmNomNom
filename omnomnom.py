@@ -18,87 +18,28 @@ import canteens.studentenwerk
 import telegram
 import time
 
-CANTEENS_DICT = {}
-
-CANTEENS = [
-  {
-    'id'    : 'singh',
-    'title' : 'Singh Cafe',
-    'names' : ['singh', 'ma', 'mathe-cafete', 'ma-unten'],
-    'type'  : 'nofeed',
-    'link'  : 'http://singh-catering.de/cafe',
-    'feed'  : False
-  },
-  {
-    'id'    : 'personalkantine',
-    'title' : 'Personalkantine',
-    'type'  : 'makantine',
-    'names' : ['ma-kantine', 'personalkantine', 'ma-oben'],
-    'link'  : 'http://personalkantine.personalabteilung.tu-berlin.de/pdf/MA-aktuell.pdf',
-    'feed'  : False
-  }
-]
-
-class Canteen:
-  canteen_id = ''
-  title = ''
-  names = []
-  canteen_type = ''
-  link = ''
-  feed = ''
-  votes = 0
-  def __init__(self, canteen):
-    self.canteen_id = canteen['id']
-    self.title = canteen['title']
-    self.names = canteen['names']
-    self.canteen_type = canteen['type']
-    self.link = canteen['link']
-    self.feed = canteen['feed']
-  def get_id(self):
-    return self.canteen_id
-  def get_title(self):
-    return self.title
-  def get_link(self):
-    return self.link
-  def get_type(self):
-    return self.canteen_type
-  def get_feed(self):
-    return self.feed
-  def get_names(self):
-    return self.names
-
-for canteen in CANTEENS:
-  CANTEENS_DICT[canteen['id']] = Canteen(canteen)
-
-for canteen in canteens.studentenwerk.CANTEENS:
-  CANTEENS_DICT[canteen['id']] = Canteen(canteen)
-
 class OmNomNom:
-  def start(bot, update):
-    bot.sendMessage(chat_id=update.message.chat_id, text="I'm a bot, please talk to me!")
-  def menu_listing(bot, update):
-    text = ''
-    for key, canteen in CANTEENS_DICT.items():
-      text = text + canteen.get_title() + ': ' + canteen.get_link() + '\n'
-
-    bot.sendMessage(chat_id=update.message.chat_id, text=text)
   def menu_makantine(bot, update):
     bot.sendChatAction(chat_id=update.message.chat_id, action=telegram.ChatAction.TYPING)
     text = canteens.matheparser.get_menu(time.strftime('%d.%m.%Y'))
     bot.sendMessage(chat_id=update.message.chat_id, text=text)
+
   def menu_marchstrasse(bot, update):
     bot.sendChatAction(chat_id=update.message.chat_id, action=telegram.ChatAction.TYPING)
-    text = canteens.studentenwerk.get_menu(CANTEENS_DICT['mar'].get_feed())
+    text = canteens.studentenwerk.menu_mar()
     bot.sendMessage(chat_id=update.message.chat_id, text=text)
+
   def menu_architektur(bot, update):
     bot.sendChatAction(chat_id=update.message.chat_id, action=telegram.ChatAction.TYPING)
-    text = canteens.studentenwerk.get_menu(CANTEENS_DICT['arch'].get_feed())
+    text = canteens.studentenwerk.menu_a()
     bot.sendMessage(chat_id=update.message.chat_id, text=text)
+
   def menu_mensa(bot, update):
     bot.sendChatAction(chat_id=update.message.chat_id, action=telegram.ChatAction.TYPING)
-    text = canteens.studentenwerk.get_menu(CANTEENS_DICT['mensa'].get_feed())
+    text = canteens.studentenwerk.menu_mensa()
     bot.sendMessage(chat_id=update.message.chat_id, text=text)
+
   def menu_tel(bot, update):
     bot.sendChatAction(chat_id=update.message.chat_id, action=telegram.ChatAction.TYPING)
-    text = canteens.studentenwerk.get_menu(CANTEENS_DICT['tel'].get_feed())
+    text = canteens.studentenwerk.menu_tel()
     bot.sendMessage(chat_id=update.message.chat_id, text=text)

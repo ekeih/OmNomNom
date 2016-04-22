@@ -16,42 +16,24 @@
 import feedparser
 from bs4 import BeautifulSoup
 
-CANTEENS = [
-  {
-    'id'    : 'arch',
-    'title' : 'Architekturgebäude',
-    'names' : ['arch', 'architektur', 'a'],
-    'type'  : 'studentenwerk',
-    'link'  : 'http://www.studentenwerk-berlin.de/mensen/speiseplan/tu_cafe_erp/index.html',
-    'feed'  : 'http://www.studentenwerk-berlin.de/speiseplan/rss/tu_cafe_erp/tag/lang/0000000000000000000000000'
-  },
-  {
-    'id'    : 'mar',
-    'title' : 'Marchstraße',
-    'names' : ['march', 'marchstraße', 'mar'],
-    'type'  : 'studentenwerk',
-    'link'  : 'http://www.studentenwerk-berlin.de/mensen/speiseplan/tu_marchstr/index.html',
-    'feed'  : 'http://www.studentenwerk-berlin.de/speiseplan/rss/tu_marchstr/tag/lang/0000000000000000000000000'
-  },
-  {
-    'id'    : 'mensa',
-    'title' : 'Mensa',
-    'names' : ['mensa', 'hauptmensa'],
-    'type'  : 'studentenwerk',
-    'link'  : 'http://www.studentenwerk-berlin.de/mensen/speiseplan/tu/index.html',
-    'feed'  : 'http://www.studentenwerk-berlin.de/speiseplan/rss/tu/tag/lang/0000000000000000000000000'
-  },
-  {
-    'id'    : 'tel',
-    'title' : 'Skyline TEL',
-    'names' : ['tel', 'skyline'],
-    'type'  : 'studentenwerk',
-    'link'  : 'http://www.studentenwerk-berlin.de/mensen/speiseplan/tu_cafe_skyline/index.html',
-    'feed'  : 'http://www.studentenwerk-berlin.de/speiseplan/rss/tu_cafe_skyline/tag/lang/0000000000000000000000000'
-  }
-]
+CANTEEN_A     = 'http://www.studentenwerk-berlin.de/speiseplan/rss/tu_cafe_erp/tag/lang/0000000000000000000000000'
+CANTEEN_MAR   = 'http://www.studentenwerk-berlin.de/speiseplan/rss/tu_marchstr/tag/lang/0000000000000000000000000'
+CANTEEN_MENSA = 'http://www.studentenwerk-berlin.de/speiseplan/rss/tu/tag/lang/0000000000000000000000000'
+CANTEEN_TEL   = 'http://www.studentenwerk-berlin.de/speiseplan/rss/tu_cafe_skyline/tag/lang/0000000000000000000000000'
 
-def get_menu(url):
+def menu_a():
+  return __parse_menu(CANTEEN_A)
+
+def menu_mar():
+  return __parse_menu(CANTEEN_MAR)
+
+def menu_mensa():
+  return __parse_menu(CANTEEN_MENSA)
+
+def menu_tel():
+  return __parse_menu(CANTEEN_TEL)
+
+def __parse_menu(url):
   feed = feedparser.parse(url)
   summary = feed['entries'][0]['summary_detail']['value']
   soup = BeautifulSoup(summary, "html.parser")

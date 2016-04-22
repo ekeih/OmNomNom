@@ -32,15 +32,16 @@ logger.debug('Initialize API')
 updater = Updater(token=config.AUTH_TOKEN)
 dispatcher = updater.dispatcher
 
+def __start_conversation(bot, update):
+	bot.sendMessage(chat_id=update.message.chat_id, text="Hello, I know the menus for some canteens in Berlin (Germany).")
+
 logger.debug('Adding API callbacks')
-dispatcher.addTelegramCommandHandler('start', OmNomNom.start)
-dispatcher.addTelegramCommandHandler('speiseplan', OmNomNom.menu_listing)
+dispatcher.addTelegramCommandHandler('start', __start_conversation)
 dispatcher.addTelegramCommandHandler('personalkantine', OmNomNom.menu_makantine)
 dispatcher.addTelegramCommandHandler('mar', OmNomNom.menu_marchstrasse)
 dispatcher.addTelegramCommandHandler('a', OmNomNom.menu_architektur)
 dispatcher.addTelegramCommandHandler('mensa', OmNomNom.menu_mensa)
 dispatcher.addTelegramCommandHandler('tel', OmNomNom.menu_tel)
-
 
 logger.debug('Start polling')
 updater.start_polling()
