@@ -41,7 +41,7 @@ def _format(line):
 
   return line
 
-def get_menue(date):
+def get_menu(date):
   dishes = main(date)
   menue = ""
   for dish in dishes:
@@ -50,6 +50,6 @@ def get_menue(date):
   return menue
 
 if __name__ == '__main__':
-  print( get_menue( datetime.date.today().strftime("%d.%m.%Y")))
+  print( get_menu( datetime.date.today().strftime("%d.%m.%Y")))
 
 # vim:set ft et sw=2 sts=2:
