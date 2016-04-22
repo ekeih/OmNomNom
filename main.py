@@ -2,7 +2,7 @@
 
 # A simple Telegram bot to get canteen information
 
-#    Copyright (C) 2015  Max Rosin git@hackrid.de
+#    Copyright (C) 2016 Max Rosin git@hackrid.de
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -26,15 +26,21 @@ from omnomnom import OmNomNom
 
 # logging configuration
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logger = logging.getLogger()
 
-# initialize API
+logger.debug('Initialize API')
 updater = Updater(token=config.AUTH_TOKEN)
 dispatcher = updater.dispatcher
 
+logger.debug('Adding API callbacks')
 dispatcher.addTelegramCommandHandler('start', OmNomNom.start)
 dispatcher.addTelegramCommandHandler('speiseplan', OmNomNom.menu_listing)
 dispatcher.addTelegramCommandHandler('personalkantine', OmNomNom.menu_makantine)
+dispatcher.addTelegramCommandHandler('mar', OmNomNom.menu_marchstrasse)
+dispatcher.addTelegramCommandHandler('a', OmNomNom.menu_architektur)
+dispatcher.addTelegramCommandHandler('mensa', OmNomNom.menu_mensa)
+dispatcher.addTelegramCommandHandler('tel', OmNomNom.menu_tel)
 
+
+logger.debug('Start polling')
 updater.start_polling()
-
-sys.exit(0)
