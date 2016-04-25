@@ -3,6 +3,8 @@
 OmNomNom is a Telegram bot that can tell you what you can eat in some canteens in Berlin (Germany). You can invite the bot to a group or ask it directly.
 
 ## How to use it
+Usually you do not need to run the bot yourself. You can just talk to the @OmnBot in Telegram. Feel free to invite it in your groups. But if you want to run it anyways or would like to improve the code you can do so by following these steps.
+
 This assumes that you use virtualenv and virtualenvwrapper. Otherwise you can use virtualenv directly without virtualenvwrapper or install the dependencies global.
 
 At first you have to create a bot by talking to Telegrams [BotFather](https://core.telegram.org/bots#6-botfather). Copy your access token and keep it a secret!
