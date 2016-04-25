@@ -17,12 +17,16 @@ import feedparser
 from bs4 import BeautifulSoup
 
 CANTEEN_A     = 'http://www.studentenwerk-berlin.de/speiseplan/rss/tu_cafe_erp/tag/lang/0000000000000000000000000'
+CANTEEN_ACKER = 'http://www.studentenwerk-berlin.de/speiseplan/rss/tu_ackerstr/tag/lang/0000000000000000000000000'
 CANTEEN_MAR   = 'http://www.studentenwerk-berlin.de/speiseplan/rss/tu_marchstr/tag/lang/0000000000000000000000000'
 CANTEEN_MENSA = 'http://www.studentenwerk-berlin.de/speiseplan/rss/tu/tag/lang/0000000000000000000000000'
 CANTEEN_TEL   = 'http://www.studentenwerk-berlin.de/speiseplan/rss/tu_cafe_skyline/tag/lang/0000000000000000000000000'
 
 def menu_a():
   return __parse_menu(CANTEEN_A)
+
+def menu_acker():
+  return __parse_menu(CANTEEN_ACKER)
 
 def menu_mar():
   return __parse_menu(CANTEEN_MAR)

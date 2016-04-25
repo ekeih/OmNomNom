@@ -34,6 +34,11 @@ class OmNomNom:
     text = canteens.studentenwerk.menu_a()
     bot.sendMessage(chat_id=update.message.chat_id, text=text)
 
+  def menu_acker(bot, update):
+    bot.sendChatAction(chat_id=update.message.chat_id, action=telegram.ChatAction.TYPING)
+    text = canteens.studentenwerk.menu_acker()
+    bot.sendMessage(chat_id=update.message.chat_id, text=text)
+
   def menu_mensa(bot, update):
     bot.sendChatAction(chat_id=update.message.chat_id, action=telegram.ChatAction.TYPING)
     text = canteens.studentenwerk.menu_mensa()

@@ -39,6 +39,7 @@ dispatcher.addTelegramCommandHandler('start', __start_conversation)
 dispatcher.addTelegramCommandHandler('personalkantine', OmNomNom.menu_makantine)
 dispatcher.addTelegramCommandHandler('mar', OmNomNom.menu_marchstrasse)
 dispatcher.addTelegramCommandHandler('a', OmNomNom.menu_architektur)
+dispatcher.addTelegramCommandHandler('acker', OmNomNom.menu_acker)
 dispatcher.addTelegramCommandHandler('mensa', OmNomNom.menu_mensa)
 dispatcher.addTelegramCommandHandler('tel', OmNomNom.menu_tel)
 
