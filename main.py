@@ -36,12 +36,25 @@ def __start_conversation(bot, update):
 
 logger.debug('Adding API callbacks')
 dispatcher.addTelegramCommandHandler('start', __start_conversation)
+
+# TU Berlin
 dispatcher.addTelegramCommandHandler('personalkantine', OmNomNom.menu_makantine)
 dispatcher.addTelegramCommandHandler('mar', OmNomNom.menu_marchstrasse)
 dispatcher.addTelegramCommandHandler('a', OmNomNom.menu_architektur)
 dispatcher.addTelegramCommandHandler('acker', OmNomNom.menu_acker)
 dispatcher.addTelegramCommandHandler('mensa', OmNomNom.menu_mensa)
 dispatcher.addTelegramCommandHandler('tel', OmNomNom.menu_tel)
+
+# FU Berlin
+dispatcher.addTelegramCommandHandler('FU1', OmNomNom.menu_fu_1)
+dispatcher.addTelegramCommandHandler('FU2', OmNomNom.menu_fu_2)
+dispatcher.addTelegramCommandHandler('FULankwitz', OmNomNom.menu_fu_lankwitz)
+dispatcher.addTelegramCommandHandler('FUAssmannshauser', OmNomNom.menu_fu_assmannshauser)
+dispatcher.addTelegramCommandHandler('FUDueppel', OmNomNom.menu_fu_dueppel)
+dispatcher.addTelegramCommandHandler('FUCafeteria', OmNomNom.menu_fu_cafeteria)
+dispatcher.addTelegramCommandHandler('FUCafeKoeniginLuise', OmNomNom.menu_fu_cafe_koenigin_luise)
+dispatcher.addTelegramCommandHandler('FUCafeVantHoff', OmNomNom.menu_fu_cafe_vant_hoff)
+dispatcher.addTelegramCommandHandler('FUCafeIhne', OmNomNom.menu_fu_cafe_ihne)
 
 logger.debug('Start polling')
 updater.start_polling()
