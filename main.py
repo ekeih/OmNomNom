@@ -39,7 +39,11 @@ def __send_typing_action(bot, update):
   logger.debug("Send typing")
   bot.sendChatAction(chat_id=update.message.chat_id, action=ChatAction.TYPING)
 
+def __error_handler(bot, update, error):
+  logger.info(error)
+
 logger.debug('Adding API callbacks')
+dispatcher.addErrorHandler(__error_handler)
 dispatcher.addHandler(CommandHandler('start', __start_conversation))
 dispatcher.addHandler(RegexHandler('.*', __send_typing_action))
 
