@@ -22,6 +22,21 @@ CANTEEN_MAR   = 'https://www.studentenwerk-berlin.de/speiseplan/rss/tu_marchstr/
 CANTEEN_MENSA = 'https://www.studentenwerk-berlin.de/speiseplan/rss/tu/tag/lang/0000000000000000000000000'
 CANTEEN_TEL   = 'https://www.studentenwerk-berlin.de/speiseplan/rss/tu_cafe_skyline/tag/lang/0000000000000000000000000'
 
+HU_NORD = 'https://www.studentenwerk-berlin.de/speiseplan/rss/hu_nord/tag/lang/0000000000000000000000000'
+HU_SUED = 'https://www.studentenwerk-berlin.de/speiseplan/rss/hu_sued/tag/lang/0000000000000000000000000'
+HU_ADLERSHOF = 'https://www.studentenwerk-berlin.de/speiseplan/rss/hu_adlershof/tag/lang/0000000000000000000000000'
+HU_SPANDAUER = 'https://www.studentenwerk-berlin.de/speiseplan/rss/hu_spandauer/tag/lang/0000000000000000000000000'
+
+FU_1 = 'https://www.studentenwerk-berlin.de/speiseplan/rss/fu1/tag/lang/0000000000000000000000000'
+FU_2 = 'https://www.studentenwerk-berlin.de/speiseplan/rss/fu2/tag/lang/0000000000000000000000000'
+FU_LANKWITZ = 'https://www.studentenwerk-berlin.de/speiseplan/rss/fu_lankwitz/tag/lang/0000000000000000000000000'
+FU_ASSMANNSHAUSER = 'https://www.studentenwerk-berlin.de/speiseplan/rss/fu_assmannshauser/tag/lang/0000000000000000000000000'
+FU_DUEPPEL = 'https://www.studentenwerk-berlin.de/speiseplan/rss/fu_dueppel/tag/lang/0000000000000000000000000'
+FU_CAFETERIA = 'https://www.studentenwerk-berlin.de/speiseplan/rss/fu_cafeteria/tag/lang/0000000000000000000000000'
+FU_CAFE_KOENIGIN_LUISE = 'https://www.studentenwerk-berlin.de/speiseplan/rss/fu_cafe_koenigin_luise/tag/lang/0000000000000000000000000'
+FU_CAFE_VANT_HOFF = 'https://www.studentenwerk-berlin.de/speiseplan/rss/fu_cafe_vant_hoff/tag/lang/0000000000000000000000000'
+FU_CAFE_IHNE = 'https://www.studentenwerk-berlin.de/speiseplan/rss/fu_cafe_ihne/tag/lang/0000000000000000000000000'
+
 def menu_a():
   return __parse_menu(CANTEEN_A)
 
@@ -36,6 +51,49 @@ def menu_mensa():
 
 def menu_tel():
   return __parse_menu(CANTEEN_TEL)
+
+# HU Berlin
+
+def menu_hu_nord():
+  return __parse_menu(HU_NORD)
+
+def menu_hu_sued():
+  return __parse_menu(HU_SUED)
+
+def menu_hu_adlershof():
+  return __parse_menu(HU_ADLERSHOF)
+
+def menu_hu_spandauer():
+  return __parse_menu(HU_SPANDAUER)
+
+# FU Berlin
+
+def menu_fu_1():
+  return __parse_menu(FU_1)
+
+def menu_fu_2():
+  return __parse_menu(FU_2)
+
+def menu_fu_lankwitz():
+  return __parse_menu(FU_LANKWITZ)
+
+def menu_fu_assmannshauser():
+  return __parse_menu(FU_ASSMANNSHAUSER)
+
+def menu_fu_dueppel():
+  return __parse_menu(FU_DUEPPEL)
+
+def menu_fu_cafeteria():
+  return __parse_menu(FU_CAFETERIA)
+
+def menu_fu_cafe_koenigin_luise():
+  return __parse_menu(FU_CAFE_KOENIGIN_LUISE)
+
+def menu_fu_cafe_vant_hoff():
+  return __parse_menu(FU_CAFE_VANT_HOFF)
+
+def menu_fu_cafe_ihne():
+  return __parse_menu(FU_CAFE_IHNE)
 
 def __parse_menu(url):
   feed = feedparser.parse(url)

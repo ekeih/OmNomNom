@@ -48,3 +48,72 @@ class OmNomNom:
     bot.sendChatAction(chat_id=update.message.chat_id, action=telegram.ChatAction.TYPING)
     text = canteens.studentenwerk.menu_tel()
     bot.sendMessage(chat_id=update.message.chat_id, text=text)
+
+# HU Berlin
+
+  def menu_hu_nord(bot, update):
+    bot.sendChatAction(chat_id=update.message.chat_id, action=telegram.ChatAction.TYPING)
+    text = canteens.studentenwerk.menu_hu_nord()
+    bot.sendMessage(chat_id=update.message.chat_id, text=text)
+
+  def menu_hu_sued(bot, update):
+    bot.sendChatAction(chat_id=update.message.chat_id, action=telegram.ChatAction.TYPING)
+    text = canteens.studentenwerk.menu_hu_sued()
+    bot.sendMessage(chat_id=update.message.chat_id, text=text)
+
+  def menu_hu_adlershof(bot, update):
+    bot.sendChatAction(chat_id=update.message.chat_id, action=telegram.ChatAction.TYPING)
+    text = canteens.studentenwerk.menu_hu_adlershof()
+    bot.sendMessage(chat_id=update.message.chat_id, text=text)
+
+  def menu_hu_spandauer(bot, update):
+    bot.sendChatAction(chat_id=update.message.chat_id, action=telegram.ChatAction.TYPING)
+    text = canteens.studentenwerk.menu_hu_spandauer()
+    bot.sendMessage(chat_id=update.message.chat_id, text=text)
+
+# FU Berlin
+
+  def menu_fu_1(bot, update):
+    bot.sendChatAction(chat_id=update.message.chat_id, action=telegram.ChatAction.TYPING)
+    text = canteens.studentenwerk.menu_fu_1()
+    bot.sendMessage(chat_id=update.message.chat_id, text=text)
+
+  def menu_fu_2(bot, update):
+    bot.sendChatAction(chat_id=update.message.chat_id, action=telegram.ChatAction.TYPING)
+    text = canteens.studentenwerk.menu_fu_2()
+    bot.sendMessage(chat_id=update.message.chat_id, text=text)
+
+  def menu_fu_lankwitz(bot, update):
+    bot.sendChatAction(chat_id=update.message.chat_id, action=telegram.ChatAction.TYPING)
+    text = canteens.studentenwerk.menu_fu_lankwitz()
+    bot.sendMessage(chat_id=update.message.chat_id, text=text)
+
+  def menu_fu_assmannshauser(bot, update):
+    bot.sendChatAction(chat_id=update.message.chat_id, action=telegram.ChatAction.TYPING)
+    text = canteens.studentenwerk.menu_fu_assmannshauser()
+    bot.sendMessage(chat_id=update.message.chat_id, text=text)
+
+  def menu_fu_dueppel(bot, update):
+    bot.sendChatAction(chat_id=update.message.chat_id, action=telegram.ChatAction.TYPING)
+    text = canteens.studentenwerk.menu_fu_dueppel()
+    bot.sendMessage(chat_id=update.message.chat_id, text=text)
+
+  def menu_fu_cafeteria(bot, update):
+    bot.sendChatAction(chat_id=update.message.chat_id, action=telegram.ChatAction.TYPING)
+    text = canteens.studentenwerk.menu_fu_cafeteria()
+    bot.sendMessage(chat_id=update.message.chat_id, text=text)
+
+  def menu_fu_cafe_koenigin_luise(bot, update):
+    bot.sendChatAction(chat_id=update.message.chat_id, action=telegram.ChatAction.TYPING)
+    text = canteens.studentenwerk.menu_fu_cafe_koenigin_luise()
+    bot.sendMessage(chat_id=update.message.chat_id, text=text)
+
+  def menu_fu_cafe_vant_hoff(bot, update):
+    bot.sendChatAction(chat_id=update.message.chat_id, action=telegram.ChatAction.TYPING)
+    text = canteens.studentenwerk.menu_fu_cafe_vant_hoff()
+    bot.sendMessage(chat_id=update.message.chat_id, text=text)
+
+  def menu_fu_cafe_ihne(bot, update):
+    bot.sendChatAction(chat_id=update.message.chat_id, action=telegram.ChatAction.TYPING)
+    text = canteens.studentenwerk.menu_fu_cafe_ihne()
+    bot.sendMessage(chat_id=update.message.chat_id, text=text)
