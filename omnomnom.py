@@ -49,6 +49,28 @@ class OmNomNom:
     text = canteens.studentenwerk.menu_tel()
     bot.sendMessage(chat_id=update.message.chat_id, text=text)
 
+# HU Berlin
+
+  def menu_hu_nord(bot, update):
+    bot.sendChatAction(chat_id=update.message.chat_id, action=telegram.ChatAction.TYPING)
+    text = canteens.studentenwerk.menu_hu_nord()
+    bot.sendMessage(chat_id=update.message.chat_id, text=text)
+
+  def menu_hu_sued(bot, update):
+    bot.sendChatAction(chat_id=update.message.chat_id, action=telegram.ChatAction.TYPING)
+    text = canteens.studentenwerk.menu_hu_sued()
+    bot.sendMessage(chat_id=update.message.chat_id, text=text)
+
+  def menu_hu_adlershof(bot, update):
+    bot.sendChatAction(chat_id=update.message.chat_id, action=telegram.ChatAction.TYPING)
+    text = canteens.studentenwerk.menu_hu_adlershof()
+    bot.sendMessage(chat_id=update.message.chat_id, text=text)
+
+  def menu_hu_spandauer(bot, update):
+    bot.sendChatAction(chat_id=update.message.chat_id, action=telegram.ChatAction.TYPING)
+    text = canteens.studentenwerk.menu_hu_spandauer()
+    bot.sendMessage(chat_id=update.message.chat_id, text=text)
+
 # FU Berlin
 
   def menu_fu_1(bot, update):

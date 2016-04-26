@@ -45,6 +45,12 @@ dispatcher.addTelegramCommandHandler('acker', OmNomNom.menu_acker)
 dispatcher.addTelegramCommandHandler('mensa', OmNomNom.menu_mensa)
 dispatcher.addTelegramCommandHandler('tel', OmNomNom.menu_tel)
 
+# HU Berlin
+dispatcher.addTelegramCommandHandler('HUNord', OmNomNom.menu_hu_nord)
+dispatcher.addTelegramCommandHandler('HUSued', OmNomNom.menu_hu_sued)
+dispatcher.addTelegramCommandHandler('HUAdlershof', OmNomNom.menu_hu_adlershof)
+dispatcher.addTelegramCommandHandler('HUSpandauer', OmNomNom.menu_hu_spandauer)
+
 # FU Berlin
 dispatcher.addTelegramCommandHandler('FU1', OmNomNom.menu_fu_1)
 dispatcher.addTelegramCommandHandler('FU2', OmNomNom.menu_fu_2)
