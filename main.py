@@ -20,7 +20,8 @@ import config # has to set BOT_USERNAME, AUTH_TOKEN
 import logging
 import sys
 
-from telegram.ext import CommandHandler, Updater
+from telegram import ChatAction
+from telegram.ext import CommandHandler, RegexHandler, Updater
 from omnomnom import OmNomNom
 
 # logging configuration
@@ -32,35 +33,40 @@ updater = Updater(token=config.AUTH_TOKEN)
 dispatcher = updater.dispatcher
 
 def __start_conversation(bot, update):
-	bot.sendMessage(chat_id=update.message.chat_id, text="Hello, I know the menus for some canteens in Berlin (Germany).")
+  bot.sendMessage(chat_id=update.message.chat_id, text="Hello, I know the menus for some canteens in Berlin (Germany).")
+
+def __send_typing_action(bot, update):
+  logger.debug("Send typing")
+  bot.sendChatAction(chat_id=update.message.chat_id, action=ChatAction.TYPING)
 
 logger.debug('Adding API callbacks')
 dispatcher.addHandler(CommandHandler('start', __start_conversation))
+dispatcher.addHandler(RegexHandler('.*', __send_typing_action))
 
 # TU Berlin
-dispatcher.addHandler(CommandHandler('personalkantine', OmNomNom.menu_makantine))
-dispatcher.addHandler(CommandHandler('mar', OmNomNom.menu_marchstrasse))
-dispatcher.addHandler(CommandHandler('a', OmNomNom.menu_architektur))
-dispatcher.addHandler(CommandHandler('acker', OmNomNom.menu_acker))
-dispatcher.addHandler(CommandHandler('mensa', OmNomNom.menu_mensa))
-dispatcher.addHandler(CommandHandler('tel', OmNomNom.menu_tel))
+dispatcher.addHandler(CommandHandler('personalkantine', OmNomNom.menu_makantine), 'parsing_command')
+dispatcher.addHandler(CommandHandler('mar', OmNomNom.menu_marchstrasse), 'parsing_command')
+dispatcher.addHandler(CommandHandler('a', OmNomNom.menu_architektur), 'parsing_command')
+dispatcher.addHandler(CommandHandler('acker', OmNomNom.menu_acker), 'parsing_command')
+dispatcher.addHandler(CommandHandler('mensa', OmNomNom.menu_mensa), 'parsing_command')
+dispatcher.addHandler(CommandHandler('tel', OmNomNom.menu_tel), 'parsing_command')
 
 # HU Berlin
-dispatcher.addHandler(CommandHandler('hunord', OmNomNom.menu_hu_nord))
-dispatcher.addHandler(CommandHandler('husued', OmNomNom.menu_hu_sued))
-dispatcher.addHandler(CommandHandler('huadlershof', OmNomNom.menu_hu_adlershof))
-dispatcher.addHandler(CommandHandler('huspandauer', OmNomNom.menu_hu_spandauer))
+dispatcher.addHandler(CommandHandler('hunord', OmNomNom.menu_hu_nord), 'parsing_command')
+dispatcher.addHandler(CommandHandler('husued', OmNomNom.menu_hu_sued), 'parsing_command')
+dispatcher.addHandler(CommandHandler('huadlershof', OmNomNom.menu_hu_adlershof), 'parsing_command')
+dispatcher.addHandler(CommandHandler('huspandauer', OmNomNom.menu_hu_spandauer), 'parsing_command')
 
 # FU Berlin
-dispatcher.addHandler(CommandHandler('fu1', OmNomNom.menu_fu_1))
-dispatcher.addHandler(CommandHandler('fu2', OmNomNom.menu_fu_2))
-dispatcher.addHandler(CommandHandler('fulankwitz', OmNomNom.menu_fu_lankwitz))
-dispatcher.addHandler(CommandHandler('fuassmannshauser', OmNomNom.menu_fu_assmannshauser))
-dispatcher.addHandler(CommandHandler('fudueppel', OmNomNom.menu_fu_dueppel))
-dispatcher.addHandler(CommandHandler('fucafeteria', OmNomNom.menu_fu_cafeteria))
-dispatcher.addHandler(CommandHandler('fucafekoeniginluise', OmNomNom.menu_fu_cafe_koenigin_luise))
-dispatcher.addHandler(CommandHandler('fucafevanthoff', OmNomNom.menu_fu_cafe_vant_hoff))
-dispatcher.addHandler(CommandHandler('fucafeihne', OmNomNom.menu_fu_cafe_ihne))
+dispatcher.addHandler(CommandHandler('fu1', OmNomNom.menu_fu_1), 'parsing_command')
+dispatcher.addHandler(CommandHandler('fu2', OmNomNom.menu_fu_2), 'parsing_command')
+dispatcher.addHandler(CommandHandler('fulankwitz', OmNomNom.menu_fu_lankwitz), 'parsing_command')
+dispatcher.addHandler(CommandHandler('fuassmannshauser', OmNomNom.menu_fu_assmannshauser), 'parsing_command')
+dispatcher.addHandler(CommandHandler('fudueppel', OmNomNom.menu_fu_dueppel), 'parsing_command')
+dispatcher.addHandler(CommandHandler('fucafeteria', OmNomNom.menu_fu_cafeteria), 'parsing_command')
+dispatcher.addHandler(CommandHandler('fucafekoeniginluise', OmNomNom.menu_fu_cafe_koenigin_luise), 'parsing_command')
+dispatcher.addHandler(CommandHandler('fucafevanthoff', OmNomNom.menu_fu_cafe_vant_hoff), 'parsing_command')
+dispatcher.addHandler(CommandHandler('fucafeihne', OmNomNom.menu_fu_cafe_ihne), 'parsing_command')
 
 logger.debug('Start polling')
 updater.start_polling()
