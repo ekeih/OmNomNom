@@ -20,7 +20,7 @@ import config # has to set BOT_USERNAME, AUTH_TOKEN
 import logging
 import sys
 
-from telegram.ext import Updater
+from telegram.ext import CommandHandler, Updater
 from omnomnom import OmNomNom
 
 # logging configuration
@@ -35,32 +35,32 @@ def __start_conversation(bot, update):
 	bot.sendMessage(chat_id=update.message.chat_id, text="Hello, I know the menus for some canteens in Berlin (Germany).")
 
 logger.debug('Adding API callbacks')
-dispatcher.addTelegramCommandHandler('start', __start_conversation)
+dispatcher.addHandler(CommandHandler('start', __start_conversation))
 
 # TU Berlin
-dispatcher.addTelegramCommandHandler('personalkantine', OmNomNom.menu_makantine)
-dispatcher.addTelegramCommandHandler('mar', OmNomNom.menu_marchstrasse)
-dispatcher.addTelegramCommandHandler('a', OmNomNom.menu_architektur)
-dispatcher.addTelegramCommandHandler('acker', OmNomNom.menu_acker)
-dispatcher.addTelegramCommandHandler('mensa', OmNomNom.menu_mensa)
-dispatcher.addTelegramCommandHandler('tel', OmNomNom.menu_tel)
+dispatcher.addHandler(CommandHandler('personalkantine', OmNomNom.menu_makantine))
+dispatcher.addHandler(CommandHandler('mar', OmNomNom.menu_marchstrasse))
+dispatcher.addHandler(CommandHandler('a', OmNomNom.menu_architektur))
+dispatcher.addHandler(CommandHandler('acker', OmNomNom.menu_acker))
+dispatcher.addHandler(CommandHandler('mensa', OmNomNom.menu_mensa))
+dispatcher.addHandler(CommandHandler('tel', OmNomNom.menu_tel))
 
 # HU Berlin
-dispatcher.addTelegramCommandHandler('hunord', OmNomNom.menu_hu_nord)
-dispatcher.addTelegramCommandHandler('husued', OmNomNom.menu_hu_sued)
-dispatcher.addTelegramCommandHandler('huadlershof', OmNomNom.menu_hu_adlershof)
-dispatcher.addTelegramCommandHandler('huspandauer', OmNomNom.menu_hu_spandauer)
+dispatcher.addHandler(CommandHandler('hunord', OmNomNom.menu_hu_nord))
+dispatcher.addHandler(CommandHandler('husued', OmNomNom.menu_hu_sued))
+dispatcher.addHandler(CommandHandler('huadlershof', OmNomNom.menu_hu_adlershof))
+dispatcher.addHandler(CommandHandler('huspandauer', OmNomNom.menu_hu_spandauer))
 
 # FU Berlin
-dispatcher.addTelegramCommandHandler('fu1', OmNomNom.menu_fu_1)
-dispatcher.addTelegramCommandHandler('fu2', OmNomNom.menu_fu_2)
-dispatcher.addTelegramCommandHandler('fulankwitz', OmNomNom.menu_fu_lankwitz)
-dispatcher.addTelegramCommandHandler('fuassmannshauser', OmNomNom.menu_fu_assmannshauser)
-dispatcher.addTelegramCommandHandler('fudueppel', OmNomNom.menu_fu_dueppel)
-dispatcher.addTelegramCommandHandler('fucafeteria', OmNomNom.menu_fu_cafeteria)
-dispatcher.addTelegramCommandHandler('fucafekoeniginluise', OmNomNom.menu_fu_cafe_koenigin_luise)
-dispatcher.addTelegramCommandHandler('fucafevanthoff', OmNomNom.menu_fu_cafe_vant_hoff)
-dispatcher.addTelegramCommandHandler('fucafeihne', OmNomNom.menu_fu_cafe_ihne)
+dispatcher.addHandler(CommandHandler('fu1', OmNomNom.menu_fu_1))
+dispatcher.addHandler(CommandHandler('fu2', OmNomNom.menu_fu_2))
+dispatcher.addHandler(CommandHandler('fulankwitz', OmNomNom.menu_fu_lankwitz))
+dispatcher.addHandler(CommandHandler('fuassmannshauser', OmNomNom.menu_fu_assmannshauser))
+dispatcher.addHandler(CommandHandler('fudueppel', OmNomNom.menu_fu_dueppel))
+dispatcher.addHandler(CommandHandler('fucafeteria', OmNomNom.menu_fu_cafeteria))
+dispatcher.addHandler(CommandHandler('fucafekoeniginluise', OmNomNom.menu_fu_cafe_koenigin_luise))
+dispatcher.addHandler(CommandHandler('fucafevanthoff', OmNomNom.menu_fu_cafe_vant_hoff))
+dispatcher.addHandler(CommandHandler('fucafeihne', OmNomNom.menu_fu_cafe_ihne))
 
 logger.debug('Start polling')
 updater.start_polling()
