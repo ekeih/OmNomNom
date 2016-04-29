@@ -16,8 +16,8 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import config # has to set BOT_USERNAME, AUTH_TOKEN
 import logging
+import os
 import sys
 
 from telegram import ChatAction
@@ -28,8 +28,13 @@ from omnomnom import OmNomNom
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger()
 
+token = os.environ.get('TELEGRAM_BOT_AUTH_TOKEN')
+if not token:
+	logging.error('You have to set your auth token as environment variable in TELEGRAM_BOT_AUTH_TOKEN')
+	sys.exit()
+
 logger.debug('Initialize API')
-updater = Updater(token=config.AUTH_TOKEN)
+updater = Updater(token=token)
 dispatcher = updater.dispatcher
 
 def __start_conversation(bot, update):
