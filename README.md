@@ -38,6 +38,7 @@ $ echo "AUTH_TOKEN = 'YOUR_ACCESS_TOKEN'" > config.py
 ## Developer
 * Max Rosin
 * Christian Beneke
+* Matthias Loibl
 
 ## License
 
