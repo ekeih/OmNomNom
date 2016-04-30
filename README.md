@@ -5,6 +5,12 @@ OmNomNom is a Telegram bot that can tell you what you can eat in some canteens i
 ## How to use it
 Usually you do not need to run the bot yourself. You can just talk to the @OmnBot in Telegram. Feel free to invite it in your groups. But if you want to run it anyways or would like to improve the code you can do so by following these steps.
 
+### Docker
+```bash
+$ docker run --env TELEGRAM_BOT_AUTH_TOKEN='YOUR_ACCESS_TOKEN' ekeih/omnomnom
+```
+
+### Virtualenvwrapper
 This assumes that you use virtualenv and virtualenvwrapper. Otherwise you can use virtualenv directly without virtualenvwrapper or install the dependencies global.
 
 At first you have to create a bot by talking to Telegrams [BotFather](https://core.telegram.org/bots#6-botfather). Copy your access token and keep it a secret!
@@ -21,19 +27,12 @@ $ workon omnomnom
 (omnomnom) $ git clone https://github.com/ekeih/OmNomNom.git
 (omnomnom) $ cd OmNomNom
 
-# Create a configuration file with your access token
-# This line would add your access token to your shell history.
-# It would be clever to avoid this by using an editor 
-# or temporary disabling the history.
-$ echo "AUTH_TOKEN = 'YOUR_ACCESS_TOKEN'" > config.py
-
 # Install dependencies
 (omnomnom) $ pip install -r requirements.txt
 
 # Run OmNomNom
-(omnomnom) $ python3 main.py
+(omnomnom) $ TELEGRAM_BOT_AUTH_TOKEN='YOUR_ACCESS_TOKEN' python3 main.py
 ```
-
 
 ## Developer
 * Max Rosin
