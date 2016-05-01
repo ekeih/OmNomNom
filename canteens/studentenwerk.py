@@ -111,3 +111,6 @@ def __parse_menu(url):
       price = price.get_text().split('/')[0].strip('EUR ')
       text = text + name+ ': ' + price + '€\n'
   return text
+
+if __name__ == '__main__':
+  print(__parse_menu(CANTEEN_MAR))
