@@ -59,6 +59,7 @@ dispatcher.addHandler(CommandHandler('a', OmNomNom.menu_architektur), 'parsing_c
 dispatcher.addHandler(CommandHandler('acker', OmNomNom.menu_acker), 'parsing_command')
 dispatcher.addHandler(CommandHandler('mensa', OmNomNom.menu_mensa), 'parsing_command')
 dispatcher.addHandler(CommandHandler('tel', OmNomNom.menu_tel), 'parsing_command')
+dispatcher.addHandler(CommandHandler('sing', OmNomNom.menu_tu_sing), 'parsing_command')
 
 # HU Berlin
 dispatcher.addHandler(CommandHandler('hunord', OmNomNom.menu_hu_nord), 'parsing_command')
@@ -76,8 +77,6 @@ dispatcher.addHandler(CommandHandler('fucafeteria', OmNomNom.menu_fu_cafeteria),
 dispatcher.addHandler(CommandHandler('fucafekoeniginluise', OmNomNom.menu_fu_cafe_koenigin_luise), 'parsing_command')
 dispatcher.addHandler(CommandHandler('fucafevanthoff', OmNomNom.menu_fu_cafe_vant_hoff), 'parsing_command')
 dispatcher.addHandler(CommandHandler('fucafeihne', OmNomNom.menu_fu_cafe_ihne), 'parsing_command')
-
-dispatcher.addHandler(CommandHandler('sing', OmNomNom.menu_tu_sing), 'parsing_command')
 
 logger.debug('Start polling')
 updater.start_polling()
