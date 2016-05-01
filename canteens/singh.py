@@ -15,42 +15,48 @@
 
 from bs4 import BeautifulSoup
 from datetime import datetime
+from telegram import Emoji
 from terminaltables import AsciiTable
 from urllib.request import urlopen
 
 URL = 'http://singh-catering.de/cafe/'
 
 def __parse_menu_items(items):
-	table_data = []
-	for item in items.find_all('li', class_='menu-list__item'):
-		title = item.find('span', class_='item_title').get_text()
-		price = item.find('span', class_='menu-list__item-price').get_text()
-		table_data.append([title, price])
-	table = AsciiTable(table_data)
-	table.outer_border = False
-	table.inner_column_border = False
-	table.inner_heading_row_border = False
-	return '```%s```' % table.table
+  table_data = []
+  text = ''
+  for item in items.find_all('li', class_='menu-list__item'):
+    title = item.find('span', class_='item_title').get_text()
+    price = item.find('span', class_='menu-list__item-price').get_text()
+    veggie = item.find('span', class_='menu-list__item-highlight-title')
+    annotation = ''
+    if veggie and (('VEGAN!' in veggie) or ('VEGETARISCH!' in veggie)):
+      annotation = Emoji.EAR_OF_MAIZE
+    else:
+      annotation = Emoji.POULTRY_LEG
+    description = item.find('span', class_='desc__content').get_text()
+    text = '%s%s *%s: %s*\n_%s_\n' % (text, annotation, title, price, description)
+  return text
 
 def __parse_menu():
-	today = datetime.now().weekday()
-	html = urlopen(URL).read()
-	soup = BeautifulSoup(html, 'html.parser')
-	menu_items = soup.find_all('ul', class_='menu-list__items')
+  today = datetime.now().weekday()
+  html = urlopen(URL).read()
+  soup = BeautifulSoup(html, 'html.parser')
+  menu_items = soup.find_all('ul', class_='menu-list__items')
 
-	menu = {
-		0: __parse_menu_items(menu_items[0]), # Monday
-		1: __parse_menu_items(menu_items[3]), # Tuesday
-		2: __parse_menu_items(menu_items[1]), # Wednesday
-		3: __parse_menu_items(menu_items[4]), # Thursday
-		4: __parse_menu_items(menu_items[2]), # Friday
-		5: 'Heute geschlossen.\nMontag gibt es:\n%s' % __parse_menu_items(menu_items[0]), # Saturday
-		6: 'Heute geschlossen.\nMontag gibt es:\n%s' % __parse_menu_items(menu_items[0]), # Sunday
-	}
-	return '[Singh Catering](%s)\n%s' % (URL, menu[today])
-	
+  menu = {
+    0: __parse_menu_items(menu_items[0]), # Monday
+    1: __parse_menu_items(menu_items[3]), # Tuesday
+    2: __parse_menu_items(menu_items[1]), # Wednesday
+    3: __parse_menu_items(menu_items[4]), # Thursday
+    4: __parse_menu_items(menu_items[2]), # Friday
+    5: 'Heute geschlossen.\nMontag gibt es:\n%s' % __parse_menu_items(menu_items[0]), # Saturday
+    6: 'Heute geschlossen.\nMontag gibt es:\n%s' % __parse_menu_items(menu_items[0]), # Sunday
+  }
+  return '[Singh Catering](%s)\n%s' % (URL, menu[today])
+  # <span class="menu-list__item-highlight-title">VEGAN!</span>
+
 def get_menu():
-	return __parse_menu()
+  return __parse_menu()
 
 if __name__ == '__main__':
-	print(__parse_menu())
+  print(__parse_menu())
