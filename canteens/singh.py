@@ -53,7 +53,6 @@ def __parse_menu():
     6: 'Heute geschlossen.\nMontag gibt es:\n%s' % __parse_menu_items(menu_items[0]), # Sunday
   }
   return '[Singh Catering](%s)\n%s' % (URL, menu[today])
-  # <span class="menu-list__item-highlight-title">VEGAN!</span>
 
 def get_menu():
   return __parse_menu()
