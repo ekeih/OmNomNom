@@ -13,9 +13,9 @@ RUN apk add bash ca-certificates  python3 && \
     pip3 install --upgrade pip setuptools
 
 COPY canteens/ canteens/
-COPY main.py omnomnom.py ./
 COPY requirements.txt ./
-
 RUN pip install -r requirements.txt
+
+COPY main.py omnomnom.py ./
 
 CMD python3 main.py
