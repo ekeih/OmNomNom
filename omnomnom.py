@@ -14,7 +14,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import canteens.matheparser
-import canteens.sing
+import canteens.singh
 import canteens.studentenwerk
 import telegram
 import time
@@ -44,8 +44,8 @@ class OmNomNom:
     text = canteens.studentenwerk.menu_tel()
     bot.sendMessage(chat_id=update.message.chat_id, text=text)
 
-  def menu_tu_sing(bot, update):
-    text = canteens.sing.get_menu()
+  def menu_tu_singh(bot, update):
+    text = canteens.singh.get_menu()
     bot.sendMessage(chat_id=update.message.chat_id, text=text, parse_mode=telegram.ParseMode.MARKDOWN, disable_web_page_preview=True)
 
 # HU Berlin

@@ -59,7 +59,7 @@ dispatcher.addHandler(CommandHandler('a', OmNomNom.menu_architektur), 'parsing_c
 dispatcher.addHandler(CommandHandler('acker', OmNomNom.menu_acker), 'parsing_command')
 dispatcher.addHandler(CommandHandler('mensa', OmNomNom.menu_mensa), 'parsing_command')
 dispatcher.addHandler(CommandHandler('tel', OmNomNom.menu_tel), 'parsing_command')
-dispatcher.addHandler(CommandHandler('sing', OmNomNom.menu_tu_sing), 'parsing_command')
+dispatcher.addHandler(CommandHandler('singh', OmNomNom.menu_tu_singh), 'parsing_command')
 
 # HU Berlin
 dispatcher.addHandler(CommandHandler('hunord', OmNomNom.menu_hu_nord), 'parsing_command')
