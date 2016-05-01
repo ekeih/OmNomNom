@@ -77,5 +77,7 @@ dispatcher.addHandler(CommandHandler('fucafekoeniginluise', OmNomNom.menu_fu_caf
 dispatcher.addHandler(CommandHandler('fucafevanthoff', OmNomNom.menu_fu_cafe_vant_hoff), 'parsing_command')
 dispatcher.addHandler(CommandHandler('fucafeihne', OmNomNom.menu_fu_cafe_ihne), 'parsing_command')
 
+dispatcher.addHandler(CommandHandler('sing', OmNomNom.menu_tu_sing), 'parsing_command')
+
 logger.debug('Start polling')
 updater.start_polling()
