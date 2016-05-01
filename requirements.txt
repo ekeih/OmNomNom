@@ -1,4 +1,3 @@
 beautifulsoup4
 feedparser
 python-telegram-bot==4.0rc1
-terminaltables
