@@ -15,6 +15,7 @@
 
 import feedparser
 from bs4 import BeautifulSoup
+from telegram import Emoji
 
 CANTEEN_A     = 'https://www.studentenwerk-berlin.de/speiseplan/rss/tu_cafe_erp/tag/lang/0000000000000000000000000'
 CANTEEN_ACKER = 'https://www.studentenwerk-berlin.de/speiseplan/rss/tu_ackerstr/tag/lang/0000000000000000000000000'
@@ -113,8 +114,10 @@ def __parse_menu(url):
       vegan = row.find_all('a', href='#vegan_siegel')
       annotation = ''
       if veggie or vegan:
-        annotation = '(v) '
-      text = '%s• %s%s: *%s€*\n' % (text, annotation, name, price)
+        annotation = Emoji.EAR_OF_MAIZE
+      else:
+        annotation = Emoji.POULTRY_LEG
+      text = '%s%s %s: *%s€*\n' % (text, annotation, name, price)
   return text
 
 if __name__ == '__main__':
