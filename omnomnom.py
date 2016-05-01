@@ -13,93 +13,94 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import canteens.matheparser
-import canteens.singh
-import canteens.studentenwerk
-import telegram
-import time
+from canteens import matheparser, singh, studentenwerk
+from telegram import ParseMode
+from time import strftime
+
+def _send_message(bot, update, text):
+  bot.sendMessage(chat_id=update.message.chat_id, text=text, parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
 
 class OmNomNom:
   def menu_makantine(bot, update):
-    text = canteens.matheparser.get_menu(time.strftime('%d.%m.%Y'))
-    bot.sendMessage(chat_id=update.message.chat_id, text=text)
+    text = matheparser.get_menu(strftime('%d.%m.%Y'))
+    _send_message(bot, update, text)
 
   def menu_marchstrasse(bot, update):
-    text = canteens.studentenwerk.menu_mar()
-    bot.sendMessage(chat_id=update.message.chat_id, text=text)
+    text = studentenwerk.menu_mar()
+    _send_message(bot, update, text)
 
   def menu_architektur(bot, update):
-    text = canteens.studentenwerk.menu_a()
-    bot.sendMessage(chat_id=update.message.chat_id, text=text)
+    text = studentenwerk.menu_a()
+    _send_message(bot, update, text)
 
   def menu_acker(bot, update):
-    text = canteens.studentenwerk.menu_acker()
-    bot.sendMessage(chat_id=update.message.chat_id, text=text)
+    text = studentenwerk.menu_acker()
+    _send_message(bot, update, text)
 
   def menu_mensa(bot, update):
-    text = canteens.studentenwerk.menu_mensa()
-    bot.sendMessage(chat_id=update.message.chat_id, text=text)
+    text = studentenwerk.menu_mensa()
+    _send_message(bot, update, text)
 
   def menu_tel(bot, update):
-    text = canteens.studentenwerk.menu_tel()
-    bot.sendMessage(chat_id=update.message.chat_id, text=text)
+    text = studentenwerk.menu_tel()
+    _send_message(bot, update, text)
 
   def menu_tu_singh(bot, update):
-    text = canteens.singh.get_menu()
-    bot.sendMessage(chat_id=update.message.chat_id, text=text, parse_mode=telegram.ParseMode.MARKDOWN, disable_web_page_preview=True)
+    text = singh.get_menu()
+    _send_message(bot, update, text)
 
 # HU Berlin
 
   def menu_hu_nord(bot, update):
-    text = canteens.studentenwerk.menu_hu_nord()
-    bot.sendMessage(chat_id=update.message.chat_id, text=text)
+    text = studentenwerk.menu_hu_nord()
+    _send_message(bot, update, text)
 
   def menu_hu_sued(bot, update):
-    text = canteens.studentenwerk.menu_hu_sued()
-    bot.sendMessage(chat_id=update.message.chat_id, text=text)
+    text = studentenwerk.menu_hu_sued()
+    _send_message(bot, update, text)
 
   def menu_hu_adlershof(bot, update):
-    text = canteens.studentenwerk.menu_hu_adlershof()
-    bot.sendMessage(chat_id=update.message.chat_id, text=text)
+    text = studentenwerk.menu_hu_adlershof()
+    _send_message(bot, update, text)
 
   def menu_hu_spandauer(bot, update):
-    text = canteens.studentenwerk.menu_hu_spandauer()
-    bot.sendMessage(chat_id=update.message.chat_id, text=text)
+    text = studentenwerk.menu_hu_spandauer()
+    _send_message(bot, update, text)
 
 # FU Berlin
 
   def menu_fu_1(bot, update):
-    text = canteens.studentenwerk.menu_fu_1()
-    bot.sendMessage(chat_id=update.message.chat_id, text=text)
+    text = studentenwerk.menu_fu_1()
+    _send_message(bot, update, text)
 
   def menu_fu_2(bot, update):
-    text = canteens.studentenwerk.menu_fu_2()
-    bot.sendMessage(chat_id=update.message.chat_id, text=text)
+    text = studentenwerk.menu_fu_2()
+    _send_message(bot, update, text)
 
   def menu_fu_lankwitz(bot, update):
-    text = canteens.studentenwerk.menu_fu_lankwitz()
-    bot.sendMessage(chat_id=update.message.chat_id, text=text)
+    text = studentenwerk.menu_fu_lankwitz()
+    _send_message(bot, update, text)
 
   def menu_fu_assmannshauser(bot, update):
-    text = canteens.studentenwerk.menu_fu_assmannshauser()
-    bot.sendMessage(chat_id=update.message.chat_id, text=text)
+    text = studentenwerk.menu_fu_assmannshauser()
+    _send_message(bot, update, text)
 
   def menu_fu_dueppel(bot, update):
-    text = canteens.studentenwerk.menu_fu_dueppel()
-    bot.sendMessage(chat_id=update.message.chat_id, text=text)
+    text = studentenwerk.menu_fu_dueppel()
+    _send_message(bot, update, text)
 
   def menu_fu_cafeteria(bot, update):
-    text = canteens.studentenwerk.menu_fu_cafeteria()
-    bot.sendMessage(chat_id=update.message.chat_id, text=text)
+    text = studentenwerk.menu_fu_cafeteria()
+    _send_message(bot, update, text)
 
   def menu_fu_cafe_koenigin_luise(bot, update):
-    text = canteens.studentenwerk.menu_fu_cafe_koenigin_luise()
-    bot.sendMessage(chat_id=update.message.chat_id, text=text)
+    text = studentenwerk.menu_fu_cafe_koenigin_luise()
+    _send_message(bot, update, text)
 
   def menu_fu_cafe_vant_hoff(bot, update):
-    text = canteens.studentenwerk.menu_fu_cafe_vant_hoff()
-    bot.sendMessage(chat_id=update.message.chat_id, text=text)
+    text = studentenwerk.menu_fu_cafe_vant_hoff()
+    _send_message(bot, update, text)
 
   def menu_fu_cafe_ihne(bot, update):
-    text = canteens.studentenwerk.menu_fu_cafe_ihne()
-    bot.sendMessage(chat_id=update.message.chat_id, text=text)
+    text = studentenwerk.menu_fu_cafe_ihne()
+    _send_message(bot, update, text)
