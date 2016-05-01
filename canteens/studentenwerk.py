@@ -109,7 +109,12 @@ def __parse_menu(url):
       name = name.strip().rstrip('1234567890').strip()
       price = row.find('td', attrs={'class':"mensa_day_speise_preis"})
       price = price.get_text().split('/')[0].strip('EUR ')
-      text = '%s• %s: *%s€*\n' % (text, name, price)
+      veggie = row.find_all('a', href='#vegetarisch_siegel')
+      vegan = row.find_all('a', href='#vegan_siegel')
+      annotation = ''
+      if veggie or vegan:
+        annotation = '(v) '
+      text = '%s• %s%s: *%s€*\n' % (text, annotation, name, price)
   return text
 
 if __name__ == '__main__':
