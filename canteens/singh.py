@@ -16,7 +16,6 @@
 from bs4 import BeautifulSoup
 from datetime import datetime
 from telegram import Emoji
-from terminaltables import AsciiTable
 from urllib.request import urlopen
 
 URL = 'http://singh-catering.de/cafe/'
