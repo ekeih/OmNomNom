@@ -21,7 +21,7 @@ from urllib.request import urlopen
 URL = 'http://singh-catering.de/cafe/'
 
 def __parse_menu_items(items):
-	table_data = [['Gericht','Preis']]
+	table_data = []
 	for item in items.find_all('li', class_='menu-list__item'):
 		title = item.find('span', class_='item_title').get_text()
 		price = item.find('span', class_='menu-list__item-price').get_text()
@@ -47,7 +47,7 @@ def __parse_menu():
 		5: 'Heute geschlossen.\nMontag gibt es:\n%s' % __parse_menu_items(menu_items[0]), # Saturday
 		6: 'Heute geschlossen.\nMontag gibt es:\n%s' % __parse_menu_items(menu_items[0]), # Sunday
 	}
-	return menu[today]
+	return '[Sing Catering](%s)\n%s' % (URL, menu[today])
 	
 def get_menu():
 	return __parse_menu()

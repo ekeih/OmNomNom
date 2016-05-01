@@ -46,7 +46,7 @@ class OmNomNom:
 
   def menu_tu_sing(bot, update):
     text = canteens.sing.get_menu()
-    bot.sendMessage(chat_id=update.message.chat_id, text=text, parse_mode=telegram.ParseMode.MARKDOWN)
+    bot.sendMessage(chat_id=update.message.chat_id, text=text, parse_mode=telegram.ParseMode.MARKDOWN, disable_web_page_preview=True)
 
 # HU Berlin
 
