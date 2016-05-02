@@ -20,22 +20,29 @@ import time
 import re
 import urllib.request
 from bs4 import BeautifulSoup
+from telegram import Emoji
+
+URL = "http://personalkantine.personalabteilung.tu-berlin.de/"
 
 def main(date):
   dishes = []
-  url = "http://personalkantine.personalabteilung.tu-berlin.de/"
-  html = urllib.request.urlopen(url).read()
+  html = urllib.request.urlopen(URL).read()
   menu = BeautifulSoup( html, 'html.parser' ).find("ul", class_="Menu__accordion")
 
   for day in menu.children:
     if day.name and date in day.find("h2").string:
       for dishlist in day.children:
         if dishlist.name == 'ul':
-          for dish in dishlist.find_all('li'):
+          items = dishlist.find_all('li')
+          for counter,dish in enumerate(items):
+            if counter >= len(items)-2:
+              annotation = Emoji.EAR_OF_MAIZE
+            else:
+              annotation = Emoji.POULTRY_LEG
             this_dish = ""
             for string in dish.stripped_strings:
               this_dish = this_dish + " " + string
-            this_dish = _format( this_dish )
+            this_dish = '%s %s' % (annotation, _format(this_dish))
             dishes.append( this_dish )
 
   if not dishes:
@@ -62,6 +69,7 @@ def get_menu(date):
   for dish in dishes:
     menue = menue + dish + "\n"
   menue = menue.rstrip()
+  menue = '[Personalkantine](%s) (11:00 - 16:00)\n%s' % (URL, menue)
   return menue
 
 if __name__ == '__main__':
