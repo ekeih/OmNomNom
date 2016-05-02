@@ -13,10 +13,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import os
-import sys
 import datetime
-import time
 import re
 import urllib.request
 from bs4 import BeautifulSoup
@@ -27,10 +24,10 @@ URL = 'http://personalkantine.personalabteilung.tu-berlin.de/#speisekarte'
 def main(date):
   dishes = []
   html = urllib.request.urlopen(URL).read()
-  menu = BeautifulSoup( html, 'html.parser' ).find("ul", class_="Menu__accordion")
+  menu = BeautifulSoup(html, 'html.parser').find('ul', class_='Menu__accordion')
 
   for day in menu.children:
-    if day.name and date in day.find("h2").string:
+    if day.name and date in day.find('h2').string:
       for dishlist in day.children:
         if dishlist.name == 'ul':
           items = dishlist.find_all('li')
@@ -39,16 +36,13 @@ def main(date):
               annotation = Emoji.EAR_OF_MAIZE
             else:
               annotation = Emoji.POULTRY_LEG
-            this_dish = ""
+            this_dish = ''
             for string in dish.stripped_strings:
-              this_dish = this_dish + " " + string
+              this_dish = '%s %s' % (this_dish, string)
             this_dish = '%s %s' % (annotation, _format(this_dish))
             dishes.append( this_dish )
 
-  if not dishes:
-    dishes = ["Food is like black humor, not everybody gets it."]
-
-  return dishes
+  return dishes or ['Heute geschlossen.']
 
 def _format(line):
   line = line.strip()
@@ -65,14 +59,14 @@ def _format(line):
 
 def get_menu(date):
   dishes = main(date)
-  menue = ""
+  menu = ''
   for dish in dishes:
-    menue = menue + dish + "\n"
-  menue = menue.rstrip()
-  menue = '[Personalkantine](%s) (11:00 - 16:00)\n%s' % (URL, menue)
-  return menue
+    menu = '%s%s\n' % (menu, dish)
+  menu = menu.rstrip()
+  menu = '[Personalkantine](%s) (11:00 - 16:00)\n%s' % (URL, menu)
+  return menu
 
 if __name__ == '__main__':
-  print( get_menu( datetime.date.today().strftime("%d.%m.%Y")))
+  print(get_menu(datetime.date.today().strftime('%d.%m.%Y')))
 
 # vim:set ft et sw=2 sts=2:
