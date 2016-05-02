@@ -22,7 +22,7 @@ import urllib.request
 from bs4 import BeautifulSoup
 from telegram import Emoji
 
-URL = "http://personalkantine.personalabteilung.tu-berlin.de/"
+URL = 'http://personalkantine.personalabteilung.tu-berlin.de/#speisekarte'
 
 def main(date):
   dishes = []
