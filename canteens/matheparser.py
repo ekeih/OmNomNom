@@ -59,7 +59,7 @@ def _format(line):
 
   # use common price tag design
   exp = re.compile('\s+(\d,\d+)\s+€')
-  line = exp.sub(': \g<1>€', line)
+  line = exp.sub(': *\g<1>€*', line)
 
   return line
 
