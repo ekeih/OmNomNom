@@ -118,6 +118,8 @@ def __parse_menu(url):
       else:
         annotation = Emoji.POULTRY_LEG
       text = '%s%s %s: *%s€*\n' % (text, annotation, name, price)
+  if text == '':
+    text = 'Leider keine Mahlzeiten gefunden. Bitte schau manuell beim [Studentenwerk](http://www.studentenwerk-berlin.de/mensen/speiseplan/index.html) nach.'
   return text
 
 if __name__ == '__main__':
