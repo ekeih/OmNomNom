@@ -7,7 +7,7 @@ Usually you do not need to run the bot yourself. You can just talk to the @OmnBo
 
 ### Docker
 ```bash
-$ docker run --env TELEGRAM_BOT_AUTH_TOKEN='YOUR_ACCESS_TOKEN' ekeih/omnomnom
+$ docker run --env TELEGRAM_BOT_AUTH_TOKEN='YOUR_ACCESS_TOKEN' -v '/etc/localtime:/etc/localtime:ro' ekeih/omnomnom
 ```
 
 ### Virtualenvwrapper
