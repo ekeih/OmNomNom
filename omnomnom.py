@@ -14,10 +14,24 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from canteens import matheparser, singh, studentenwerk
+from logging import getLogger
 from telegram import ParseMode
 from time import strftime
 
 def _send_message(bot, update, text):
+  logger = getLogger()
+  chat = update.message.chat
+  target_chat = ''
+  if chat.type == 'group':
+    target_chat = chat.title
+  elif chat.type == 'private':
+    if chat.first_name:
+      target_chat += chat.first_name
+    if chat.last_name:
+      target_chat += ' %s' % chat.last_name
+    if chat.username:
+      target_chat += ' (%s)' % chat.username
+  logger.info('Out: %s\n%s\n' % (target_chat, text))
   bot.sendMessage(chat_id=update.message.chat_id, text=text, parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
 
 class OmNomNom:
