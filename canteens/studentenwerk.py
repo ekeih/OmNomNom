@@ -107,6 +107,8 @@ def __parse_menu(url):
     for row in rows:
       name = row.find('td', attrs={'class':"mensa_day_speise_name"})
       name = name.get_text().replace('21a', '')
+      name = name.replace('6a', '')
+      name = name.replace('6b', '')
       name = name.strip().rstrip('1234567890').strip()
       price = row.find('td', attrs={'class':"mensa_day_speise_preis"})
       price = price.get_text().split('/')[0].strip('EUR ')
