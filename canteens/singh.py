@@ -14,6 +14,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from bs4 import BeautifulSoup
+from canteens.canteen import Canteen
 from datetime import datetime
 from telegram import Emoji
 from urllib.request import urlopen
@@ -53,8 +54,17 @@ def __parse_menu():
   }
   return '[Singh Catering](%s) (bis 18:00)\n%s' % (URL, menu[today])
 
-def get_menu():
+def get_menu(url=''):
   return __parse_menu()
+
+singh = {
+  'id_': 'singh',
+  'name': 'Singh Catering',
+  'url': 'http://singh-catering.de/cafe/',
+  'update': get_menu
+}
+
+CANTEENS = [Canteen(singh)]
 
 if __name__ == '__main__':
   print(__parse_menu())

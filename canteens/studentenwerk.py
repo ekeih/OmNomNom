@@ -13,90 +13,13 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import datetime
 import feedparser
 from bs4 import BeautifulSoup
+from canteens.canteen import Canteen
 from telegram import Emoji
 
-CANTEEN_A     = 'https://www.studentenwerk-berlin.de/speiseplan/rss/tu_cafe_erp/tag/lang/0000000000000000000000000'
-CANTEEN_ACKER = 'https://www.studentenwerk-berlin.de/speiseplan/rss/tu_ackerstr/tag/lang/0000000000000000000000000'
-CANTEEN_MAR   = 'https://www.studentenwerk-berlin.de/speiseplan/rss/tu_marchstr/tag/lang/0000000000000000000000000'
-CANTEEN_MENSA = 'https://www.studentenwerk-berlin.de/speiseplan/rss/tu/tag/lang/0000000000000000000000000'
-CANTEEN_TEL   = 'https://www.studentenwerk-berlin.de/speiseplan/rss/tu_cafe_skyline/tag/lang/0000000000000000000000000'
-
-HU_NORD = 'https://www.studentenwerk-berlin.de/speiseplan/rss/hu_nord/tag/lang/0000000000000000000000000'
-HU_SUED = 'https://www.studentenwerk-berlin.de/speiseplan/rss/hu_sued/tag/lang/0000000000000000000000000'
-HU_ADLERSHOF = 'https://www.studentenwerk-berlin.de/speiseplan/rss/hu_adlershof/tag/lang/0000000000000000000000000'
-HU_SPANDAUER = 'https://www.studentenwerk-berlin.de/speiseplan/rss/hu_spandauer/tag/lang/0000000000000000000000000'
-
-FU_1 = 'https://www.studentenwerk-berlin.de/speiseplan/rss/fu1/tag/lang/0000000000000000000000000'
-FU_2 = 'https://www.studentenwerk-berlin.de/speiseplan/rss/fu2/tag/lang/0000000000000000000000000'
-FU_LANKWITZ = 'https://www.studentenwerk-berlin.de/speiseplan/rss/fu_lankwitz/tag/lang/0000000000000000000000000'
-FU_ASSMANNSHAUSER = 'https://www.studentenwerk-berlin.de/speiseplan/rss/fu_assmannshauser/tag/lang/0000000000000000000000000'
-FU_DUEPPEL = 'https://www.studentenwerk-berlin.de/speiseplan/rss/fu_dueppel/tag/lang/0000000000000000000000000'
-FU_CAFETERIA = 'https://www.studentenwerk-berlin.de/speiseplan/rss/fu_cafeteria/tag/lang/0000000000000000000000000'
-FU_CAFE_KOENIGIN_LUISE = 'https://www.studentenwerk-berlin.de/speiseplan/rss/fu_cafe_koenigin_luise/tag/lang/0000000000000000000000000'
-FU_CAFE_VANT_HOFF = 'https://www.studentenwerk-berlin.de/speiseplan/rss/fu_cafe_vant_hoff/tag/lang/0000000000000000000000000'
-FU_CAFE_IHNE = 'https://www.studentenwerk-berlin.de/speiseplan/rss/fu_cafe_ihne/tag/lang/0000000000000000000000000'
-
-def menu_a():
-  return __parse_menu(CANTEEN_A)
-
-def menu_acker():
-  return __parse_menu(CANTEEN_ACKER)
-
-def menu_mar():
-  return __parse_menu(CANTEEN_MAR)
-
-def menu_mensa():
-  return __parse_menu(CANTEEN_MENSA)
-
-def menu_tel():
-  return __parse_menu(CANTEEN_TEL)
-
-# HU Berlin
-
-def menu_hu_nord():
-  return __parse_menu(HU_NORD)
-
-def menu_hu_sued():
-  return __parse_menu(HU_SUED)
-
-def menu_hu_adlershof():
-  return __parse_menu(HU_ADLERSHOF)
-
-def menu_hu_spandauer():
-  return __parse_menu(HU_SPANDAUER)
-
-# FU Berlin
-
-def menu_fu_1():
-  return __parse_menu(FU_1)
-
-def menu_fu_2():
-  return __parse_menu(FU_2)
-
-def menu_fu_lankwitz():
-  return __parse_menu(FU_LANKWITZ)
-
-def menu_fu_assmannshauser():
-  return __parse_menu(FU_ASSMANNSHAUSER)
-
-def menu_fu_dueppel():
-  return __parse_menu(FU_DUEPPEL)
-
-def menu_fu_cafeteria():
-  return __parse_menu(FU_CAFETERIA)
-
-def menu_fu_cafe_koenigin_luise():
-  return __parse_menu(FU_CAFE_KOENIGIN_LUISE)
-
-def menu_fu_cafe_vant_hoff():
-  return __parse_menu(FU_CAFE_VANT_HOFF)
-
-def menu_fu_cafe_ihne():
-  return __parse_menu(FU_CAFE_IHNE)
-
-def __parse_menu(url):
+def __parse_menu(url, date=datetime.date.today().strftime('%d.%m.%Y')):
   feed = feedparser.parse(url)
   summary = feed['entries'][0]['summary_detail']['value']
   soup = BeautifulSoup(summary, "html.parser")
@@ -124,5 +47,111 @@ def __parse_menu(url):
     text = 'Leider keine Mahlzeiten gefunden. Bitte schau manuell beim [Studentenwerk](http://www.studentenwerk-berlin.de/mensen/speiseplan/index.html) nach.'
   return text
 
-if __name__ == '__main__':
-  print(__parse_menu(CANTEEN_MAR))
+_canteens = [
+  {
+    'id_': 'tu_architektur',
+    'name': 'TU Architektur Cafeteria',
+    'url': 'https://www.studentenwerk-berlin.de/speiseplan/rss/tu_cafe_erp/tag/lang/0000000000000000000000000',
+    'update': __parse_menu
+  },
+  {
+    'id_': 'tu_ackerstrasse',
+    'name': 'TU Ackerstraße',
+    'url': 'https://www.studentenwerk-berlin.de/speiseplan/rss/tu_ackerstr/tag/lang/0000000000000000000000000',
+    'update': __parse_menu
+  },
+  {
+    'id_': 'tu_marchstrasse',
+    'name': 'TU Marchstraße',
+    'url': 'https://www.studentenwerk-berlin.de/speiseplan/rss/tu_marchstr/tag/lang/0000000000000000000000000',
+    'update': __parse_menu
+  },
+  {
+    'id_': 'tu_mensa',
+    'name': 'TU Hauptmensa',
+    'url': 'https://www.studentenwerk-berlin.de/speiseplan/rss/tu/tag/lang/0000000000000000000000000',
+    'update': __parse_menu
+  },
+  {
+    'id_': 'tu_tel',
+    'name': 'TU TEL Skyline',
+    'url': 'https://www.studentenwerk-berlin.de/speiseplan/rss/tu_cafe_skyline/tag/lang/0000000000000000000000000',
+    'update': __parse_menu
+  },
+  {
+    'id_': 'hu_nord',
+    'name': 'HU Nord',
+    'url': 'https://www.studentenwerk-berlin.de/speiseplan/rss/hu_nord/tag/lang/0000000000000000000000000',
+    'update': __parse_menu
+  },
+  {
+    'id_': 'hu_sued',
+    'name': 'HU Süd',
+    'url': 'https://www.studentenwerk-berlin.de/speiseplan/rss/hu_sued/tag/lang/0000000000000000000000000',
+    'update': __parse_menu
+  },
+  {
+    'id_': 'hu_adlershof',
+    'name': 'HU Oase Adlershof',
+    'url': 'https://www.studentenwerk-berlin.de/speiseplan/rss/hu_adlershof/tag/lang/0000000000000000000000000',
+    'update': __parse_menu
+  },
+  {
+    'id_': 'hu_spandauer',
+    'name': 'HU Spandauer Straße',
+    'url': 'https://www.studentenwerk-berlin.de/speiseplan/rss/hu_spandauer/tag/lang/0000000000000000000000000',
+    'update': __parse_menu
+  },
+  {
+    'id_': 'fu_veggie_no_1',
+    'name': 'FU Veggie No1',
+    'url': 'https://www.studentenwerk-berlin.de/speiseplan/rss/fu1/tag/lang/0000000000000000000000000',
+    'update': __parse_menu
+  },
+  {
+    'id_': 'fu_mensa_2',
+    'name': 'FU Mensa II',
+    'url': 'https://www.studentenwerk-berlin.de/speiseplan/rss/fu2/tag/lang/0000000000000000000000000',
+    'update': __parse_menu
+  },
+  {
+    'id_': 'fu_lankwitz',
+    'name': 'FU Mensa Lankwitz',
+    'url': 'https://www.studentenwerk-berlin.de/speiseplan/rss/fu_lankwitz/tag/lang/0000000000000000000000000',
+    'update': __parse_menu
+  },
+  {
+    'id_': 'fu_dueppel',
+    'name': 'FU Düppel',
+    'url': 'https://www.studentenwerk-berlin.de/speiseplan/rss/fu_dueppel/tag/lang/0000000000000000000000000',
+    'update': __parse_menu
+  },
+  {
+    'id_': 'fu_koserstrasse',
+    'name': 'FU Cafeteria Koserstraße',
+    'url': 'https://www.studentenwerk-berlin.de/speiseplan/rss/fu_cafeteria/tag/lang/0000000000000000000000000',
+    'update': __parse_menu
+  },
+  {
+    'id_': 'fu_koenigin_luise',
+    'name': 'FU Cafeteria Königin-Luise-Str.',
+    'url': 'https://www.studentenwerk-berlin.de/speiseplan/rss/fu_cafe_koenigin_luise/tag/lang/0000000000000000000000000',
+    'update': __parse_menu
+  },
+  {
+    'id_': 'fu_vant_hoff',
+    'name': 'FU Cafeteria V.-Hoff-Str',
+    'url': 'https://www.studentenwerk-berlin.de/speiseplan/rss/fu_cafe_vant_hoff/tag/lang/0000000000000000000000000',
+    'update': __parse_menu
+  },
+  {
+    'id_': 'fu_ihnestrasse',
+    'name': 'FU Cafeteria Ihnestraße',
+    'url': 'https://www.studentenwerk-berlin.de/speiseplan/rss/fu_cafe_ihne/tag/lang/0000000000000000000000000',
+    'update': __parse_menu
+  }
+]
+
+CANTEENS = []
+for canteen in _canteens:
+  CANTEENS.append(Canteen(canteen))

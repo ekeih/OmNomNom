@@ -17,6 +17,7 @@ import datetime
 import re
 import urllib.request
 from bs4 import BeautifulSoup
+from canteens.canteen import Canteen
 from telegram import Emoji
 
 URL = 'http://personalkantine.personalabteilung.tu-berlin.de/#speisekarte'
@@ -57,7 +58,7 @@ def _format(line):
 
   return line
 
-def get_menu(date):
+def get_menu(url='', date = datetime.date.today().strftime('%d.%m.%Y')):
   dishes = main(date)
   menu = ''
   for dish in dishes:
@@ -66,7 +67,11 @@ def get_menu(date):
   menu = '[Personalkantine](%s) (11:00 - 16:00)\n%s' % (URL, menu)
   return menu
 
-if __name__ == '__main__':
-  print(get_menu(datetime.date.today().strftime('%d.%m.%Y')))
+personalkantine = {
+  'id_': 'personalkantine',
+  'name': 'Personalkantine',
+  'url': 'http://personalkantine.personalabteilung.tu-berlin.de/#speisekarte',
+  'update': get_menu
+}
 
-# vim:set ft et sw=2 sts=2:
+CANTEENS = [Canteen(personalkantine)]

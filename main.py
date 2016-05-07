@@ -20,8 +20,10 @@ import logging
 import os
 import sys
 
+from canteens import cache
 from telegram import ChatAction, ParseMode
 from telegram.ext import CommandHandler, RegexHandler, Updater
+from threading import Lock
 from omnomnom import OmNomNom
 
 # logging configuration
@@ -80,31 +82,36 @@ dispatcher.addHandler(CommandHandler('help', __about))
 dispatcher.addHandler(RegexHandler('.*', __send_typing_action), 0)
 dispatcher.addHandler(RegexHandler('.*', __log_incomming_messages), 1)
 
+global_cache = cache.Cache()
+cache_refresh = cache.Refresh(global_cache)
+cache_refresh.start()
+
+omnomnom = OmNomNom(global_cache)
+
 # TU Berlin
-dispatcher.addHandler(CommandHandler('personalkantine', OmNomNom.menu_makantine), 2)
-dispatcher.addHandler(CommandHandler('mar', OmNomNom.menu_marchstrasse), 2)
-dispatcher.addHandler(CommandHandler('a', OmNomNom.menu_architektur), 2)
-dispatcher.addHandler(CommandHandler('acker', OmNomNom.menu_acker), 2)
-dispatcher.addHandler(CommandHandler('mensa', OmNomNom.menu_mensa), 2)
-dispatcher.addHandler(CommandHandler('tel', OmNomNom.menu_tel), 2)
-dispatcher.addHandler(CommandHandler('singh', OmNomNom.menu_tu_singh), 2)
+dispatcher.addHandler(CommandHandler('personalkantine', omnomnom.menu_makantine), 2)
+dispatcher.addHandler(CommandHandler('mar', omnomnom.menu_marchstrasse), 2)
+dispatcher.addHandler(CommandHandler('a', omnomnom.menu_architektur), 2)
+dispatcher.addHandler(CommandHandler('acker', omnomnom.menu_acker), 2)
+dispatcher.addHandler(CommandHandler('mensa', omnomnom.menu_mensa), 2)
+dispatcher.addHandler(CommandHandler('tel', omnomnom.menu_tel), 2)
+dispatcher.addHandler(CommandHandler('singh', omnomnom.menu_tu_singh), 2)
 
 # HU Berlin
-dispatcher.addHandler(CommandHandler('hunord', OmNomNom.menu_hu_nord), 2)
-dispatcher.addHandler(CommandHandler('husued', OmNomNom.menu_hu_sued), 2)
-dispatcher.addHandler(CommandHandler('huadlershof', OmNomNom.menu_hu_adlershof), 2)
-dispatcher.addHandler(CommandHandler('huspandauer', OmNomNom.menu_hu_spandauer), 2)
+dispatcher.addHandler(CommandHandler('hunord', omnomnom.menu_hu_nord), 2)
+dispatcher.addHandler(CommandHandler('husued', omnomnom.menu_hu_sued), 2)
+dispatcher.addHandler(CommandHandler('huadlershof', omnomnom.menu_hu_adlershof), 2)
+dispatcher.addHandler(CommandHandler('huspandauer', omnomnom.menu_hu_spandauer), 2)
 
 # FU Berlin
-dispatcher.addHandler(CommandHandler('fu1', OmNomNom.menu_fu_1), 2)
-dispatcher.addHandler(CommandHandler('fu2', OmNomNom.menu_fu_2), 2)
-dispatcher.addHandler(CommandHandler('fulankwitz', OmNomNom.menu_fu_lankwitz), 2)
-dispatcher.addHandler(CommandHandler('fuassmannshauser', OmNomNom.menu_fu_assmannshauser), 2)
-dispatcher.addHandler(CommandHandler('fudueppel', OmNomNom.menu_fu_dueppel), 2)
-dispatcher.addHandler(CommandHandler('fucafeteria', OmNomNom.menu_fu_cafeteria), 2)
-dispatcher.addHandler(CommandHandler('fucafekoeniginluise', OmNomNom.menu_fu_cafe_koenigin_luise), 2)
-dispatcher.addHandler(CommandHandler('fucafevanthoff', OmNomNom.menu_fu_cafe_vant_hoff), 2)
-dispatcher.addHandler(CommandHandler('fucafeihne', OmNomNom.menu_fu_cafe_ihne), 2)
+dispatcher.addHandler(CommandHandler('fu1', omnomnom.menu_fu_1), 2)
+dispatcher.addHandler(CommandHandler('fu2', omnomnom.menu_fu_2), 2)
+dispatcher.addHandler(CommandHandler('fulankwitz', omnomnom.menu_fu_lankwitz), 2)
+dispatcher.addHandler(CommandHandler('fudueppel', omnomnom.menu_fu_dueppel), 2)
+dispatcher.addHandler(CommandHandler('fucafeteria', omnomnom.menu_fu_cafeteria), 2)
+dispatcher.addHandler(CommandHandler('fucafekoeniginluise', omnomnom.menu_fu_cafe_koenigin_luise), 2)
+dispatcher.addHandler(CommandHandler('fucafevanthoff', omnomnom.menu_fu_cafe_vant_hoff), 2)
+dispatcher.addHandler(CommandHandler('fucafeihne', omnomnom.menu_fu_cafe_ihne), 2)
 
 logger.info('Start polling')
 updater.start_polling()
