@@ -20,7 +20,7 @@ import logging
 import os
 import sys
 
-from telegram import ChatAction
+from telegram import ChatAction, ParseMode
 from telegram.ext import CommandHandler, RegexHandler, Updater
 from omnomnom import OmNomNom
 
@@ -32,6 +32,17 @@ token = os.environ.get('TELEGRAM_BOT_AUTH_TOKEN')
 if not token:
 	logging.error('You have to set your auth token as environment variable in TELEGRAM_BOT_AUTH_TOKEN')
 	sys.exit()
+
+ABOUT_TEXT = """*OmNomNom*
+
+OmNomNom is a simple Telegram bot to get canteen information. Currently it supports only canteens in Berlin (Germany) and most of its answers are in German.
+
+The "official" version of this bot is available as [@OmnBot](https://telegram.me/OmnBot). Feel free to talk to it and invite it to your groups.
+
+Find out more about it on [Github](https://github.com/ekeih/OmNomNom). Pull requests and issues are always welcome. If you have questions you can talk to me via [Telegram](https://telegram.me/ekeih).
+
+OmNomNom is licensed under the [GNU AGPL v3](https://github.com/ekeih/OmNomNom#license).
+"""
 
 logger.debug('Initialize API')
 updater = Updater(token=token)
@@ -51,19 +62,21 @@ def __log_incomming_messages(bot, update):
 	    target_chat += ' (%s)' % chat.username
 	logger.info('In:  %s: %s' % (target_chat, update.message.text))
 
-def __start_conversation(bot, update):
-  bot.sendMessage(chat_id=update.message.chat_id, text="Hello, I know the menus for some canteens in Berlin (Germany).")
-
 def __send_typing_action(bot, update):
   logger.debug("Send typing")
   bot.sendChatAction(chat_id=update.message.chat_id, action=ChatAction.TYPING)
+
+def __about(bot, update):
+	bot.sendMessage(chat_id=update.message.chat_id, text=ABOUT_TEXT, parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
 
 def __error_handler(bot, update, error):
   logger.info(error)
 
 logger.debug('Adding API callbacks')
 dispatcher.addErrorHandler(__error_handler)
-dispatcher.addHandler(CommandHandler('start', __start_conversation))
+dispatcher.addHandler(CommandHandler('start', __about))
+dispatcher.addHandler(CommandHandler('about', __about))
+dispatcher.addHandler(CommandHandler('help', __about))
 dispatcher.addHandler(RegexHandler('.*', __send_typing_action), 0)
 dispatcher.addHandler(RegexHandler('.*', __log_incomming_messages), 1)
 
