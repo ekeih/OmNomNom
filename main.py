@@ -113,5 +113,8 @@ dispatcher.addHandler(CommandHandler('fucafekoeniginluise', omnomnom.menu_fu_caf
 dispatcher.addHandler(CommandHandler('fucafevanthoff', omnomnom.menu_fu_cafe_vant_hoff), 2)
 dispatcher.addHandler(CommandHandler('fucafeihne', omnomnom.menu_fu_cafe_ihne), 2)
 
+# UDK Berlin
+dispatcher.addHandler(CommandHandler('udk_jazz_cafe', omnomnom.menu_udk_jazz_cafe), 2)
+
 logger.info('Start polling')
 updater.start_polling()

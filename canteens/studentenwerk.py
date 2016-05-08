@@ -149,6 +149,12 @@ _canteens = [
     'name': 'FU Cafeteria Ihnestraße',
     'url': 'https://www.studentenwerk-berlin.de/speiseplan/rss/fu_cafe_ihne/tag/lang/0000000000000000000000000',
     'update': __parse_menu
+  },
+  {
+    'id_': 'udk_jazz_cafe',
+    'name': 'UDK "Jazz Cafe"',
+    'url': 'http://www.studentenwerk-berlin.de/speiseplan/rss/udk_jazzcafe/tag/lang/0000000000000000000000000',
+    'update': __parse_menu
   }
 ]
 
