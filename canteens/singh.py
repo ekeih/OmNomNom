@@ -58,7 +58,7 @@ def get_menu(url=''):
   return __parse_menu()
 
 singh = {
-  'id_': 'singh',
+  'id_': 'tu_singh',
   'name': 'Singh Catering',
   'url': 'http://singh-catering.de/cafe/',
   'update': get_menu

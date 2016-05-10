@@ -40,7 +40,7 @@ class OmNomNom:
     self._cache = cache
 
   def menu_makantine(self, bot, update):
-    _send_message(bot, update, self._cache.read('personalkantine'))
+    _send_message(bot, update, self._cache.read('tu_personalkantine'))
 
   def menu_marchstrasse(self, bot, update):
     _send_message(bot, update, self._cache.read('tu_marchstrasse'))
@@ -58,7 +58,7 @@ class OmNomNom:
     _send_message(bot, update, self._cache.read('tu_tel'))
 
   def menu_tu_singh(self, bot, update):
-    _send_message(bot, update, self._cache.read('singh'))
+    _send_message(bot, update, self._cache.read('tu_singh'))
 
 # HU Berlin
 
