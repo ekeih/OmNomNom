@@ -58,8 +58,9 @@ def _format(line):
 
   return line
 
-def get_menu(url='', date = datetime.date.today().strftime('%d.%m.%Y')):
-  dishes = main(date)
+def get_menu(url='', date = False):
+  requested_date = date or datetime.date.today().strftime('%d.%m.%Y')
+  dishes = main(requested_date)
   menu = ''
   for dish in dishes:
     menu = '%s%s\n' % (menu, dish)
