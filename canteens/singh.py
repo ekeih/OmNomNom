@@ -57,14 +57,15 @@ def __parse_menu():
 def get_menu(url=''):
   return __parse_menu()
 
-singh = {
-  'id_': 'tu_singh',
-  'name': 'Singh Catering',
-  'url': 'http://singh-catering.de/cafe/',
-  'update': get_menu
-}
+singh = Canteen(
+  id_ = 'tu_singh',
+  name = 'Singh Catering',
+  url = 'http://singh-catering.de/cafe/',
+  update = get_menu,
+  website = 'http://singh-catering.de'
+)
 
-CANTEENS = [Canteen(singh)]
+CANTEENS = [singh]
 
 if __name__ == '__main__':
   print(__parse_menu())

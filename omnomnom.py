@@ -20,6 +20,11 @@ from time import strftime
 
 logger = getLogger()
 
+canteens = matheparser.CANTEENS + singh.CANTEENS + studentenwerk.CANTEENS
+
+def get_canteens():
+  return canteens
+
 def _send_message(bot, update, text):
   chat = update.message.chat
   target_chat = ''

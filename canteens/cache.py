@@ -15,7 +15,7 @@
 
 import logging
 import threading
-from canteens import matheparser, singh, studentenwerk
+import omnomnom
 from time import sleep
 
 logger = logging.getLogger()
@@ -73,7 +73,7 @@ class Refresh(threading.Thread):
     while True:
       logger.info('Cache update started')
       update_threads = []
-      for canteen in matheparser.CANTEENS + singh.CANTEENS + studentenwerk.CANTEENS:
+      for canteen in omnomnom.get_canteens():
         t = threading.Thread(target=self._refresh_one_canteen, args=[canteen])
         t.start()
         update_threads.append(t)

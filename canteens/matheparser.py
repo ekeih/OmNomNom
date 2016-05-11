@@ -67,11 +67,12 @@ def get_menu(url='', date = datetime.date.today().strftime('%d.%m.%Y')):
   menu = '[Personalkantine](%s) (11:00 - 16:00)\n%s' % (URL, menu)
   return menu
 
-personalkantine = {
-  'id_': 'tu_personalkantine',
-  'name': 'Personalkantine',
-  'url': 'http://personalkantine.personalabteilung.tu-berlin.de/#speisekarte',
-  'update': get_menu
-}
+personalkantine = Canteen(
+  id_ = 'tu_personalkantine',
+  name = 'Personalkantine',
+  url = 'http://personalkantine.personalabteilung.tu-berlin.de/#speisekarte',
+  update = get_menu,
+  website = 'http://personalkantine.personalabteilung.tu-berlin.de'
+)
 
-CANTEENS = [Canteen(personalkantine)]
+CANTEENS = [personalkantine]

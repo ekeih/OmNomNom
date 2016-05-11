@@ -14,11 +14,11 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 class Canteen:
-	def __init__(self, canteen):
-		self.id_ = canteen['id_']
-		self.name = canteen['name']
-		self.url = canteen['url']
-		self.website = canteen.get('website') or canteen['url']
-		self.update = canteen['update']
+	def __init__(self, id_, name, url, update, website=False):
+		self.id_ = id_
+		self.name = name
+		self.url = url
+		self.update = update
+		self.website = website or url
 	def __str__(self):
 		return 'Canteen: %s' % self.name
