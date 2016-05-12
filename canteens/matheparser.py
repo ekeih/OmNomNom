@@ -65,7 +65,7 @@ def get_menu(url='', date = False):
   for dish in dishes:
     menu = '%s%s\n' % (menu, dish)
   menu = menu.rstrip()
-  menu = '[Personalkantine](%s) (%s) (11:00 - 16:00)\n%s' % (URL, date, menu)
+  menu = '[Personalkantine](%s) (%s) (11:00 - 16:00)\n%s' % (URL, requested_date, menu)
   return menu
 
 personalkantine = Canteen(
