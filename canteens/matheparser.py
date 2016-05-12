@@ -43,7 +43,7 @@ def main(date):
             this_dish = '%s %s' % (annotation, _format(this_dish))
             dishes.append( this_dish )
 
-  return dishes or ['Heute geschlossen.']
+  return dishes or ['Leider kenne ich (noch) keinen Speiseplan für diesen Tag.']
 
 def _format(line):
   line = line.strip()
@@ -65,7 +65,7 @@ def get_menu(url='', date = False):
   for dish in dishes:
     menu = '%s%s\n' % (menu, dish)
   menu = menu.rstrip()
-  menu = '[Personalkantine](%s) (11:00 - 16:00)\n%s' % (URL, menu)
+  menu = '[Personalkantine](%s) (%s) (11:00 - 16:00)\n%s' % (URL, date, menu)
   return menu
 
 personalkantine = Canteen(

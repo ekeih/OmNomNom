@@ -89,7 +89,7 @@ cache_refresh.start()
 omnomnom = OmNomNom(global_cache)
 
 # TU Berlin
-dispatcher.addHandler(CommandHandler('tu_personalkantine', omnomnom.menu_makantine), 2)
+dispatcher.addHandler(CommandHandler('tu_personalkantine', omnomnom.menu_makantine, pass_args=True), 2)
 dispatcher.addHandler(CommandHandler('tu_mar', omnomnom.menu_marchstrasse), 2)
 dispatcher.addHandler(CommandHandler('tu_architektur', omnomnom.menu_architektur), 2)
 dispatcher.addHandler(CommandHandler('tu_acker', omnomnom.menu_acker), 2)

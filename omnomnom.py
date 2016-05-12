@@ -14,8 +14,10 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from canteens import matheparser, singh, studentenwerk
+from dateparser import parse as parseDate
 from logging import getLogger
 from telegram import ParseMode
+from sys import exc_info
 from time import strftime
 
 logger = getLogger()
@@ -44,8 +46,19 @@ class OmNomNom:
   def __init__(self, cache):
     self._cache = cache
 
-  def menu_makantine(self, bot, update):
-    _send_message(bot, update, self._cache.read('tu_personalkantine'))
+  def menu_makantine(self, bot, update, args):
+    if args:
+      try:
+        all_args = ' '.join(args)
+        day = parseDate(all_args, settings={'PREFER_DATES_FROM': 'future'})
+        formatted_for_matheparser = day.date().strftime("%d.%m.%Y")
+        text = matheparser.get_menu(date=formatted_for_matheparser)
+        _send_message(bot, update, text)
+      except:
+        logger.error('Error:\n%s' % exc_info()[0])
+        _send_message(bot, update, 'Leider habe ich das Datum nicht verstanden. Bitte gib einen Wochentag an.')
+    else:
+      _send_message(bot, update, self._cache.read('tu_personalkantine'))
 
   def menu_marchstrasse(self, bot, update):
     _send_message(bot, update, self._cache.read('tu_marchstrasse'))
