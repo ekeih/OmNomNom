@@ -118,6 +118,9 @@ class OmNomNom:
   def menu_fu_cafe_ihne(self, bot, update):
     _send_message(bot, update, self._cache.read('fu_ihnestrasse'))
 
+  def menu_fu_assmanshauser(self, bot, update):
+    _send_message(bot, update, self._cache.read('fu_assmanshauser'))
+
 # UDK Berlin
   def menu_udk_jazz_cafe(self, bot, update):
     _send_message(bot, update, self._cache.read('udk_jazz_cafe'))

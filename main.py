@@ -112,6 +112,7 @@ dispatcher.addHandler(CommandHandler('fu_cafeteria', omnomnom.menu_fu_cafeteria)
 dispatcher.addHandler(CommandHandler('fu_cafe_koeniginluise', omnomnom.menu_fu_cafe_koenigin_luise), 2)
 dispatcher.addHandler(CommandHandler('fu_cafe_vanthoff', omnomnom.menu_fu_cafe_vant_hoff), 2)
 dispatcher.addHandler(CommandHandler('fu_cafe_ihne', omnomnom.menu_fu_cafe_ihne), 2)
+dispatcher.addHandler(CommandHandler('fu_assmanshauser', omnomnom.menu_fu_assmanshauser), 2)
 
 # UDK Berlin
 dispatcher.addHandler(CommandHandler('udk_jazz_cafe', omnomnom.menu_udk_jazz_cafe), 2)

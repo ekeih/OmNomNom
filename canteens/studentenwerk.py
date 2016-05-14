@@ -151,6 +151,12 @@ _canteens = [
     update = __parse_menu
   ),
   Canteen(
+    id_ = 'fu_assmanshauser',
+    name = 'FU Mensa Aßmannshauser Straße',
+    url = 'http://www.studentenwerk-berlin.de/speiseplan/rss/fu_assmannshauser/tag/lang/0000000000000000000000000',
+    update = __parse_menu
+  ),
+  Canteen(
     id_ = 'udk_jazz_cafe',
     name = 'UDK "Jazz Cafe"',
     url = 'http://www.studentenwerk-berlin.de/speiseplan/rss/udk_jazzcafe/tag/lang/0000000000000000000000000',
