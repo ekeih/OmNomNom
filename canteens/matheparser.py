@@ -28,7 +28,7 @@ def main(date):
   menu = BeautifulSoup(html, 'html.parser').find('ul', class_='Menu__accordion')
 
   for day in menu.children:
-    if day.name and date in day.find('h2').string:
+    if day.name and date.lstrip('0') in day.find('h2').string:
       for dishlist in day.children:
         if dishlist.name == 'ul':
           items = dishlist.find_all('li')
