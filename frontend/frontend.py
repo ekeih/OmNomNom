@@ -31,7 +31,7 @@ cache = redis.Redis(host=redis_host, decode_responses=True)
 
 token = os.environ.get('OMNOMNOM_AUTH_TOKEN')
 if not token:
-    logging.error('You have to set your auth token as environment variable in TELEGRAM_BOT_AUTH_TOKEN')
+    logging.error('You have to set your auth token as environment variable in OMNOMNOM_AUTH_TOKEN')
     sys.exit()
 
 ABOUT_TEXT = """*OmNomNom*
