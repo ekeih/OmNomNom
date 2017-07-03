@@ -1,0 +1,5 @@
+beautifulsoup4
+dateparser
+emoji
+feedparser
+redis
