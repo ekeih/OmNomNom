@@ -16,6 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import logging
+import os
 import redis
 import time
 
@@ -26,7 +27,8 @@ canteens = matheparser.CANTEENS + singh.CANTEENS + studentenwerk.CANTEENS
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger()
 
-cache = redis.Redis(host='localhost')
+redis_host = os.environ.get('OMNOMNOM_REDIS_HOST') or 'localhost'
+cache = redis.Redis(host=redis_host)
 
 logger.debug('Initialize Cache')
 
