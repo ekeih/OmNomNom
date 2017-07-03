@@ -1,4 +1,0 @@
-beautifulsoup4
-dateparser
-feedparser
-python-telegram-bot==4.0.3
