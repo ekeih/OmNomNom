@@ -13,157 +13,139 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import datetime
-import feedparser
-from bs4 import BeautifulSoup
-from canteens.canteen import Canteen, VEGGIE, MEAT
+import bs4
+import requests
+from canteens.canteen import Canteen
 
 
-def __parse_menu(url, date=datetime.date.today().strftime('%d.%m.%Y')):
-    return "Das Studentenwerk hat eine neue Website, daher muss leider erstmal der Parser neugebaut werden. " \
-           "Sorry :-( https://www.stw.berlin/mensen.html"
-    feed = feedparser.parse(url)
-    summary = feed['entries'][0]['summary_detail']['value']
-    soup = BeautifulSoup(summary, "html.parser")
-    text = ""
-    tables = soup.find_all('table', attrs={'class': "mensa_day_speise"})
-    for table in tables:
-        rows = table.find_all('tr', attrs={'class': "mensa_day_speise_row"})
-        for row in rows:
-            name = row.find('td', attrs={'class': "mensa_day_speise_name"})
-            name = name.get_text().replace('21a', '')
-            name = name.replace('6a', '')
-            name = name.replace('6b', '')
-            name = name.strip().rstrip('1234567890').strip()
-            price = row.find('td', attrs={'class': "mensa_day_speise_preis"})
-            price = price.get_text().split('/')[0].strip('EUR ')
-            veggie = row.find_all('a', href='#vegetarisch_siegel')
-            vegan = row.find_all('a', href='#vegan_siegel')
-            annotation = ''
-            if veggie or vegan:
-                annotation = VEGGIE
-            else:
-                annotation = MEAT
-            text = '%s%s %s: *%s€*\n' % (text, annotation, name, price)
-    if text == '':
-        text = 'Leider keine Mahlzeiten gefunden. Bitte schau manuell beim ' \
-               '[Studentenwerk](http://www.studentenwerk-berlin.de/mensen/speiseplan/index.html) nach.'
-    return text
+def __parse_menu(url):
+    params = {'resources_id': url}
+    headers = {'user-agent': 'User-Agent: Mozilla'}
+    request = requests.post('https://www.stw.berlin/xhr/speiseplan-und-standortdaten.html',
+                            data=params, headers=headers)
+    if request.status_code == requests.codes.ok:
+        text = ''
+        soup = bs4.BeautifulSoup(request.text, 'html.parser')
+        menu = soup.find('div', id='speiseplan')
+        menu_groups = menu.find_all('div', class_='splGroupWrapper')
+        for group in menu_groups:
+            menu_items = group.find_all('div', class_='splMeal')
+            for item in menu_items:
+                title = item.find('span', class_='bold').text.strip()
+                price = item.find('div', class_='text-right').text.strip()
+                text = '%s%s: %s\n' % (text, title, price)
+        return text
+    else:
+        return 'Sorry, leider konnte ich den Speiseplan nicht korrekt abrufen.'
 
 _canteens = [
     Canteen(
         id_='tu_architektur',
         name='TU Architektur Cafeteria',
-        url='https://www.studentenwerk-berlin.de/speiseplan/rss/tu_cafe_erp/tag/lang/0000000000000000000000000',
-        update=__parse_menu
+        update=__parse_menu,
+        url=540
     ),
     Canteen(
         id_='tu_acker',
         name='TU Ackerstraße',
-        url='https://www.studentenwerk-berlin.de/speiseplan/rss/tu_ackerstr/tag/lang/0000000000000000000000000',
-        update=__parse_menu
+        update=__parse_menu,
+        url=539
     ),
     Canteen(
         id_='tu_mar',
         name='TU Marchstraße',
-        url='https://www.studentenwerk-berlin.de/speiseplan/rss/tu_marchstr/tag/lang/0000000000000000000000000',
-        update=__parse_menu
+        update=__parse_menu,
+        url=538
     ),
     Canteen(
         id_='tu_mensa',
         name='TU Hauptmensa',
-        url='https://www.studentenwerk-berlin.de/speiseplan/rss/tu/tag/lang/0000000000000000000000000',
-        update=__parse_menu
+        update=__parse_menu,
+        url=321
     ),
     Canteen(
         id_='tu_tel',
         name='TU TEL Skyline',
-        url='https://www.studentenwerk-berlin.de/speiseplan/rss/tu_cafe_skyline/tag/lang/0000000000000000000000000',
-        update=__parse_menu
+        update=__parse_menu,
+        url=657
     ),
     Canteen(
         id_='hu_nord',
         name='HU Nord',
-        url='https://www.studentenwerk-berlin.de/speiseplan/rss/hu_nord/tag/lang/0000000000000000000000000',
-        update=__parse_menu
+        update=__parse_menu,
+        url=147
     ),
     Canteen(
         id_='hu_sued',
         name='HU Süd',
-        url='https://www.studentenwerk-berlin.de/speiseplan/rss/hu_sued/tag/lang/0000000000000000000000000',
-        update=__parse_menu
+        update=__parse_menu,
+        url=367
     ),
     Canteen(
         id_='hu_adlershof',
         name='HU Oase Adlershof',
-        url='https://www.studentenwerk-berlin.de/speiseplan/rss/hu_adlershof/tag/lang/0000000000000000000000000',
-        update=__parse_menu
+        update=__parse_menu,
+        url=191
     ),
     Canteen(
         id_='hu_spandauer',
         name='HU Spandauer Straße',
-        url='https://www.studentenwerk-berlin.de/speiseplan/rss/hu_spandauer/tag/lang/0000000000000000000000000',
-        update=__parse_menu
+        update=__parse_menu,
+        url=270
     ),
     Canteen(
         id_='fu_veggie_no_1',
         name='FU Veggie No1',
-        url='https://www.studentenwerk-berlin.de/speiseplan/rss/fu1/tag/lang/0000000000000000000000000',
-        update=__parse_menu
+        update=__parse_menu,
+        url=323
     ),
     Canteen(
         id_='fu_mensa_2',
         name='FU Mensa II',
-        url='https://www.studentenwerk-berlin.de/speiseplan/rss/fu2/tag/lang/0000000000000000000000000',
-        update=__parse_menu
+        update=__parse_menu,
+        url=322
     ),
     Canteen(
         id_='fu_lankwitz',
         name='FU Mensa Lankwitz',
-        url='https://www.studentenwerk-berlin.de/speiseplan/rss/fu_lankwitz/tag/lang/0000000000000000000000000',
-        update=__parse_menu
+        update=__parse_menu,
+        url=528
     ),
     Canteen(
         id_='fu_dueppel',
         name='FU Düppel',
-        url='https://www.studentenwerk-berlin.de/speiseplan/rss/fu_dueppel/tag/lang/0000000000000000000000000',
-        update=__parse_menu
+        update=__parse_menu,
+        url=271
     ),
     Canteen(
         id_='fu_koserstrasse',
         name='FU Cafeteria Koserstraße',
-        url='https://www.studentenwerk-berlin.de/speiseplan/rss/fu_cafeteria/tag/lang/0000000000000000000000000',
-        update=__parse_menu
+        update=__parse_menu,
+        url=660
     ),
     Canteen(
         id_='fu_koenigin_luise',
         name='FU Cafeteria Königin-Luise-Str.',
-        url='https://www.studentenwerk-berlin.de/speiseplan/rss/fu_cafe_koenigin_luise/tag/lang/0000000000000000000000000',
-        update=__parse_menu
+        update=__parse_menu,
+        url=542
     ),
     Canteen(
         id_='fu_vant_hoff',
         name='FU Cafeteria V.-Hoff-Str',
-        url='https://www.studentenwerk-berlin.de/speiseplan/rss/fu_cafe_vant_hoff/tag/lang/0000000000000000000000000',
-        update=__parse_menu
+        update=__parse_menu,
+        url=277
     ),
     Canteen(
         id_='fu_ihnestrasse',
         name='FU Cafeteria Ihnestraße',
-        url='https://www.studentenwerk-berlin.de/speiseplan/rss/fu_cafe_ihne/tag/lang/0000000000000000000000000',
-        update=__parse_menu
-    ),
-    Canteen(
-        id_='fu_assmanshauser',
-        name='FU Mensa Aßmannshauser Straße',
-        url='http://www.studentenwerk-berlin.de/speiseplan/rss/fu_assmannshauser/tag/lang/0000000000000000000000000',
-        update=__parse_menu
+        update=__parse_menu,
+        url=368
     ),
     Canteen(
         id_='udk_jazz_cafe',
         name='UDK "Jazz Cafe"',
-        url='http://www.studentenwerk-berlin.de/speiseplan/rss/udk_jazzcafe/tag/lang/0000000000000000000000000',
-        update=__parse_menu
+        update=__parse_menu,
+        url=722
     )
 ]
 

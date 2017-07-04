@@ -3,3 +3,5 @@ dateparser
 emoji
 feedparser
 redis
+requests
+
