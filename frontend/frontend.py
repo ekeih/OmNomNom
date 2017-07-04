@@ -81,7 +81,7 @@ def __error_handler(bot, update, error):
 
 def __menu(bot, update):
     if update.message.text:
-        requested_canteen = update.message.text[1:]
+        requested_canteen = update.message.text[1:].replace('@OmnBot', '')
         logger.debug('Requested Canteen: %s' % requested_canteen)
         reply = cache.get(requested_canteen) or \
             'Leider kenne ich keinen passenden Speiseplan. Wenn das ein Fehler ist, wende dich einfach an @ekeih.'
