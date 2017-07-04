@@ -15,7 +15,7 @@
 
 import bs4
 import requests
-from canteens.canteen import Canteen
+from canteens.canteen import Canteen, VEGGIE, MEAT
 
 
 def __parse_menu(url):
@@ -31,9 +31,14 @@ def __parse_menu(url):
         for group in menu_groups:
             menu_items = group.find_all('div', class_='splMeal')
             for item in menu_items:
+                veggie = item.find_all('img', class_='splIcon')
+                annotation = MEAT
+                for icon in veggie:
+                    if 'icons/1.png' in icon.attrs['src'] or 'icons/15.png' in icon.attrs['src']:
+                        annotation = VEGGIE
                 title = item.find('span', class_='bold').text.strip()
                 price = item.find('div', class_='text-right').text.strip()
-                text = '%s%s: %s\n' % (text, title, price)
+                text = '%s%s %s: %s\n' % (text, annotation, title, price)
         return text
     else:
         return 'Sorry, leider konnte ich den Speiseplan nicht korrekt abrufen.'
@@ -152,3 +157,4 @@ _canteens = [
 CANTEENS = []
 for canteen in _canteens:
     CANTEENS.append(canteen)
+
