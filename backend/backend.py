@@ -35,6 +35,6 @@ logger.debug('Initialize Cache')
 while True:
     for canteen in canteens:
         menu = canteen.update(url=canteen.url)
-        cache.set(canteen.id_, menu, ex=60*60)
+        cache.set(canteen.id_, menu, ex=60*60*24)
         logger.debug('Cached %s' % canteen.id_)
-    time.sleep(300)
+    time.sleep(60*60)
