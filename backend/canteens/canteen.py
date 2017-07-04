@@ -15,7 +15,7 @@
 
 import emoji
 
-VEGGIE = emoji.emojize(':corn:')
+VEGGIE = emoji.emojize(':ear_of_corn:')
 MEAT = emoji.emojize(':poultry_leg:')
 
 
