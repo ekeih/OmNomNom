@@ -1,14 +1,10 @@
-FROM alpine:latest
+FROM python:3.6-alpine3.6
 
 WORKDIR /app
 
-RUN apk update
-RUN apk add bash ca-certificates python3 python3-dev musl-dev gcc
-RUN python3 -m ensurepip && pip3 install --upgrade pip setuptools
-
 COPY requirements.txt ./
 RUN pip3 install -r requirements.txt
-
 COPY frontend.py ./
 
+USER nobody
 CMD python3 frontend.py
