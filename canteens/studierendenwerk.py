@@ -1,32 +1,44 @@
 import bs4
 import requests
 from canteens.canteen import Canteen, VEGGIE, MEAT
+from omnomgram.tasks import send_message_to_admin
 
 
 def __parse_menu(url):
     params = {'resources_id': url}
     headers = {'user-agent': 'User-Agent: Mozilla'}
-    request = requests.post('https://www.stw.berlin/xhr/speiseplan-und-standortdaten.html',
-                            data=params, headers=headers)
-    if request.status_code == requests.codes.ok:
-        text = ''
-        soup = bs4.BeautifulSoup(request.text, 'html.parser')
-        menu = soup.find('div', id='speiseplan')
-        menu_groups = menu.find_all('div', class_='splGroupWrapper')
-        for group in menu_groups:
-            menu_items = group.find_all('div', class_='splMeal')
-            for item in menu_items:
-                veggie = item.find_all('img', class_='splIcon')
-                annotation = MEAT
-                for icon in veggie:
-                    if 'icons/1.png' in icon.attrs['src'] or 'icons/15.png' in icon.attrs['src']:
-                        annotation = VEGGIE
-                title = item.find('span', class_='bold').text.strip()
-                price = item.find('div', class_='text-right').text.strip()
-                text = '%s%s %s: %s\n' % (text, annotation, title, price)
-        return text
-    else:
-        return 'Sorry, leider konnte ich den Speiseplan nicht korrekt abrufen.'
+
+    def get_menu():
+        request = requests.post('https://www.stw.berlin/xhr/speiseplan-und-standortdaten.html',
+                                data=params, headers=headers)
+        if request.status_code == requests.codes.ok:
+            text = ''
+            soup = bs4.BeautifulSoup(request.text, 'html.parser')
+            menu = soup.find('div', id='speiseplan')
+            menu_groups = menu.find_all('div', class_='splGroupWrapper')
+            for group in menu_groups:
+                menu_items = group.find_all('div', class_='splMeal')
+                for item in menu_items:
+                    veggie = item.find_all('img', class_='splIcon')
+                    annotation = MEAT
+                    for icon in veggie:
+                        if 'icons/1.png' in icon.attrs['src'] or 'icons/15.png' in icon.attrs['src']:
+                            annotation = VEGGIE
+                    title = item.find('span', class_='bold').text.strip()
+                    price = item.find('div', class_='text-right').text.strip()
+                    text = '%s%s %s: %s\n' % (text, annotation, title, price)
+            return text
+        else:
+            send_message_to_admin('Could not update %s' % url)
+            return 'Sorry, leider konnte ich den Speiseplan nicht korrekt abrufen.'
+
+    def get_notes():
+        request = requests.post('https://www.stw.berlin/xhr/hinweise.html', data=params, headers=headers)
+        if request.status_code == requests.codes.ok:
+            soup = bs4.BeautifulSoup(request.text, 'html.parser')
+            return '\n%s' % soup.get_text().strip()
+
+    return '%s%s' % (get_menu(), get_notes())
 
 _canteens = [
     Canteen(
