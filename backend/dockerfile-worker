@@ -1,9 +1,0 @@
-FROM python:3.6-alpine3.6
-
-WORKDIR /app
-
-COPY backend/ backend/
-RUN pip3 install -r backend/requirements.txt
-
-USER nobody
-CMD celery -A backend worker -l info

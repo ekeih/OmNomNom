@@ -1,0 +1,14 @@
+FROM python:3.6-alpine
+
+WORKDIR /app
+
+COPY requirements.txt requirements.txt
+RUN pip3 install -r requirements.txt
+
+COPY omnomgram/ omnomgram/
+COPY canteens/ canteens/
+COPY backend/ backend/
+
+RUN chown nobody /app
+USER nobody
+CMD celery -A backend.backend beat -l info

@@ -1,1 +1,6 @@
-docker-compose
+beautifulsoup4
+celery[redis]
+emoji
+python-telegram-bot
+redis
+requests

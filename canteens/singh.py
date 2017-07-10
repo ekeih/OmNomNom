@@ -1,5 +1,5 @@
 from bs4 import BeautifulSoup
-from backend.canteens.canteen import Canteen, VEGGIE, MEAT
+from canteens.canteen import Canteen, VEGGIE, MEAT
 from datetime import datetime
 from urllib.request import urlopen
 

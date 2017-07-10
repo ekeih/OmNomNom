@@ -2,7 +2,7 @@ import datetime
 import re
 import urllib.request
 from bs4 import BeautifulSoup
-from backend.canteens.canteen import Canteen, VEGGIE, MEAT
+from canteens.canteen import Canteen, VEGGIE, MEAT
 
 URL = 'http://personalkantine.personalabteilung.tu-berlin.de/#speisekarte'
 

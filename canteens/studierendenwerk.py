@@ -1,6 +1,6 @@
 import bs4
 import requests
-from backend.canteens.canteen import Canteen, VEGGIE, MEAT
+from canteens.canteen import Canteen, VEGGIE, MEAT
 
 
 def __parse_menu(url):

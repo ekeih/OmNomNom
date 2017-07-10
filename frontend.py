@@ -20,8 +20,10 @@ import os
 import redis
 import sys
 
-from telegram import ChatAction, ParseMode
+from telegram import Bot, ChatAction, ParseMode
 from telegram.ext import CommandHandler, RegexHandler, Updater
+
+from omnomgram.tasks import send_message_to_admin
 
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger()
@@ -35,6 +37,11 @@ cache = redis.Redis(host=redis_host, decode_responses=True)
 token = os.environ.get('OMNOMNOM_AUTH_TOKEN')
 if not token:
     logging.error('You have to set your auth token as environment variable in OMNOMNOM_AUTH_TOKEN')
+    sys.exit()
+
+ADMIN = os.environ.get('OMNOMNOM_ADMIN')
+if not ADMIN:
+    logger.error('You have to specify an Admin account.')
     sys.exit()
 
 ABOUT_TEXT = """*OmNomNom*
@@ -51,6 +58,7 @@ OmNomNom is licensed under the [GNU AGPL v3](https://github.com/ekeih/OmNomNom#l
 
 logger.debug('Initialize API')
 updater = Updater(token=token)
+bot = Bot(token)
 dispatcher = updater.dispatcher
 
 
@@ -79,6 +87,12 @@ def __about(bot, update):
 
 
 def __error_handler(bot, update, error):
+    error_message = """
+    ```
+    ...Some Error...
+    ```
+    """
+    send_message_to_admin(text=error_message)
     logger.info(error)
 
 
@@ -99,6 +113,17 @@ dispatcher.add_handler(CommandHandler('help', __about), 2)
 dispatcher.add_handler(RegexHandler('.*', __send_typing_action), 0)
 dispatcher.add_handler(RegexHandler('.*', __log_incoming_messages), 1)
 dispatcher.add_handler(RegexHandler('/.*', __menu), 2)
+
+start_message = """*Bot Started*
+
+ID: %s
+Firstname: %s
+Lastname: %s
+Username: %s
+Name: %s
+""" % (bot.id, bot.first_name, bot.last_name, bot.username, bot.name)
+
+send_message_to_admin.delay(start_message)
 
 logger.info('Start polling')
 updater.start_polling()

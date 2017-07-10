@@ -1,9 +1,9 @@
-from backend.celery import app, cache, cache_interval
+from backend.backend import app, cache, cache_interval
 from celery.utils.log import get_task_logger
 
-import backend.canteens.singh
-import backend.canteens.personalkantine
-import backend.canteens.studierendenwerk
+import canteens.singh
+import canteens.personalkantine
+import canteens.studierendenwerk
 
 logger = get_task_logger(__name__)
 
@@ -17,17 +17,17 @@ def update_canteens(canteens):
 
 @app.task
 def update_personalkantine():
-    update_canteens(backend.canteens.personalkantine.CANTEENS)
+    update_canteens(canteens.personalkantine.CANTEENS)
     return 'Personalkantine Done'
 
 
 @app.task
 def update_singh():
-    update_canteens(backend.canteens.singh.CANTEENS)
+    update_canteens(canteens.singh.CANTEENS)
     return 'Singh Done'
 
 
 @app.task
 def update_studierendenwerk():
-    update_canteens(backend.canteens.studierendenwerk.CANTEENS)
+    update_canteens(canteens.studierendenwerk.CANTEENS)
     return 'Studierendenwerk Done'

@@ -17,20 +17,23 @@ cache = Redis(host=redis_host, port=redis_port, db=cache_database)
 
 app = Celery('backend',
              broker='redis://%s:%s/%s' % (redis_host, redis_port, celery_database),
-             include=['backend.canteens.tasks']
+             include=[
+                 'canteens.tasks',
+                 'omnomgram.tasks'
+             ]
              )
 app.conf.timezone = 'Europe/Berlin'
 app.conf.beat_schedule = {
     'update singh': {
-        'task': 'backend.canteens.tasks.update_singh',
+        'task': 'canteens.tasks.update_singh',
         'schedule': cache_interval
     },
     'update personalkantine': {
-        'task': 'backend.canteens.tasks.update_personalkantine',
+        'task': 'canteens.tasks.update_personalkantine',
         'schedule': cache_interval
     },
     'update studierendenwerk': {
-        'task': 'backend.canteens.tasks.update_studierendenwerk',
+        'task': 'canteens.tasks.update_studierendenwerk',
         'schedule': cache_interval
     }
 }

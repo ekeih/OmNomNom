@@ -5,26 +5,31 @@ services:
   omnomnom-redis:
     image: redis:alpine
     ports:
-    - 127.0.0.1:6379:6379/tcp
+      - 127.0.0.1:6379:6379/tcp
     restart: always
   omnomnom-worker:
     build:
       context: .
-      dockerfile: backend/dockerfile-worker
+      dockerfile: dockerfile-worker
     environment:
       OMNOMNOM_REDIS_HOST: omnomnom-redis
+      OMNOMNOM_AUTH_TOKEN: ${OMNOMNOM_AUTH_TOKEN}
+      OMNOMNOM_ADMIN: ${OMNOMNOM_ADMIN}
     restart: always
   omnomnom-beat:
     build:
       context: .
-      dockerfile: backend/dockerfile-beat
-    environment:
-      OMNOMNOM_REDIS_HOST: omnomnom-redis
-    restart: always
-  omnomnom-frontend:
-    build:
-      context: ./frontend
+      dockerfile: dockerfile-beat
     environment:
       OMNOMNOM_REDIS_HOST: omnomnom-redis
       OMNOMNOM_AUTH_TOKEN: ${OMNOMNOM_AUTH_TOKEN}
+    restart: always
+  omnomnom-frontend:
+    build:
+      context: .
+      dockerfile: dockerfile-frontend
+    environment:
+      OMNOMNOM_REDIS_HOST: omnomnom-redis
+      OMNOMNOM_AUTH_TOKEN: ${OMNOMNOM_AUTH_TOKEN}
+      OMNOMNOM_ADMIN: ${OMNOMNOM_ADMIN}
     restart: always
