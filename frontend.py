@@ -19,10 +19,10 @@ import logging
 import os
 import redis
 import sys
+import textwrap
 
 from telegram import Bot, ChatAction, ParseMode
 from telegram.ext import CommandHandler, RegexHandler, Updater
-
 from omnomgram.tasks import send_message_to_admin
 
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -92,16 +92,32 @@ def __error_handler(bot, update, error):
     ...Some Error...
     ```
     """
-    send_message_to_admin(text=error_message)
+    send_message_to_admin(error_message)
     logger.info(error)
 
 
 def __menu(bot, update):
     if update.message.text:
-        requested_canteen = update.message.text[1:].replace('@OmnBot', '')
+        requested_canteen = update.message.text[1:].replace(bot.name, '')
         logger.debug('Requested Canteen: %s' % requested_canteen)
-        reply = cache.get(requested_canteen) or \
-            'Leider kenne ich keinen passenden Speiseplan. Wenn das ein Fehler ist, wende dich einfach an @ekeih.'
+        reply = cache.get(requested_canteen)
+        if not reply:
+            error_message = """\
+                            *Chat*
+                            ```
+                            %s
+                            ```
+                            *Message*
+                            ```
+                            %s
+                            ```
+                            *User*
+                            ```
+                            %s
+                            ```
+                            """ % (update.effective_chat, update.effective_message, update.effective_user)
+            send_message_to_admin(textwrap.dedent(error_message))
+            reply = 'Leider kenne ich keinen passenden Speiseplan. Wenn das ein Fehler ist, wende dich an @ekeih.'
         logger.debug(reply)
         update.message.reply_text(text=reply, parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
 
