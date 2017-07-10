@@ -6,6 +6,8 @@ services:
     image: redis:alpine
     ports:
       - 127.0.0.1:6379:6379/tcp
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
     restart: always
   omnomnom-worker:
     build:
@@ -15,6 +17,8 @@ services:
       OMNOMNOM_REDIS_HOST: omnomnom-redis
       OMNOMNOM_AUTH_TOKEN: ${OMNOMNOM_AUTH_TOKEN}
       OMNOMNOM_ADMIN: ${OMNOMNOM_ADMIN}
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
     restart: always
   omnomnom-beat:
     build:
@@ -23,6 +27,8 @@ services:
     environment:
       OMNOMNOM_REDIS_HOST: omnomnom-redis
       OMNOMNOM_AUTH_TOKEN: ${OMNOMNOM_AUTH_TOKEN}
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
     restart: always
   omnomnom-frontend:
     build:
@@ -32,4 +38,6 @@ services:
       OMNOMNOM_REDIS_HOST: omnomnom-redis
       OMNOMNOM_AUTH_TOKEN: ${OMNOMNOM_AUTH_TOKEN}
       OMNOMNOM_ADMIN: ${OMNOMNOM_ADMIN}
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
     restart: always
