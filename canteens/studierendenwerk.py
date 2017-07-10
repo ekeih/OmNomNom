@@ -29,7 +29,7 @@ def __parse_menu(url):
                     text = '%s%s %s: %s\n' % (text, annotation, title, price)
             return text
         else:
-            send_message_to_admin('Could not update %s' % url)
+            send_message_to_admin.delay('Could not update %s' % url)
             return 'Sorry, leider konnte ich den Speiseplan nicht korrekt abrufen.'
 
     def get_notes():

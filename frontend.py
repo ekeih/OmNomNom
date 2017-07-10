@@ -92,7 +92,7 @@ def __error_handler(bot, update, error):
     ...Some Error...
     ```
     """
-    send_message_to_admin(error_message)
+    send_message_to_admin.delay(error_message)
     logger.info(error)
 
 
@@ -116,7 +116,7 @@ def __menu(bot, update):
                             %s
                             ```
                             """ % (update.effective_chat, update.effective_message, update.effective_user)
-            send_message_to_admin(textwrap.dedent(error_message))
+            send_message_to_admin.delay(textwrap.dedent(error_message))
             reply = 'Leider kenne ich keinen passenden Speiseplan. Wenn das ein Fehler ist, wende dich an @ekeih.'
         logger.debug(reply)
         update.message.reply_text(text=reply, parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
