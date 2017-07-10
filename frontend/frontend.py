@@ -25,6 +25,9 @@ from telegram.ext import CommandHandler, RegexHandler, Updater
 
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger()
+logging.getLogger('JobQueue').setLevel(logging.INFO)
+logging.getLogger('telegram').setLevel(logging.INFO)
+logging.getLogger('requests').setLevel(logging.INFO)
 
 redis_host = os.environ.get('OMNOMNOM_REDIS_HOST') or 'localhost'
 cache = redis.Redis(host=redis_host, decode_responses=True)

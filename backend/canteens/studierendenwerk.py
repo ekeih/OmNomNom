@@ -1,21 +1,6 @@
-# Copyright (C) 2017  Max Rosin
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU Affero General Public License as
-# published by the Free Software Foundation, either version 3 of the
-# License, or (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU Affero General Public License for more details.
-#
-# You should have received a copy of the GNU Affero General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
 import bs4
 import requests
-from canteens.canteen import Canteen, VEGGIE, MEAT
+from backend.canteens.canteen import Canteen, VEGGIE, MEAT
 
 
 def __parse_menu(url):
@@ -99,13 +84,13 @@ _canteens = [
         url=270
     ),
     Canteen(
-        id_='fu_veggie_no_1',
+        id_='fu_veggie',
         name='FU Veggie No1',
         update=__parse_menu,
         url=323
     ),
     Canteen(
-        id_='fu_mensa_2',
+        id_='fu_2',
         name='FU Mensa II',
         update=__parse_menu,
         url=322

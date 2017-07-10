@@ -1,0 +1,12 @@
+FROM alpine:latest
+
+WORKDIR /app
+
+RUN apk update
+RUN apk add bash ca-certificates python3 python3-dev musl-dev gcc
+RUN python3 -m ensurepip && pip3 install --upgrade pip setuptools
+
+COPY backend/ backend/
+RUN pip3 install -r backend/requirements.txt
+
+CMD celery -A backend worker -l info

@@ -1,0 +1,30 @@
+---
+
+version: '3.0'
+services:
+  omnomnom-redis:
+    image: redis:alpine
+    ports:
+    - 127.0.0.1:6379:6379/tcp
+    restart: always
+  omnomnom-worker:
+    build:
+      context: .
+      dockerfile: backend/dockerfile-worker
+    environment:
+      OMNOMNOM_REDIS_HOST: omnomnom-redis
+    restart: always
+  omnomnom-beat:
+    build:
+      context: .
+      dockerfile: backend/dockerfile-beat
+    environment:
+      OMNOMNOM_REDIS_HOST: omnomnom-redis
+    restart: always
+  omnomnom-frontend:
+    build:
+      context: ./frontend
+    environment:
+      OMNOMNOM_REDIS_HOST: omnomnom-redis
+      OMNOMNOM_AUTH_TOKEN: ${OMNOMNOM_AUTH_TOKEN}
+    restart: always
