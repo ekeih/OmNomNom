@@ -87,7 +87,8 @@ def __about(bot, update):
 
 
 def __error_handler(bot, update, error):
-    error_message = """*Some Frontend Error*
+    error_message = """\
+                    *Some Frontend Error*
                     *Update*
                     ```
                     %s
