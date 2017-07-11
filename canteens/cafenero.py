@@ -53,9 +53,7 @@ def __parse_menu(url):
                             line = '%s\n' % line
                         else:
                             line = '%s ' % line
-                    # print(line)
                     cleaned_result += line
-                # print('=' * 30)
             return cleaned_result
 
         result = ''
