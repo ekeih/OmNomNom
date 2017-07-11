@@ -41,7 +41,38 @@ def __parse_menu(url):
             menu = f.read()
         return menu
 
-    return pdf_to_text(get_pdf())
+    def get_menu():
+        def clean_newlines(text):
+            cleaned_result = ''
+            for line in text.splitlines():
+                if not line == '' and 'cafeneroinder' not in line:
+                    if 'mittagstisch' in line or '---' in line or 'schonkost' in line:
+                        line = '%s\n' % line
+                    else:
+                        if line.endswith(('€', 'vegetarisch', 'schweinefleisch')):
+                            line = '%s\n' % line
+                        else:
+                            line = '%s ' % line
+                    # print(line)
+                    cleaned_result += line
+                # print('=' * 30)
+            return cleaned_result
+
+        result = ''
+        for entry in clean_newlines(pdf_to_text(get_pdf())).splitlines():
+            if 'mittagstisch' in entry or '---' in entry or 'schonkost' in entry:
+                annotation = ''
+            elif 'vegetarisch' in entry:
+                annotation = '%s ' % VEGGIE
+            else:
+                annotation = '%s ' % MEAT
+            entry = entry.replace('vegetarisch', '')
+            entry = entry.replace('schweinefleisch', '')
+            entry = ' '.join(entry.split())
+            result += '%s%s\n' % (annotation, entry)
+        return result
+
+    return get_menu()
 
 cafenero = Canteen(
     id_='tu_cafenero',
@@ -54,4 +85,4 @@ cafenero = Canteen(
 CANTEENS = [cafenero]
 
 if __name__ == '__main__':
-    print(__parse_menu())
+    print(__parse_menu(''))
