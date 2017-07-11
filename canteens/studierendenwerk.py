@@ -36,6 +36,7 @@ def __parse_menu(url):
         request = requests.post('https://www.stw.berlin/xhr/hinweise.html', data=params, headers=headers)
         if request.status_code == requests.codes.ok:
             soup = bs4.BeautifulSoup(request.text, 'html.parser')
+            soup.find('article', {'data-hid': '6046-1'}).decompose()
             return '\n%s' % soup.get_text().strip()
 
     return '%s%s' % (get_menu(), get_notes())
