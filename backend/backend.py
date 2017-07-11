@@ -24,6 +24,10 @@ app = Celery('backend',
              )
 app.conf.timezone = 'Europe/Berlin'
 app.conf.beat_schedule = {
+    'update cafenero': {
+        'task': 'canteens.tasks.update_cafenero',
+        'schedule': cache_interval
+    },
     'update singh': {
         'task': 'canteens.tasks.update_singh',
         'schedule': cache_interval

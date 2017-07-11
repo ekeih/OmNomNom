@@ -1,6 +1,7 @@
 from backend.backend import app, cache, cache_interval
 from celery.utils.log import get_task_logger
 
+import canteens.cafenero
 import canteens.singh
 import canteens.personalkantine
 import canteens.studierendenwerk
@@ -13,6 +14,12 @@ def update_canteens(canteens):
         logger.info('[Update] %s' % canteen.name)
         menu = canteen.update(url=canteen.url)
         cache.set(canteen.id_, menu, ex=cache_interval*2)
+
+
+@app.task
+def update_cafenero():
+    update_canteens(canteens.cafenero.CANTEENS)
+    return 'Cafenero Done'
 
 
 @app.task
