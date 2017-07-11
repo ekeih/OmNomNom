@@ -87,12 +87,17 @@ def __about(bot, update):
 
 
 def __error_handler(bot, update, error):
-    error_message = """
-    ```
-    ...Some Error...
-    ```
-    """
-    send_message_to_admin.delay(error_message)
+    error_message = """*Some Frontend Error*
+                    *Update*
+                    ```
+                    %s
+                    ```
+                    *Error*
+                    ```
+                    %s
+                    ```
+                    """ % (update, error)
+    send_message_to_admin.delay(textwrap.dedent(error_message))
     logger.info(error)
 
 
