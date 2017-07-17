@@ -1,6 +1,7 @@
 beautifulsoup4
 celery[redis]
 emoji
+fake-useragent
 python-telegram-bot
 redis
 requests

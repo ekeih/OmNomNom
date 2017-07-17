@@ -1,12 +1,14 @@
 import bs4
+import fake_useragent
 import requests
 from canteens.canteen import Canteen, VEGGIE, MEAT
 from omnomgram.tasks import send_message_to_admin
 
 
 def __parse_menu(url):
+    useragent = fake_useragent.UserAgent(fallback='Mozilla/5.0 (X11; OpenBSD amd64; rv:28.0) Gecko/20100101 Firefox/28.0')
     params = {'resources_id': url}
-    headers = {'user-agent': 'User-Agent: Mozilla'}
+    headers = {'user-agent': useragent.random}
 
     def get_menu():
         request = requests.post('https://www.stw.berlin/xhr/speiseplan-und-standortdaten.html',
