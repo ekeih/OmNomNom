@@ -5,6 +5,7 @@ import canteens.cafenero
 import canteens.singh
 import canteens.personalkantine
 import canteens.studierendenwerk
+import time
 
 logger = get_task_logger(__name__)
 
@@ -14,6 +15,7 @@ def update_canteens(canteens):
         logger.info('[Update] %s' % canteen.name)
         menu = canteen.update(url=canteen.url)
         cache.set(canteen.id_, menu, ex=cache_interval*2)
+        time.sleep(3)
 
 
 @app.task
