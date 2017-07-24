@@ -32,7 +32,7 @@ def __parse_menu(url):
             return text
         else:
             send_message_to_admin.delay('Could not update %s' % url)
-            return 'Sorry, leider konnte ich den Speiseplan nicht korrekt abrufen.'
+            return False
 
     def get_notes():
         request = requests.post('https://www.stw.berlin/xhr/hinweise.html', data=params, headers=headers)
@@ -40,8 +40,16 @@ def __parse_menu(url):
             soup = bs4.BeautifulSoup(request.text, 'html.parser')
             soup.find('article', {'data-hid': '6046-1'}).decompose()
             return '\n%s' % soup.get_text().strip()
+        else:
+            return ''
 
-    return '%s%s' % (get_menu(), get_notes())
+    menu = get_menu()
+    notes = get_notes()
+
+    if menu:
+        return '%s%s' % (menu, notes)
+    else:
+        return False
 
 _canteens = [
     Canteen(

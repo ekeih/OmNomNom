@@ -14,7 +14,8 @@ def update_canteens(canteens):
     for canteen in canteens:
         logger.info('[Update] %s' % canteen.name)
         menu = canteen.update(url=canteen.url)
-        cache.set(canteen.id_, menu, ex=cache_interval*4)
+        if menu:
+            cache.set(canteen.id_, menu, ex=cache_interval*4)
         time.sleep(3)
 
 
