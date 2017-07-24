@@ -4,3 +4,4 @@ __pycache__/
 *$py.class
 *.env
 celerybeat-schedule
+celerybeat.pid
