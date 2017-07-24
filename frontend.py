@@ -107,7 +107,7 @@ def __menu(bot, update):
         requested_canteen = update.message.text[1:].replace(bot.name, '')
         logger.debug('Requested Canteen: %s' % requested_canteen)
         reply = cache.get(requested_canteen)
-        if not reply:
+        if not reply or reply.strip() == '':
             error_message = """\
                             *Chat*
                             ```
