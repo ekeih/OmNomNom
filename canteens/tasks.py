@@ -19,25 +19,37 @@ def update_canteens(canteens):
         time.sleep(3)
 
 
-@app.task
-def update_cafenero():
-    update_canteens(canteens.cafenero.CANTEENS)
-    return 'Cafenero Done'
+@app.task(bind=True, default_retry_delay=30)
+def update_cafenero(self):
+    try:
+        update_canteens(canteens.cafenero.CANTEENS)
+        return 'Cafenero Done'
+    except Exception as ex:
+        raise self.retry(exc=ex)
 
 
-@app.task
-def update_personalkantine():
-    update_canteens(canteens.personalkantine.CANTEENS)
-    return 'Personalkantine Done'
+@app.task(bind=True, default_retry_delay=30)
+def update_personalkantine(self):
+    try:
+        update_canteens(canteens.personalkantine.CANTEENS)
+        return 'Personalkantine Done'
+    except Exception as ex:
+        raise self.retry(exc=ex)
 
 
-@app.task
-def update_singh():
-    update_canteens(canteens.singh.CANTEENS)
-    return 'Singh Done'
+@app.task(bind=True, default_retry_delay=30)
+def update_singh(self):
+    try:
+        update_canteens(canteens.singh.CANTEENS)
+        return 'Singh Done'
+    except Exception as ex:
+        raise self.retry(exc=ex)
 
 
-@app.task
-def update_studierendenwerk():
-    update_canteens(canteens.studierendenwerk.CANTEENS)
-    return 'Studierendenwerk Done'
+@app.task(bind=True, default_retry_delay=30)
+def update_studierendenwerk(self):
+    try:
+        update_canteens(canteens.studierendenwerk.CANTEENS)
+        return 'Studierendenwerk Done'
+    except Exception as ex:
+        raise self.retry(exc=ex)
