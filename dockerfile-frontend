@@ -5,6 +5,7 @@ WORKDIR /app
 COPY requirements.txt requirements.txt
 RUN pip3 install -r requirements.txt
 
+COPY stats/ stats/
 COPY omnomgram/ omnomgram/
 COPY backend/ backend/
 COPY frontend.py frontend.py
