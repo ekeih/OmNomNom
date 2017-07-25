@@ -21,9 +21,11 @@ import redis
 import sys
 import textwrap
 
+from omnomgram.tasks import send_message_to_admin
+from stats.tasks import log_to_influxdb
 from telegram import Bot, ChatAction, ParseMode
 from telegram.ext import CommandHandler, RegexHandler, Updater
-from omnomgram.tasks import send_message_to_admin
+
 
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger()
@@ -75,6 +77,8 @@ def __log_incoming_messages(bot, update):
         if chat.username:
             target_chat += ' (%s)' % chat.username
     logger.info('In:  %s: %s' % (target_chat, update.message.text))
+    fields = {'chat': target_chat, 'message': update.message.text}
+    log_to_influxdb.delay('messages', fields)
 
 
 def __send_typing_action(bot, update):

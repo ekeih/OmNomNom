@@ -19,7 +19,8 @@ app = Celery('backend',
              broker='redis://%s:%s/%s' % (redis_host, redis_port, celery_database),
              include=[
                  'canteens.tasks',
-                 'omnomgram.tasks'
+                 'omnomgram.tasks',
+                 'stats.tasks'
              ]
              )
 app.conf.timezone = 'Europe/Berlin'
