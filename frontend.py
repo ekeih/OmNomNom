@@ -77,8 +77,9 @@ def __log_incoming_messages(bot, update):
         if chat.username:
             target_chat += ' (%s)' % chat.username
     logger.info('In:  %s: %s' % (target_chat, update.message.text))
-    fields = {'chat': target_chat, 'message': update.message.text}
-    log_to_influxdb.delay('messages', fields)
+    fields = {'message': update.message.text}
+    tags = {'chat': target_chat}
+    log_to_influxdb.delay('messages', fields, tags)
 
 
 def __send_typing_action(bot, update):
