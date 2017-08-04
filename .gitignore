@@ -1,5 +1,7 @@
-config.py
 *.swp
 __pycache__/
 *.py[cod]
 *$py.class
+*.env
+celerybeat-schedule
+celerybeat.pid

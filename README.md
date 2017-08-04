@@ -1,48 +1,34 @@
 # OmNomNom
 
-OmNomNom is a Telegram bot that can tell you what you can eat in some canteens in Berlin (Germany). You can invite the bot to a group or ask it directly.
+OmNomNom is a Telegram bot that can tell you what you can eat in some canteens
+in Berlin (Germany). I would like to support more canteens in other towns or
+countries in the future. If you have any suggestions let me now.
+You can invite the bot to a group or ask it directly.
 
 ## How to use it
-Usually you do not need to run the bot yourself. You can just talk to the @OmnBot in Telegram. Feel free to invite it in your groups. But if you want to run it anyways or would like to improve the code you can do so by following these steps.
+Usually you do not need to run the bot yourself. You can just talk to the
+@OmnBot in Telegram. Feel free to invite it to your groups.
 
-### Docker
-```bash
-$ docker run --env TELEGRAM_BOT_AUTH_TOKEN='YOUR_ACCESS_TOKEN' -v '/etc/localtime:/etc/localtime:ro' ekeih/omnomnom
-```
-
-### Virtualenvwrapper
-This assumes that you use virtualenv and virtualenvwrapper. Otherwise you can use virtualenv directly without virtualenvwrapper or install the dependencies global.
-
-At first you have to create a bot by talking to Telegrams [BotFather](https://core.telegram.org/bots#6-botfather). Copy your access token and keep it a secret!
-
-
-```bash
-# Create a new env
-$ mkvirtualenv omnomnom
-
-# Or use an existing one
-$ workon omnomnom
-
-# Checkout the repository
-(omnomnom) $ git clone https://github.com/ekeih/OmNomNom.git
-(omnomnom) $ cd OmNomNom
-
-# Install dependencies
-(omnomnom) $ pip install -r requirements.txt
-
-# Run OmNomNom
-(omnomnom) $ TELEGRAM_BOT_AUTH_TOKEN='YOUR_ACCESS_TOKEN' python3 main.py
-```
-
-## Developer
+## Developer & Maintainer
 * Max Rosin
+
+## Contributer
+Thanks to everyone who contributed code or documentation improvements to the
+bot.
+
 * Christian Beneke
 * Matthias Loibl
+
+If you want to add canteens or features to the bot or want to fix some bug feel
+free to open a GitHub issue and start hacking :-) Pull Requests are very
+wellcome! If you found some problem or would like to see a new feature or more
+canteens but are not able (or do not want to / do not have the time) please
+also open an issue at GitHub and/or talk to me via Telegram (@ekeih).
 
 ## License
 
 ```
-A simple Telegram bot to get canteen information.
+A Telegram bot to get canteen information.
 Copyright (C) 2016  Max Rosin
 
 This program is free software: you can redistribute it and/or modify

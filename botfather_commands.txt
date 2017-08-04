@@ -1,0 +1,22 @@
+about - Über OmNomNom
+tu_acker - TU Ackerstraße
+tu_architektur - TU Architekturgebäude
+tu_cafenero - TU Cafe Nero
+tu_mar - TU Marchstraße
+tu_mensa - TU Hauptmensa
+tu_personalkantine - TU Personalkantine
+tu_singh - TU Singh
+tu_tel - TU TEL / Skyline
+udk_jazz_cafe - UDK Jazz Cafe
+fu_2 - FU 2
+fu_dueppel - FU Düppel
+fu_ihnestrasse - Ihnestraße
+fu_koenigin_luise - FU Königin Luise
+fu_koserstrasse - FU Koserstraße
+fu_lankwitz - FU Lankwitz
+fu_vant_hoff - FU Vant Hoff
+fu_veggie - FU Veggie
+hu_adlershof - HU Adlershof
+hu_nord - HU Nord
+hu_spandauer - HU Spandauer
+hu_sued - HU Süd

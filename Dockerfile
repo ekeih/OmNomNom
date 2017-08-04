@@ -1,20 +1,22 @@
-# Docker image for OmNomNom Telegram Bot
-#
-#     Build: docker build -t ekeih/omnomnom .
-#     Run: docker run -d --env TELEGRAM_BOT_AUTH_TOKEN='YOUR_ACCESS_TOKEN' -v '/etc/localtime:/etc/localtime:ro' --name omnomnom ekeih/omnomnom:latest
-
-FROM alpine:latest
+FROM python:3.6-alpine
 
 WORKDIR /app
 
-RUN apk update
-RUN apk add bash ca-certificates python3 python3-dev musl-dev gcc
-RUN python3 -m ensurepip && pip3 install --upgrade pip setuptools
+RUN apk update && apk add poppler-utils
 
-COPY requirements.txt ./
-RUN pip install -r requirements.txt
+COPY requirements.txt requirements.txt
+RUN pip3 install -r requirements.txt
 
+COPY entrypoint.sh entrypoint.sh
+RUN chmod +x entrypoint.sh
+
+COPY warmup_cache.py warmup_cache.py
+COPY stats/ stats/
+COPY omnomgram/ omnomgram/
+COPY backend/ backend/
 COPY canteens/ canteens/
-COPY main.py omnomnom.py ./
+COPY frontend.py frontend.py
 
-CMD python3 main.py
+RUN chown nobody /app
+USER nobody
+ENTRYPOINT ["/app/entrypoint.sh"]

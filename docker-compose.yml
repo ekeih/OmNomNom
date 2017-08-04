@@ -1,0 +1,45 @@
+---
+
+version: '3.0'
+services:
+  omnomnom-redis:
+    image: redis:alpine
+    ports:
+      - 127.0.0.1:6379:6379/tcp
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+    restart: always
+  omnomnom-worker:
+    build:
+      context: .
+      dockerfile: dockerfile-worker
+    environment:
+      OMNOMNOM_REDIS_HOST: omnomnom-redis
+      OMNOMNOM_AUTH_TOKEN: ${OMNOMNOM_AUTH_TOKEN}
+      OMNOMNOM_ADMIN: ${OMNOMNOM_ADMIN}
+      OMNOMNOM_INFLUXDB_HOST: ${OMNOMNOM_INFLUXDB_HOST}
+      OMNOMNOM_INFLUXDB_DATABASE: ${OMNOMNOM_INFLUXDB_DATABASE}
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+    restart: always
+  omnomnom-beat:
+    build:
+      context: .
+      dockerfile: dockerfile-beat
+    environment:
+      OMNOMNOM_REDIS_HOST: omnomnom-redis
+      OMNOMNOM_AUTH_TOKEN: ${OMNOMNOM_AUTH_TOKEN}
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+    restart: always
+  omnomnom-frontend:
+    build:
+      context: .
+      dockerfile: dockerfile-frontend
+    environment:
+      OMNOMNOM_REDIS_HOST: omnomnom-redis
+      OMNOMNOM_AUTH_TOKEN: ${OMNOMNOM_AUTH_TOKEN}
+      OMNOMNOM_ADMIN: ${OMNOMNOM_ADMIN}
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+    restart: always
