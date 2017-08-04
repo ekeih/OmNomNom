@@ -14,6 +14,7 @@ if host and database:
     influxdb_client = influxdb.InfluxDBClient(host=host, database=database)
 else:
     logger.warn('OMNOMNOM_INFLUXDB_(HOST|DATABASE) are not defined. Nothing will be logged to InfluxDB.')
+    influxdb_client = None
 
 
 @app.task(bind=True, default_retry_delay=30)
