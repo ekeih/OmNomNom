@@ -5,6 +5,8 @@ WORKDIR /app
 COPY requirements.txt requirements.txt
 RUN pip3 install -r requirements.txt
 
+COPY entrypoint-beat.sh entrypoint.sh
+RUN chmod +x entrypoint.sh
 COPY stats/ stats/
 COPY omnomgram/ omnomgram/
 COPY canteens/ canteens/
@@ -12,4 +14,4 @@ COPY backend/ backend/
 
 RUN chown nobody /app
 USER nobody
-CMD celery -A backend.backend beat -l info
+CMD ["entrypoint.sh"]
