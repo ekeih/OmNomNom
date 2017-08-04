@@ -14,4 +14,4 @@ COPY backend/ backend/
 
 RUN chown nobody /app
 USER nobody
-CMD ["entrypoint.sh"]
+CMD ["/app/entrypoint.sh"]
