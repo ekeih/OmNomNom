@@ -2,7 +2,11 @@ import datetime
 import re
 import urllib.request
 from bs4 import BeautifulSoup
-from canteens.canteen import Canteen, VEGGIE, MEAT
+from canteens.canteen import VEGGIE, MEAT
+from backend.backend import app, cache, cache_interval
+from celery.utils.log import get_task_logger
+
+logger = get_task_logger(__name__)
 
 URL = 'http://personalkantine.personalabteilung.tu-berlin.de/#speisekarte'
 
@@ -56,12 +60,12 @@ def get_menu(url='', date=False):
     return menu
 
 
-personalkantine = Canteen(
-    id_='tu_personalkantine',
-    name='Personalkantine',
-    url='http://personalkantine.personalabteilung.tu-berlin.de/#speisekarte',
-    update=get_menu,
-    website='http://personalkantine.personalabteilung.tu-berlin.de'
-)
-
-CANTEENS = [personalkantine]
+@app.task(bind=True, default_retry_delay=30)
+def update_personalkantine(self):
+    try:
+        logger.info('[Update] TU Personalkantine')
+        menu = get_menu()
+        if menu:
+            cache.set('tu_personalkantine', menu, ex=cache_interval * 4)
+    except Exception as ex:
+        raise self.retry(exc=ex)

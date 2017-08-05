@@ -3,10 +3,14 @@ import requests
 import subprocess
 import tempfile
 
+from backend.backend import app, cache, cache_interval
 from canteens.canteen import Canteen, VEGGIE, MEAT
+from celery.utils.log import get_task_logger
+
+logger = get_task_logger(__name__)
 
 
-def __parse_menu(url):
+def __parse_menu():
 
     def get_dropbox_link():
         request = requests.get('http://cafenero.net/speisen.html')
@@ -72,15 +76,16 @@ def __parse_menu(url):
 
     return get_menu()
 
-cafenero = Canteen(
-    id_='tu_cafenero',
-    name='Cafe Nero',
-    url='',
-    update=__parse_menu,
-    website='http://cafenero.net'
-)
 
-CANTEENS = [cafenero]
+@app.task(bind=True, default_retry_delay=30)
+def update_cafenero(self):
+    try:
+        logger.info('[Update] TU Cafenero')
+        menu = __parse_menu()
+        if menu:
+            cache.set('tu_cafenero', menu, ex=cache_interval * 4)
+    except Exception as ex:
+        raise self.retry(exc=ex)
 
 if __name__ == '__main__':
-    print(__parse_menu(''))
+    print(__parse_menu())

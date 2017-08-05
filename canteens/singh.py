@@ -2,7 +2,10 @@ from bs4 import BeautifulSoup
 from canteens.canteen import Canteen, VEGGIE, MEAT
 from datetime import datetime
 from urllib.request import urlopen
+from backend.backend import app, cache, cache_interval
+from celery.utils.log import get_task_logger
 
+logger = get_task_logger(__name__)
 URL = 'http://singh-catering.de/cafe/'
 
 
@@ -39,18 +42,16 @@ def __parse_menu():
     return '[Singh Catering](%s) (bis 18:00)\n%s' % (URL, menu[today])
 
 
-def get_menu(url=''):
-    return __parse_menu()
+@app.task(bind=True, default_retry_delay=30)
+def update_singh(self):
+    try:
+        logger.info('[Update] TU Singh')
+        menu = __parse_menu()
+        if menu:
+            cache.set('tu_singh', menu, ex=cache_interval * 4)
+    except Exception as ex:
+        raise self.retry(exc=ex)
 
-singh = Canteen(
-    id_='tu_singh',
-    name='Singh Catering',
-    url='http://singh-catering.de/cafe/',
-    update=get_menu,
-    website='http://singh-catering.de'
-)
-
-CANTEENS = [singh]
 
 if __name__ == '__main__':
     print(__parse_menu())
