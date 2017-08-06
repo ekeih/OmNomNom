@@ -132,6 +132,18 @@ def __menu(bot, update):
         logger.debug(reply)
         update.message.reply_text(text=reply, parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
 
+def __deprecated_commands(bot, update):
+    requested_canteen = update.message.text[1:].replace(bot.name, '')
+    if requested_canteen == 'tu_mar':
+        reply = 'Sorry: /tu\_mar heißt nun /tu\_marchstr.'
+    elif requested_canteen == 'tu_tel':
+        reply = 'Sorry: /tu\_tel heißt nun /tu\_skyline.'
+    else:
+        send_message_to_admin('Deprecated canteen procedure for no deprecated canteen...')
+        reply = 'Wooops, something went wrong. Sorry!'
+    send_message_to_admin('%s\n\n`%s`' % (reply, update.effective_user))
+    update.message.reply_text(text=reply, parse_mode=ParseMode.MARKDOWN)
+
 logger.debug('Adding API callbacks')
 dispatcher.add_error_handler(__error_handler)
 dispatcher.add_handler(CommandHandler('start', __about), 2)
@@ -139,6 +151,8 @@ dispatcher.add_handler(CommandHandler('about', __about), 2)
 dispatcher.add_handler(CommandHandler('help', __about), 2)
 dispatcher.add_handler(RegexHandler('.*', __send_typing_action), 0)
 dispatcher.add_handler(RegexHandler('.*', __log_incoming_messages), 1)
+dispatcher.add_handler(CommandHandler('tu_mar', __deprecated_commands), 2)
+dispatcher.add_handler(CommandHandler('tu_tel', __deprecated_commands), 2)
 dispatcher.add_handler(RegexHandler('/.*', __menu), 2)
 
 start_message = """*Bot Started*
