@@ -132,7 +132,7 @@ mapping = {
 }
 
 
-@app.task(bind=True, rate_limit='20/m', default_retry_delay=30)
+@app.task(bind=True, rate_limit='15/m', default_retry_delay=30)
 def update_studierendenwerk(self, id_):
     try:
         logger.info('[Update] %s' % mapping[id_]['name'])
@@ -148,3 +148,4 @@ def update_studierendenwerk(self, id_):
 
 if __name__ == '__main__':
     print(__parse_menu(538))
+
