@@ -172,14 +172,11 @@ def __help(bot, update):
 
 
 def __join(bot, update):
-    pass
-    # my_id = bot.get_me().id
-    # print(update)
-    # # if update.new_chat_members:
-    # for member in update.new_chat_members:
-    #     if member.id == my_id:
-    #         __help(bot, update)
-
+    my_id = bot.get_me().id
+    if update.message.new_chat_members:
+        for member in update.message.new_chat_members:
+            if member.id == my_id:
+                __help(bot, update)
 
 
 logger.debug('Adding API callbacks')
