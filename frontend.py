@@ -66,7 +66,7 @@ HELP_TEXT = """\
 
             für jede Mensa gibt es einen Befehl, den du mir schicken kannst.
 
-            Für die Mensa der TU-Berlin ist das zum Beispiel: /tu\_marchstr.
+            Für die Mensa der TU-Berlin ist das zum Beispiel: /tu\_mensa.
 
             Alle verfügbaren Mensen und andere Befehle (wie zum Beispiel /help oder /about) findest du über die Auto-Vervollständigung von Telegram, wenn du anfängst eine Nachricht zu tippen, die mit `/` beginnt.
             Außerdem gibt es in den meisten Telegram-Clients neben dem Textfeld einen viereckigen Button, der einen `/` enthält, über den du alle verfügbaren Befehle auswählen kannst.
