@@ -1,4 +1,5 @@
 about - Über OmNomNom
+help - Hilfe zum Bot
 ash_hellersdorf - Mensa ASH Berlin Hellersdorf
 beuth_coffeebar - Coffeebar Beuth Hochschule
 beuth_coffeebar_haus_grashof - Coffeebar Beuth Hochschule Haus Grashof
