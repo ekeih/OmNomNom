@@ -171,18 +171,29 @@ def __help(bot, update):
     update.message.reply_text(text=textwrap.dedent(HELP_TEXT), parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
 
 
+def __join(bot, update):
+    pass
+    # my_id = bot.get_me().id
+    # print(update)
+    # # if update.new_chat_members:
+    # for member in update.new_chat_members:
+    #     if member.id == my_id:
+    #         __help(bot, update)
+
+
+
 logger.debug('Adding API callbacks')
 dispatcher.add_error_handler(__error_handler)
 dispatcher.add_handler(CommandHandler('start', __help), 2)
 dispatcher.add_handler(CommandHandler('about', __about), 2)
 dispatcher.add_handler(CommandHandler('help', __help), 2)
-dispatcher.add_handler(CommandHandler('join', __help), 2)
 dispatcher.add_handler(RegexHandler('.*', __send_typing_action), 0)
 dispatcher.add_handler(RegexHandler('.*', __log_incoming_messages), 1)
 dispatcher.add_handler(CommandHandler('tu_mar', __deprecated_commands), 2)
 dispatcher.add_handler(CommandHandler('tu_tel', __deprecated_commands), 2)
 dispatcher.add_handler(RegexHandler('/.*', __menu), 2)
-dispatcher.add_handler(MessageHandler(Filters.all, __help), 2)
+dispatcher.add_handler(MessageHandler(Filters.group, __join), 2)
+dispatcher.add_handler(MessageHandler(Filters.text, __help), 2)
 
 start_message = """*Bot Started*
 
