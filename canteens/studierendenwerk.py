@@ -41,6 +41,8 @@ def __parse_menu(id_):
                         annotation = MEAT
                     title = item.find('span', class_='bold').text.strip()
                     price = item.find('div', class_='text-right').text.strip()
+                    price_exp = re.compile(r'€ (\d,\d+).*$')
+                    price = price_exp.sub('*\g<1>€*', price)
                     text = '%s%s %s: %s\n' % (text, annotation, title, price)
             if text.strip() == '':
                 return text.strip()
