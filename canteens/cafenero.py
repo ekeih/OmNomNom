@@ -4,7 +4,7 @@ import subprocess
 import tempfile
 
 from backend.backend import app, cache, cache_interval
-from canteens.canteen import Canteen, VEGGIE, MEAT
+from canteens.canteen import VEGGIE, MEAT
 from celery.utils.log import get_task_logger
 
 logger = get_task_logger(__name__)
