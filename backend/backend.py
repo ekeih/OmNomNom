@@ -40,7 +40,7 @@ app.conf.beat_schedule = {
         'task': 'canteens.personalkantine.update_personalkantine',
         'schedule': cache_interval
     },
-    'update ash_hellersdorf': {
+    'update studierendenwerk': {
         'task': 'canteens.studierendenwerk.update_all_studierendenwerk_canteens',
         'schedule': cache_interval
     }
