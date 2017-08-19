@@ -160,7 +160,3 @@ def update_studierendenwerk(self, id_):
             cache.set(mapping[id_]['command'], menu, ex=cache_interval * 4)
     except Exception as ex:
         raise self.retry(exc=ex)
-
-if __name__ == '__main__':
-    print(__parse_menu(538))
-
