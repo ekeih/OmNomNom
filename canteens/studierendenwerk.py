@@ -45,6 +45,9 @@ def __parse_menu(id_):
             if text.strip() == '':
                 return text.strip()
             else:
+                lines = text.split('\n')
+                lines.sort()
+                text = '\n'.join(lines)
                 return '*Speiseplan*\n%s' % text
         else:
             send_message_to_admin.delay('Could not update %s with status code %s.'\
