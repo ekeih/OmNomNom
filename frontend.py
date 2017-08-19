@@ -22,6 +22,7 @@ import redis
 import sys
 import textwrap
 
+from canteens.canteen import FISH,MEAT, VEGAN, VEGGIE
 from omnomgram.tasks import send_message_to_admin
 from stats.tasks import log_to_influxdb
 from telegram import Bot, ChatAction, ParseMode
@@ -73,11 +74,18 @@ HELP_TEXT = """\
 
             Übrigens kannst du mich auch in Gruppen einladen, sodass mich dort jeder nach den Speiseplänen fragen kann.
 
+            Ich markiere Gerichte nach bestem Gewissen, aber ohne Garantie, mit folgenden Symbolen:
+
+            %s = Vegan
+            %s = Vegetarisch
+            %s = Fleisch
+            %s = Fisch
+
             Viel Spaß und guten Appetit! %s
             Bei Problemen sprich einfach @ekeih an.
 
             P.S.: Der Bot ist OpenSource (GNU AGPL v3) und den Code findest du auf [GitHub](https://github.com/ekeih/OmNomNom). %s
-            """ % (emoji.emojize(':cake:', use_aliases=True), emoji.emojize(':smile:', use_aliases=True))
+            """ % (VEGAN, VEGGIE, MEAT, FISH, emoji.emojize(':cake:', use_aliases=True), emoji.emojize(':smile:', use_aliases=True))
 
 logger.debug('Initialize API')
 updater = Updater(token=token)
