@@ -3,7 +3,7 @@ import datetime
 import fake_useragent
 import re
 import requests
-from canteens.canteen import VEGGIE, MEAT
+from canteens.canteen import FISH, MEAT, VEGAN, VEGGIE
 from omnomgram.tasks import send_message_to_admin
 from backend.backend import app, cache, cache_interval
 from celery.utils.log import get_task_logger
@@ -29,10 +29,16 @@ def __parse_menu(id_):
                 menu_items = group.find_all('div', class_='splMeal')
                 for item in menu_items:
                     veggie = item.find_all('img', class_='splIcon')
-                    annotation = MEAT
+                    annotation = None
                     for icon in veggie:
-                        if 'icons/1.png' in icon.attrs['src'] or 'icons/15.png' in icon.attrs['src']:
+                        if 'icons/15.png' in icon.attrs['src']:
+                            annotation = VEGAN
+                        elif 'icons/1.png' in icon.attrs['src']:
                             annotation = VEGGIE
+                        elif 'icons/38.png' in icon.attrs['src']:
+                            annotation = FISH
+                    if annotation is None:
+                        annotation = MEAT
                     title = item.find('span', class_='bold').text.strip()
                     price = item.find('div', class_='text-right').text.strip()
                     text = '%s%s %s: %s\n' % (text, annotation, title, price)
