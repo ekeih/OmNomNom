@@ -4,7 +4,7 @@ import subprocess
 import tempfile
 
 from backend.backend import app, cache, cache_interval
-from canteens.canteen import VEGGIE, MEAT
+from canteens.canteen import FISH, MEAT, VEGAN, VEGGIE
 from celery.utils.log import get_task_logger
 
 logger = get_task_logger(__name__)
@@ -53,7 +53,7 @@ def __parse_menu():
                     if 'mittagstisch' in line or '---' in line or 'schonkost' in line:
                         line = '%s\n' % line
                     else:
-                        if line.endswith(('€', 'vegetarisch', 'schweinefleisch')):
+                        if line.endswith(('€', 'vegetarisch', 'schweinefleisch', 'rindfleisch', 'fisch', 'vegan', '(vegan)')):
                             line = '%s\n' % line
                         else:
                             line = '%s ' % line
@@ -64,11 +64,19 @@ def __parse_menu():
         for entry in clean_newlines(pdf_to_text(get_pdf())).splitlines():
             if 'mittagstisch' in entry or '---' in entry or 'schonkost' in entry:
                 annotation = ''
+            elif 'vegan' in entry:
+                annotation = '%s ' % VEGAN
             elif 'vegetarisch' in entry:
                 annotation = '%s ' % VEGGIE
+            elif 'fisch' in entry:
+                annotation = '%s ' % FISH
             else:
                 annotation = '%s ' % MEAT
             entry = entry.replace('vegetarisch', '')
+            entry = entry.replace('(vegan)', '')
+            entry = entry.replace('fisch', '')
+            entry = entry.replace('rindfleisch', '')
+            entry = entry.replace('vegan', '')
             entry = entry.replace('schweinefleisch', '')
             entry = ' '.join(entry.split())
             result += '%s%s\n' % (annotation, entry)
