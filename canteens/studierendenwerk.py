@@ -50,7 +50,7 @@ def __parse_menu(id_):
                 lines = text.split('\n')
                 lines.sort()
                 text = '\n'.join(lines)
-                return '*Speiseplan*\n%s' % text
+                return '*Speiseplan*%s' % text
         else:
             send_message_to_admin.delay('Could not update %s with status code %s.'\
                                         % (mapping[id_]['name'], request.status_code))
