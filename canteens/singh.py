@@ -1,5 +1,5 @@
 from bs4 import BeautifulSoup
-from canteens.canteen import VEGGIE, MEAT
+from canteens.canteen import MEAT, VEGAN, VEGGIE
 from datetime import datetime
 from urllib.request import urlopen
 from backend.backend import app, cache, cache_interval
@@ -15,10 +15,12 @@ def __parse_menu_items(items):
         title = item.find('span', class_='item_title').get_text()
         price = item.find('span', class_='menu-list__item-price').get_text()
         veggie = item.find('span', class_='menu-list__item-highlight-title')
-        if veggie and (('VEGAN!' in veggie) or ('VEGETARISCH!' in veggie)):
-            annotation = VEGGIE
-        else:
-            annotation = MEAT
+        annotation = MEAT
+        if veggie:
+            if 'VEGAN!' in veggie:
+                annotation = VEGAN
+            elif 'VEGETARISCH!' in veggie:
+                annotation = VEGGIE
         description = item.find('span', class_='desc__content').get_text()
         text = '%s%s *%s: %s*\n_%s_\n' % (text, annotation, title, price, description)
     return text
