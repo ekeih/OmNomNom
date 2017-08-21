@@ -57,6 +57,8 @@ invite it to your groups.
 Find out more about it on [Github](https://github.com/ekeih/OmNomNom). Pull requests and issues are always welcome. If \
 you have questions you can talk to me via [Telegram](https://telegram.me/ekeih).
 
+There is also a website: https://omnbot.io
+
 OmNomNom is licensed under the [GNU AGPL v3](https://github.com/ekeih/OmNomNom#license).
 """
 
@@ -84,7 +86,9 @@ HELP_TEXT = """\
             Viel Spaß und guten Appetit! %s
             Bei Problemen sprich einfach @ekeih an.
 
-            P.S.: Der Bot ist OpenSource (GNU AGPL v3) und den Code findest du auf [GitHub](https://github.com/ekeih/OmNomNom). %s
+            PS: Es gibt auch eine Webseite: https://omnbot.io
+
+            PPS: Der Bot ist OpenSource (GNU AGPL v3) und den Code findest du auf [GitHub](https://github.com/ekeih/OmNomNom). %s
             """ % (VEGAN, VEGGIE, MEAT, FISH, emoji.emojize(':cake:', use_aliases=True), emoji.emojize(':smile:', use_aliases=True))
 
 logger.debug('Initialize API')
