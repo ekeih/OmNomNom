@@ -66,7 +66,7 @@ def get_menu(date=False, canteen=EMPLOYEE_CANTEEN):
 def update_personalkantine(self):
     try:
         logger.info('[Update] TU Personalkantine')
-        requested_date, menu = get_menu(canteen=EN_CANTEEN)
+        requested_date, menu = get_menu(canteen=EMPLOYEE_CANTEEN)
         if menu:
             menu = '[Personalkantine](%s) (%s) (11:00-16:00)\n%s' % (URL, requested_date, menu)
             cache.set('tu_personalkantine', menu, ex=cache_interval * 4)
