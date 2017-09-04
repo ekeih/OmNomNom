@@ -19,14 +19,14 @@ def main(date, canteen=EMPLOYEE_CANTEEN):
     html = urllib.request.urlopen(URL).read()
     menus = BeautifulSoup(html, 'html.parser').find_all('ul', class_='Menu__accordion')
 
-
     for day in menus[canteen].children:
         if day.name and date.lstrip('0') in day.find('h2').string:
             for dishlist in day.children:
                 if dishlist.name == 'ul':
                     items = dishlist.find_all('li')
-                    for counter, dish in enumerate(items):
-                        if counter >= len(items)-2:
+                    for dish in items:
+                        print('DISH: %s' % dish)
+                        if '(v)' in dish.text or '(V)' in dish.text or 'Gemüseplatte' in dish.text:
                             annotation = VEGGIE
                         else:
                             annotation = MEAT
