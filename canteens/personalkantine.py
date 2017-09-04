@@ -25,7 +25,6 @@ def main(date, canteen=EMPLOYEE_CANTEEN):
                 if dishlist.name == 'ul':
                     items = dishlist.find_all('li')
                     for dish in items:
-                        print('DISH: %s' % dish)
                         if '(v)' in dish.text or '(V)' in dish.text or 'Gemüseplatte' in dish.text:
                             annotation = VEGGIE
                         else:
@@ -69,7 +68,7 @@ def update_personalkantine(self):
         logger.info('[Update] TU Personalkantine')
         requested_date, menu = get_menu(canteen=EN_CANTEEN)
         if menu:
-            menu = '[Personalkantine](%s) (11:00-16:00)\n%s' % (URL, requested_date, menu)
+            menu = '[Personalkantine](%s) (%s) (11:00-16:00)\n%s' % (URL, requested_date, menu)
             cache.set('tu_personalkantine', menu, ex=cache_interval * 4)
     except Exception as ex:
         raise self.retry(exc=ex)
