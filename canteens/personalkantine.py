@@ -20,7 +20,7 @@ def main(date, canteen=EMPLOYEE_CANTEEN):
     menus = BeautifulSoup(html, 'html.parser').find_all('ul', class_='Menu__accordion')
 
 
-    for day in menu[canteen].children:
+    for day in menus[canteen].children:
         if day.name and date.lstrip('0') in day.find('h2').string:
             for dishlist in day.children:
                 if dishlist.name == 'ul':
