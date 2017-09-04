@@ -6,38 +6,38 @@ beuth_coffeebar_haus_grashof - Coffeebar Beuth Hochschule Haus Grashof
 beuth_kurfuerstenstr - Mensa Beuth Hochschule für Technik Kurfürstenstraße
 beuth_luxembugerstr - Mensa Beuth Hochschule für Technik Luxemburger Straße
 charite_zahnklinik - Mensa Charité Zahnklinik
-ehb_teltower_damm_coffeebar - Coffeebar EHB Teltower Damm
 ehb_teltower_damm - Mensa EHB Teltower Damm
-fu_2_coffeebar - Coffeebar Mensa FU II
+ehb_teltower_damm_coffeebar - Coffeebar EHB Teltower Damm
 fu_2 - Mensa FU II Otto-von-Simson-Straße
+fu_2_coffeebar - Coffeebar Mensa FU II
 fu_dueppel - Mensa FU Herrenhaus Düppel
 fu_ihnestr - Cafeteria FU Ihnestraße
 fu_koserstr - Cafeteria FU Koserstraße
-fu_lankwitz_coffeebar - Coffeebar Mensa Lankwitz
 fu_lankwitz - Mensa FU Lankwitz Malteserstraße
+fu_lankwitz_coffeebar - Coffeebar Mensa Lankwitz
 fu_pharmazie - Cafeteria FU Pharmazie
 fu_rechtswissenschaft - Cafeteria FU Rechtswissenschaft
 fu_veggie - Mensa Veggie N° 1 - Die grüne Mensa
 fu_wirtschaftswissenschaften - Cafeteria FU Wirtschaftswissenschaften
-hfm_charlottenstr_coffeebar - Coffeebar HfM Charlottenstraße
 hfm_charlottenstr - Mensa HfM Charlottenstraße
+hfm_charlottenstr_coffeebar - Coffeebar HfM Charlottenstraße
 hfm_neuer_marstall - Coffeebar HfM „Neuer Marstall“
 hfs_schnellerstr - Mensa HfS Schnellerstraße
-htw_treskowallee_cafeteria - Cafeteria HTW Treskowallee
 htw_treskowallee - Mensa HTW Treskowallee
-htw_wilhelminenhof_coffeebar - Coffeebar HTW Wilhelminenhof
+htw_treskowallee_cafeteria - Cafeteria HTW Treskowallee
 htw_wilhelminenhof - Mensa HTW Wilhelminenhof
-hu_adlershof_coffeebar - Coffeebar HU Oase Adlershof
+htw_wilhelminenhof_coffeebar - Coffeebar HTW Wilhelminenhof
 hu_adlershof - Mensa HU Oase Adlershof
+hu_adlershof_coffeebar - Coffeebar HU Oase Adlershof
 hu_ct - Coffeebar HU „c.t“
-hu_nord_coffeebar - Coffeebar HU Mensa Nord
 hu_nord - Mensa HU Nord
+hu_nord_coffeebar - Coffeebar HU Mensa Nord
 hu_spandauer - Mensa HU Spandauer Straße
 hu_sued - Mensa HU Süd
 hu_wilhelm_grimm_zentrum - Cafeteria HU „Jacob und Wilhelm Grimm Zentrum“
 hwr_alt_friedrichsfelde - Coffeebar HWR Alt-Friedrichsfelde
-hwr_badenschestr_coffeebar - Coffeebar HWR Badensche Straße
 hwr_badenschestr - Mensa HWR Badensche Straße
+hwr_badenschestr_coffeebar - Coffeebar HWR Badensche Straße
 khs_mensa - Mensa Katholische HS für Sozialwesen
 khs_weissensee - Mensa KHS Weißensee
 tu_ackerstr - Cafeteria TU Ackerstraße
@@ -45,9 +45,9 @@ tu_architektur - Cafeteria TU Architektur
 tu_cafenero - Cafeteria in der Volkswagen Bibliothek
 tu_en_kantine - TU EN Kantine
 tu_marchstr - Cafeteria TU Marchstraße
+tu_mensa - Mensa TU Hardenbergstraße
 tu_mensa_cafeteria - Cafeteria TU Hardenbergstraße
 tu_mensa_coffeebar - Coffeebar TU Hardenbergstraße
-tu_mensa - Mensa TU Hardenbergstraße
 tu_personalkantine - TU Personalkantine
 tu_singh - TU Singh
 tu_skyline - Cafeteria TU „Skyline“
