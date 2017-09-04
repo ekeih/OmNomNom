@@ -6,17 +6,21 @@ from canteens.canteen import VEGGIE, MEAT
 from backend.backend import app, cache, cache_interval
 from celery.utils.log import get_task_logger
 
+EMPLOYEE_CANTEEN = 0
+EN_CANTEEN = 1
+
 logger = get_task_logger(__name__)
 
 URL = 'http://personalkantine.personalabteilung.tu-berlin.de/#speisekarte'
 
 
-def main(date):
+def main(date, canteen=EMPLOYEE_CANTEEN):
     dishes = []
     html = urllib.request.urlopen(URL).read()
-    menu = BeautifulSoup(html, 'html.parser').find('ul', class_='Menu__accordion')
+    menus = BeautifulSoup(html, 'html.parser').find_all('ul', class_='Menu__accordion')
 
-    for day in menu.children:
+
+    for day in menu[canteen].children:
         if day.name and date.lstrip('0') in day.find('h2').string:
             for dishlist in day.children:
                 if dishlist.name == 'ul':
@@ -49,23 +53,35 @@ def _format(line):
     return line
 
 
-def get_menu(url='', date=False):
+def get_menu(date=False, canteen=EMPLOYEE_CANTEEN):
     requested_date = date or datetime.date.today().strftime('%d.%m.%Y')
-    dishes = main(requested_date)
+    dishes = main(requested_date, canteen)
     menu = ''
     for dish in dishes:
         menu = '%s%s\n' % (menu, dish)
     menu = menu.rstrip()
-    menu = '[Personalkantine](%s) (%s) (11:00 - 16:00)\n%s' % (URL, requested_date, menu)
-    return menu
+    return requested_date, menu
 
 
 @app.task(bind=True, default_retry_delay=30)
 def update_personalkantine(self):
     try:
         logger.info('[Update] TU Personalkantine')
-        menu = get_menu()
+        requested_date, menu = get_menu(canteen=EN_CANTEEN)
         if menu:
+            menu = '[Personalkantine](%s) (11:00-16:00)\n%s' % (URL, requested_date, menu)
             cache.set('tu_personalkantine', menu, ex=cache_interval * 4)
+    except Exception as ex:
+        raise self.retry(exc=ex)
+
+
+@app.task(bind=True, default_retry_delay=30)
+def update_en_canteen(self):
+    try:
+        logger.info('[Update] TU EN Canteen')
+        requested_date, menu = get_menu(canteen=EN_CANTEEN)
+        if menu:
+            menu = '[EN Kantine](%s) (%s)\n%s' % (URL, requested_date, menu)
+            cache.set('tu_en_kantine', menu, ex=cache_interval * 4)
     except Exception as ex:
         raise self.retry(exc=ex)
