@@ -203,7 +203,7 @@ def __help(bot, update):
 
 
 def __join(bot, update):
-    frontend_logger.info('New group member')
+    frontend_logger.info('Group members changed')
     frontend_logger.debug(update)
     my_id = bot.get_me().id
     if update.message.new_chat_members:
