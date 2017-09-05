@@ -17,6 +17,7 @@ COPY backend/ backend/
 COPY canteens/ canteens/
 COPY frontend.py frontend.py
 
+RUN mkdir /app/logs
 RUN chown nobody /app
 USER nobody
 ENTRYPOINT ["/app/entrypoint.sh"]

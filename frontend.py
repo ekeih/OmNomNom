@@ -28,25 +28,41 @@ from stats.tasks import log_to_influxdb
 from telegram import Bot, ChatAction, ParseMode
 from telegram.ext import CommandHandler, Filters, MessageHandler, RegexHandler, Updater
 
-
-logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-logger = logging.getLogger()
 logging.getLogger('JobQueue').setLevel(logging.INFO)
 logging.getLogger('telegram').setLevel(logging.INFO)
 logging.getLogger('requests').setLevel(logging.INFO)
 
+logging_format = '[%(asctime)s: %(levelname)s/%(name)s] %(message)s'
+formatter = logging.Formatter(logging_format)
+logging.basicConfig(level=logging.INFO, format=logging_format)
+
+frontend_logger = logging.getLogger('frontend')
+frontend_fh = logging.handlers.TimedRotatingFileHandler('logs/frontend.log', when='midnight', backupCount=60)
+frontend_fh.setLevel(logging.DEBUG)
+frontend_fh.setFormatter(formatter)
+frontend_logger.addHandler(frontend_fh)
+
+message_logger = logging.getLogger('frontend.messages')
+message_fh = logging.handlers.TimedRotatingFileHandler('logs/messages.log', when='midnight', backupCount=60)
+message_fh.setLevel(logging.DEBUG)
+message_fh.setFormatter(formatter)
+message_logger.addHandler(message_fh)
+
 redis_host = os.environ.get('OMNOMNOM_REDIS_HOST') or 'localhost'
+frontend_logger.debug('Redis host: %s' % redis_host)
+
 cache = redis.Redis(host=redis_host, decode_responses=True)
 
 token = os.environ.get('OMNOMNOM_AUTH_TOKEN')
 if not token:
-    logging.error('You have to set your auth token as environment variable in OMNOMNOM_AUTH_TOKEN')
+    frontend_logger.error('You have to set your auth token as environment variable in OMNOMNOM_AUTH_TOKEN')
     sys.exit()
 
 ADMIN = os.environ.get('OMNOMNOM_ADMIN')
 if not ADMIN:
-    logger.error('You have to specify an Admin account.')
+    frontend_logger.error('You have to specify an Admin account.')
     sys.exit()
+frontend_logger.debug('Admin ID: %s' % ADMIN)
 
 ABOUT_TEXT = """*OmNomNom*
 
@@ -91,7 +107,7 @@ HELP_TEXT = """\
             PPS: Der Bot ist OpenSource (GNU AGPL v3) und den Code findest du auf [GitHub](https://github.com/ekeih/OmNomNom). %s
             """ % (VEGAN, VEGGIE, MEAT, FISH, emoji.emojize(':cake:', use_aliases=True), emoji.emojize(':smile:', use_aliases=True))
 
-logger.debug('Initialize API')
+frontend_logger.debug('Initialize API')
 updater = Updater(token=token)
 bot = Bot(token)
 dispatcher = updater.dispatcher
@@ -109,18 +125,19 @@ def __log_incoming_messages(bot, update):
             target_chat += ' %s' % chat.last_name
         if chat.username:
             target_chat += ' (%s)' % chat.username
-    logger.info('In:  %s: %s' % (target_chat, update.message.text))
+    message_logger.info('In: %s: %s' % (target_chat, update.message.text))
     fields = {'message': update.message.text}
     tags = {'chat': target_chat}
     log_to_influxdb.delay('messages', fields, tags)
 
 
 def __send_typing_action(bot, update):
-    logger.debug("Send typing")
+    frontend_logger.debug("Send typing")
     bot.sendChatAction(chat_id=update.message.chat_id, action=ChatAction.TYPING)
 
 
 def __about(bot, update):
+    message_logger.info('Out: Sending <about> message')
     update.message.reply_text(text=ABOUT_TEXT, parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
 
 
@@ -137,13 +154,13 @@ def __error_handler(bot, update, error):
                     ```
                     """ % (update, error)
     send_message_to_admin.delay(textwrap.dedent(error_message))
-    logger.info(error)
+    frontend_logger.error(error)
 
 
 def __menu(bot, update):
     if update.message.text:
         requested_canteen = update.message.text[1:].replace(bot.name, '')
-        logger.debug('Requested Canteen: %s' % requested_canteen)
+        frontend_logger.debug('Requested Canteen: %s' % requested_canteen)
         reply = cache.get(requested_canteen)
         if not reply or reply.strip() == '':
             error_message = """\
@@ -162,7 +179,7 @@ def __menu(bot, update):
                             """ % (update.effective_chat, update.effective_message, update.effective_user)
             send_message_to_admin.delay(textwrap.dedent(error_message))
             reply = 'Leider kenne ich keinen passenden Speiseplan. Wenn das ein Fehler ist, wende dich an @ekeih.'
-        logger.debug(reply)
+        message_logger.debug('Out: %s' % reply)
         update.message.reply_text(text=reply, parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
 
 
@@ -176,22 +193,27 @@ def __deprecated_commands(bot, update):
         send_message_to_admin('Deprecated canteen procedure for no deprecated canteen...')
         reply = 'Wooops, something went wrong. Sorry!'
     send_message_to_admin('%s\n\n`%s`' % (reply, update.effective_user))
+    frontend_logger.warning('Deprecated command: %s' % reply)
     update.message.reply_text(text=reply, parse_mode=ParseMode.MARKDOWN)
 
 
 def __help(bot, update):
+    message_logger.info('Send <help> message')
     update.message.reply_text(text=textwrap.dedent(HELP_TEXT), parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
 
 
 def __join(bot, update):
+    frontend_logger.info('New group member')
+    frontend_logger.debug(update)
     my_id = bot.get_me().id
     if update.message.new_chat_members:
         for member in update.message.new_chat_members:
             if member.id == my_id:
+                frontend_logger.info('I was invited to a group :)')
                 __help(bot, update)
 
 
-logger.debug('Adding API callbacks')
+frontend_logger.debug('Adding API callbacks')
 dispatcher.add_error_handler(__error_handler)
 dispatcher.add_handler(CommandHandler('start', __help), 2)
 dispatcher.add_handler(CommandHandler('about', __about), 2)
@@ -215,5 +237,5 @@ Name: %s
 
 send_message_to_admin.delay(start_message)
 
-logger.info('Start polling')
+frontend_logger.info('Start polling')
 updater.start_polling()
