@@ -52,7 +52,7 @@ def __parse_menu(id_):
                 text = '\n'.join(lines)
                 return '*Speiseplan*%s' % text
         else:
-            send_message_to_admin.delay('Could not update %s with status code %s.'\
+            send_message_to_admin.delay('Could not update %s with status code %s.'
                                         % (mapping[id_]['name'], request.status_code))
             raise TimeoutError
 
