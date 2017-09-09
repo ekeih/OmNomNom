@@ -54,15 +54,18 @@ def __parse_menu(id_):
         else:
             send_message_to_admin.delay('Could not update %s with status code %s.'
                                         % (mapping[id_]['name'], request.status_code))
-            raise TimeoutError
+            raise Exception
 
     def get_notes():
-        notes = ''
         request = requests.post('https://www.stw.berlin/xhr/hinweise.html', data=params, headers=headers)
         if request.status_code == requests.codes.ok:
             soup = bs4.BeautifulSoup(request.text, 'html.parser')
             soup.find('article', {'data-hid': '6046-1'}).decompose()
             notes = soup.get_text().strip()
+        else:
+            send_message_to_admin('Could not fetch notes about %s with status code %s'
+                                  % (mapping[id_]['name'], request.status_code))
+            raise Exception
         if notes == '':
             return ''
         else:
@@ -84,12 +87,16 @@ def __parse_menu(id_):
                         for item in sib.find_all('div', class_='col-xs-10'):
                             for string in item.stripped_strings:
                                 business_hours += '\n%s' % string
+        else:
+            send_message_to_admin('Could not fetch business hours for %s with status code %s'
+                                  % (mapping[id_]['name'], request.status_code))
+            raise Exception
         return business_hours.strip()
 
     try:
         result = '*%s* (%s)\n\n%s\n\n%s\n\n%s' % (mapping[id_]['name'], today_human, get_menu(), get_business_hours(), get_notes())
         return re.sub(r'\n\s*\n', '\n\n', result)
-    except TimeoutError:
+    except Exception:
         return ''
 
 mapping = {
@@ -160,6 +167,7 @@ def update_studierendenwerk(self, id_):
         if menu.strip() == '':
             logger.info('No menu for %s' % mapping[id_]['name'])
             send_message_to_admin('No menu for %s' % mapping[id_]['name'])
+            raise self.retry()
         else:
             logger.info('Caching %s' % mapping[id_]['name'])
             cache.set(mapping[id_]['command'], menu, ex=cache_interval * 4)
