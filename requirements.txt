@@ -3,6 +3,7 @@ celery[redis]
 emoji
 fake-useragent
 influxdb
+parsedatetime
 python-telegram-bot
 redis
 requests
