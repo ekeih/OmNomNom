@@ -80,7 +80,8 @@ def update_en_canteen(self):
         logger.info('[Update] TU EN Canteen')
         requested_date, menu = get_menu(canteen=EN_CANTEEN)
         if menu:
-            menu = '[EN Kantine](%s) (%s)\n%s' % (URL, requested_date, menu)
+            menu = '[EN Kantine](%s) (%s)\n%s\n\n*Öffnungszeiten*\nMo - Do: 07 - 17 Uhr\nFr: 07 - 16 Uhr' \
+                   % (URL, requested_date, menu)
             cache.set('tu_en_kantine', menu, ex=cache_interval * 4)
     except Exception as ex:
         raise self.retry(exc=ex)
