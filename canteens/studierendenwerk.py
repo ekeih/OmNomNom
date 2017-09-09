@@ -166,7 +166,6 @@ def update_studierendenwerk(self, id_):
         menu = __parse_menu(id_)
         if menu.strip() == '':
             logger.info('No menu for %s' % mapping[id_]['name'])
-            send_message_to_admin('No menu for %s' % mapping[id_]['name'])
             raise self.retry()
         else:
             logger.info('Caching %s' % mapping[id_]['name'])
