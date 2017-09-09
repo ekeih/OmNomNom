@@ -8,7 +8,7 @@ logger = get_task_logger(__name__)
 redis_host = environ.get('OMNOMNOM_REDIS_HOST') or 'localhost'
 redis_port = environ.get('OMNOMNOM_REDIS_PORT') or 6379
 
-cache_interval = environ.get('OMNOMNOM_CACHE_INTERVAL') or 60 * 30
+cache_interval = environ.get('OMNOMNOM_CACHE_INTERVAL') or 60 * 60
 cache_database = environ.get('OMNOMNOM_CACHE_DATABASE') or 0
 
 celery_database = environ.get('OMNOMNOM_CELERY_DATABASE') or 1
