@@ -54,7 +54,7 @@ def __parse_menu(id_):
         else:
             send_message_to_admin.delay('Could not update %s with status code %s.'\
                                         % (mapping[id_]['name'], request.status_code))
-            return ''
+            raise TimeoutError
 
     def get_notes():
         notes = ''
@@ -86,8 +86,11 @@ def __parse_menu(id_):
                                 business_hours += '\n%s' % string
         return business_hours.strip()
 
-    result = '*%s* (%s)\n\n%s\n\n%s\n\n%s' % (mapping[id_]['name'], today_human, get_menu(), get_business_hours(), get_notes())
-    return re.sub(r'\n\s*\n', '\n\n', result)
+    try:
+        result = '*%s* (%s)\n\n%s\n\n%s\n\n%s' % (mapping[id_]['name'], today_human, get_menu(), get_business_hours(), get_notes())
+        return re.sub(r'\n\s*\n', '\n\n', result)
+    except TimeoutError:
+        return ''
 
 mapping = {
     534: {"name": "Mensa ASH Berlin Hellersdorf", "command": "ash_hellersdorf"},
