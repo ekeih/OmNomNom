@@ -2,7 +2,7 @@ import datetime
 import re
 import urllib.request
 from bs4 import BeautifulSoup
-from canteens.canteen import VEGGIE, MEAT
+from canteens.canteen import VEGGIE, MEAT, get_next_week, get_current_week
 from backend.backend import app, cache, cache_interval
 from celery.utils.log import get_task_logger
 
@@ -59,17 +59,27 @@ def get_menu(date=False, canteen=EMPLOYEE_CANTEEN):
     for dish in dishes:
         menu = '%s%s\n' % (menu, dish)
     menu = menu.rstrip()
-    return requested_date, menu
+    return menu
+
+
+def get_date_range():
+    today = datetime.date.today()
+    if today.weekday() > 4:
+        return get_next_week()
+    else:
+        return get_current_week()
 
 
 @app.task(bind=True, default_retry_delay=30)
 def update_personalkantine(self):
     try:
         logger.info('[Update] TU Personalkantine')
-        requested_date, menu = get_menu(canteen=EMPLOYEE_CANTEEN)
-        if menu:
-            menu = '[Personalkantine](%s) (%s) (11:00-16:00)\n%s' % (URL, requested_date, menu)
-            cache.set('tu_personalkantine', menu, ex=cache_interval * 4)
+        for day in get_date_range():
+            day_website = day.strftime('%d.%m.%Y')
+            menu = get_menu(date=day_website, canteen=EMPLOYEE_CANTEEN)
+            if menu:
+                menu = '[Personalkantine](%s) (%s) (11:00-16:00)\n%s' % (URL, day_website, menu)
+                cache.set('tu_personalkantine_%s' % day.strftime('%Y-%m-%d'), menu, ex=cache_interval * 4)
     except Exception as ex:
         raise self.retry(exc=ex)
 
