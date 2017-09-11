@@ -14,6 +14,7 @@ cache_database = environ.get('OMNOMNOM_CACHE_DATABASE') or 0
 celery_database = environ.get('OMNOMNOM_CELERY_DATABASE') or 1
 
 cache = Redis(host=redis_host, port=redis_port, db=cache_database)
+cache_date_format = '%Y-%m-%d'
 
 app = Celery('backend',
              broker='redis://%s:%s/%s' % (redis_host, redis_port, celery_database),
