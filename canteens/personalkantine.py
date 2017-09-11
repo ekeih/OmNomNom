@@ -3,7 +3,7 @@ import re
 import urllib.request
 from bs4 import BeautifulSoup
 from canteens.canteen import VEGGIE, MEAT, get_next_week, get_current_week
-from backend.backend import app, cache, cache_interval
+from backend.backend import app, cache, cache_date_format, cache_interval
 from celery.utils.log import get_task_logger
 
 EMPLOYEE_CANTEEN = 0
@@ -79,7 +79,8 @@ def update_personalkantine(self):
             menu = get_menu(date=day_website, canteen=EMPLOYEE_CANTEEN)
             if menu:
                 menu = '[Personalkantine](%s) (%s) (11:00-16:00)\n%s' % (URL, day_website, menu)
-                cache.set('tu_personalkantine_%s' % day.strftime('%Y-%m-%d'), menu, ex=cache_interval * 4)
+                cache.hset(day.strftime(cache_date_format), 'tu_personalkantine', menu)
+                cache.expire(day.strftime(cache_date_format), cache_interval * 4)
     except Exception as ex:
         raise self.retry(exc=ex)
 
@@ -94,6 +95,7 @@ def update_en_canteen(self):
             if menu:
                 menu = '[EN Kantine](%s) (%s)\n%s\n\n*Öffnungszeiten*\nMo - Do: 07 - 17 Uhr\nFr: 07 - 16 Uhr' \
                        % (URL, day_website, menu)
-                cache.set('tu_en_kantine_%s' % day.strftime('%Y-%m-%d'), menu, ex=cache_interval * 4)
+                cache.hset(day.strftime(cache_date_format), 'tu_en_kantine', menu)
+                cache.expire(day.strftime(cache_date_format), cache_interval * 4)
     except Exception as ex:
         raise self.retry(exc=ex)
