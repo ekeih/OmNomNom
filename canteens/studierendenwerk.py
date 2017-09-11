@@ -3,20 +3,20 @@ import datetime
 import fake_useragent
 import re
 import requests
-from canteens.canteen import FISH, MEAT, VEGAN, VEGGIE
+from canteens.canteen import get_current_week, get_next_week, FISH, MEAT, VEGAN, VEGGIE
 from omnomgram.tasks import send_message_to_admin
-from backend.backend import app, cache, cache_interval
+from backend.backend import app, cache, cache_date_format, cache_interval
 from celery.utils.log import get_task_logger
 
 logger = get_task_logger(__name__)
 
 
-def __parse_menu(id_):
-    today = datetime.date.today()
-    today_api = today.strftime('%Y-%m-%d')
-    today_human = today.strftime('%d.%m.%Y')
+def __parse_menu(id_, date=False):
+    day = date or datetime.date.today()
+    day_api = day.strftime('%Y-%m-%d')
+    day_human = day.strftime('%d.%m.%Y')
     useragent = fake_useragent.UserAgent(fallback='Mozilla/5.0 (X11; OpenBSD amd64; rv:28.0) Gecko/20100101 Firefox/28.0')
-    params = {'resources_id': id_, 'date': today_api}
+    params = {'resources_id': id_, 'date': day_api}
     headers = {'user-agent': useragent.random}
 
     def get_menu():
@@ -94,7 +94,7 @@ def __parse_menu(id_):
         return business_hours.strip()
 
     try:
-        result = '*%s* (%s)\n\n%s\n\n%s\n\n%s' % (mapping[id_]['name'], today_human, get_menu(), get_business_hours(), get_notes())
+        result = '*%s* (%s)\n\n%s\n\n%s\n\n%s' % (mapping[id_]['name'], day_human, get_menu(), get_business_hours(), get_notes())
         return re.sub(r'\n\s*\n', '\n\n', result)
     except Exception:
         return ''
@@ -153,6 +153,10 @@ mapping = {
 }
 
 
+def get_date_range():
+    return get_current_week() + get_next_week()
+
+
 @app.task(bind=True, default_retry_delay=30)
 def update_all_studierendenwerk_canteens(self):
     for id_, canteen in mapping.items():
@@ -163,12 +167,14 @@ def update_all_studierendenwerk_canteens(self):
 def update_studierendenwerk(self, id_):
     try:
         logger.info('[Update] %s' % mapping[id_]['name'])
-        menu = __parse_menu(id_)
-        if menu.strip() == '':
-            logger.info('No menu for %s' % mapping[id_]['name'])
-            raise self.retry()
-        else:
-            logger.info('Caching %s' % mapping[id_]['name'])
-            cache.set(mapping[id_]['command'], menu, ex=cache_interval * 4)
+        for day in get_date_range():
+            menu = __parse_menu(id_, date=day)
+            if menu.strip() == '':
+                logger.info('No menu for %s' % mapping[id_]['name'])
+                raise self.retry()
+            else:
+                logger.info('Caching %s' % mapping[id_]['name'])
+                cache.hset(day.strftime(cache_date_format), mapping[id_]['command'], menu)
+                cache.expire(day.strftime(cache_date_format), cache_interval * 4)
     except Exception as ex:
         raise self.retry(exc=ex)
