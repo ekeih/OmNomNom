@@ -190,9 +190,9 @@ def __deprecated_commands(bot, update):
     elif requested_canteen == 'tu_tel':
         reply = 'Sorry: /tu\_tel heißt nun /tu\_skyline.'
     else:
-        send_message_to_admin('Deprecated canteen procedure for no deprecated canteen...')
+        send_message_to_admin.delay('Deprecated canteen procedure for no deprecated canteen...')
         reply = 'Wooops, something went wrong. Sorry!'
-    send_message_to_admin('%s\n\n`%s`' % (reply, update.effective_user))
+    send_message_to_admin.delay('%s\n\n`%s`' % (reply, update.effective_user))
     frontend_logger.warning('Deprecated command: %s' % reply)
     update.message.reply_text(text=reply, parse_mode=ParseMode.MARKDOWN)
 
