@@ -15,6 +15,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import datetime
 import logging
 import emoji
 import os
@@ -22,6 +23,7 @@ import redis
 import sys
 import textwrap
 
+from backend.backend import cache_date_format
 from canteens.canteen import FISH,MEAT, VEGAN, VEGGIE
 from omnomgram.tasks import send_message_to_admin
 from stats.tasks import log_to_influxdb
@@ -161,7 +163,7 @@ def __menu(bot, update):
     if update.message.text:
         requested_canteen = update.message.text[1:].replace(bot.name, '')
         frontend_logger.debug('Requested Canteen: %s' % requested_canteen)
-        reply = cache.get(requested_canteen)
+        reply = cache.hget(datetime.date.today().strftime(cache_date_format), requested_canteen)
         if not reply or reply.strip() == '':
             error_message = """\
                             *Chat*
