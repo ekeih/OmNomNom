@@ -22,6 +22,7 @@ def __parse_menu(id_, date=False):
 
     def get_menu():
         request = requests.post('https://www.stw.berlin/xhr/speiseplan-wochentag.html', data=params, headers=headers)
+        time.sleep(1)
         if request.status_code == requests.codes.ok:
             text = ''
             soup = bs4.BeautifulSoup(request.text, 'html.parser')
@@ -59,6 +60,7 @@ def __parse_menu(id_, date=False):
 
     def get_notes():
         request = requests.post('https://www.stw.berlin/xhr/hinweise.html', data=params, headers=headers)
+        time.sleep(1)
         if request.status_code == requests.codes.ok:
             soup = bs4.BeautifulSoup(request.text, 'html.parser')
             soup.find('article', {'data-hid': '6046-1'}).decompose()
@@ -75,16 +77,17 @@ def __parse_menu(id_, date=False):
     def get_business_hours():
         business_hours = ''
         request = requests.post('https://www.stw.berlin/xhr/speiseplan-und-standortdaten.html', data=params, headers=headers)
+        time.sleep(1)
         if request.status_code == requests.codes.ok:
             soup = bs4.BeautifulSoup(request.text, 'html.parser')
-            time = soup.find(class_='glyphicon-time')
-            transfer = soup.find(class_='glyphicon-transfer')
-            education = soup.find(class_='glyphicon-education')
+            time_icon = soup.find(class_='glyphicon-time')
+            transfer_icon = soup.find(class_='glyphicon-transfer')
+            education_icon = soup.find(class_='glyphicon-education')
 
-            if time:
+            if time_icon:
                 business_hours += '\n*Öffnungszeiten*'
-                for sib in time.parent.parent.next_siblings:
-                    if type(sib) == bs4.Tag and transfer not in sib.descendants and education not in sib.descendants:
+                for sib in time_icon.parent.parent.next_siblings:
+                    if type(sib) == bs4.Tag and transfer_icon not in sib.descendants and education_icon not in sib.descendants:
                         for item in sib.find_all('div', class_='col-xs-10'):
                             for string in item.stripped_strings:
                                 business_hours += '\n%s' % string
@@ -98,6 +101,7 @@ def __parse_menu(id_, date=False):
         result = '*%s* (%s)\n\n%s\n\n%s\n\n%s' % (mapping[id_]['name'], day_human, get_menu(), get_business_hours(), get_notes())
         return re.sub(r'\n\s*\n', '\n\n', result)
     except Exception:
+        time.sleep(5)
         return ''
 
 mapping = {
@@ -177,6 +181,6 @@ def update_studierendenwerk(self, id_):
                 logger.info('Caching %s' % mapping[id_]['name'])
                 cache.hset(day.strftime(cache_date_format), mapping[id_]['command'], menu)
                 cache.expire(day.strftime(cache_date_format), cache_interval * 4)
-            time.sleep(2)
+            time.sleep(1)
     except Exception as ex:
         raise self.retry(exc=ex)
