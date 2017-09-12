@@ -5,6 +5,9 @@ case "$1" in
     python3 warmup_cache.py
     exec celery -A backend.backend beat -l info
     ;;
+  "flower")
+    exec celery flower -A backend.backend --broker="redis://${OMNOMNOM_REDIS_HOST:}:6379/1"
+    ;;
   "frontend")
     exec python3 frontend.py
     ;;

@@ -2,6 +2,7 @@ beautifulsoup4
 celery[redis]
 emoji
 fake-useragent
+flower
 influxdb
 parsedatetime
 python-telegram-bot
