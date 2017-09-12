@@ -3,6 +3,7 @@ import datetime
 import fake_useragent
 import re
 import requests
+import time
 from canteens.canteen import get_current_week, get_next_week, FISH, MEAT, VEGAN, VEGGIE
 from omnomgram.tasks import send_message_to_admin
 from backend.backend import app, cache, cache_date_format, cache_interval
@@ -176,5 +177,6 @@ def update_studierendenwerk(self, id_):
                 logger.info('Caching %s' % mapping[id_]['name'])
                 cache.hset(day.strftime(cache_date_format), mapping[id_]['command'], menu)
                 cache.expire(day.strftime(cache_date_format), cache_interval * 4)
+            time.sleep(2)
     except Exception as ex:
         raise self.retry(exc=ex)
