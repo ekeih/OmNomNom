@@ -23,7 +23,7 @@ def __parse_menu(id_, date=False):
 
     def get_menu():
         request = requests.post('https://www.stw.berlin/xhr/speiseplan-wochentag.html', data=params, headers=headers)
-        time.sleep(random.randint(1, 4))
+        time.sleep(0.5)
         if request.status_code == requests.codes.ok:
             text = ''
             soup = bs4.BeautifulSoup(request.text, 'html.parser')
@@ -172,6 +172,7 @@ def update_all_studierendenwerk_canteens(self):
 @app.task(bind=True, rate_limit='15/m', default_retry_delay=30, max_retries=20)
 def update_studierendenwerk(self, id_):
     try:
+        time.sleep(random.randint(1, 4))
         logger.info('[Update] %s' % mapping[id_]['name'])
         for day in get_date_range():
             menu = __parse_menu(id_, date=day)
