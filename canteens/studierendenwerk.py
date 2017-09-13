@@ -1,6 +1,7 @@
 import bs4
 import datetime
 import fake_useragent
+import random
 import re
 import requests
 import time
@@ -22,7 +23,7 @@ def __parse_menu(id_, date=False):
 
     def get_menu():
         request = requests.post('https://www.stw.berlin/xhr/speiseplan-wochentag.html', data=params, headers=headers)
-        time.sleep(1)
+        time.sleep(random.randint(1, 4))
         if request.status_code == requests.codes.ok:
             text = ''
             soup = bs4.BeautifulSoup(request.text, 'html.parser')
@@ -60,7 +61,7 @@ def __parse_menu(id_, date=False):
 
     def get_notes():
         request = requests.post('https://www.stw.berlin/xhr/hinweise.html', data=params, headers=headers)
-        time.sleep(1)
+        time.sleep(0.5)
         if request.status_code == requests.codes.ok:
             soup = bs4.BeautifulSoup(request.text, 'html.parser')
             soup.find('article', {'data-hid': '6046-1'}).decompose()
@@ -77,7 +78,7 @@ def __parse_menu(id_, date=False):
     def get_business_hours():
         business_hours = ''
         request = requests.post('https://www.stw.berlin/xhr/speiseplan-und-standortdaten.html', data=params, headers=headers)
-        time.sleep(1)
+        time.sleep(0.5)
         if request.status_code == requests.codes.ok:
             soup = bs4.BeautifulSoup(request.text, 'html.parser')
             time_icon = soup.find(class_='glyphicon-time')
@@ -181,6 +182,6 @@ def update_studierendenwerk(self, id_):
                 logger.info('Caching %s' % mapping[id_]['name'])
                 cache.hset(day.strftime(cache_date_format), mapping[id_]['command'], menu)
                 cache.expire(day.strftime(cache_date_format), cache_interval * 4)
-            time.sleep(1)
+            time.sleep(0.5)
     except Exception as ex:
         raise self.retry(exc=ex)
