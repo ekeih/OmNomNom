@@ -1,18 +1,18 @@
-import bs4
 import datetime
-import requests
 import subprocess
 import tempfile
 
+import bs4
+import requests
+from celery.utils.log import get_task_logger
+
 from backend.backend import app, cache, cache_date_format, cache_interval
 from canteens.canteen import FISH, MEAT, VEGAN, VEGGIE
-from celery.utils.log import get_task_logger
 
 logger = get_task_logger(__name__)
 
 
 def __parse_menu():
-
     def get_dropbox_link():
         request = requests.get('http://cafenero.net/speisen.html')
         if request.status_code == requests.codes.ok:
@@ -97,6 +97,7 @@ def update_cafenero(self):
             cache.expire(datetime.date.today().strftime(cache_date_format), cache_interval * 4)
     except Exception as ex:
         raise self.retry(exc=ex)
+
 
 if __name__ == '__main__':
     print(__parse_menu())

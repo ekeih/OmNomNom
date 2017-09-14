@@ -1,11 +1,11 @@
-import influxdb
-
-from backend.backend import app
-from celery.utils.log import get_task_logger
 from os import environ
 
-logger = get_task_logger(__name__)
+import influxdb
+from celery.utils.log import get_task_logger
 
+from backend.backend import app
+
+logger = get_task_logger(__name__)
 
 host = environ.get('OMNOMNOM_INFLUXDB_HOST')
 database = environ.get('OMNOMNOM_INFLUXDB_DATABASE')
@@ -24,10 +24,10 @@ def log_to_influxdb(self, measurement, fields, tags=None):
     if influxdb_client:
         try:
             entry = {
-                    'measurement': measurement,
-                    'fields': fields,
-                    'tags': tags
-                    }
+                'measurement': measurement,
+                'fields': fields,
+                'tags': tags
+            }
             influxdb_client.write_points([entry])
         except Exception as ex:
             raise self.retry(exc=ex)

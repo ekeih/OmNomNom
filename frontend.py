@@ -17,18 +17,19 @@
 
 import datetime
 import logging
-import emoji
 import os
-import redis
 import sys
 import textwrap
+
+import emoji
+import redis
+from telegram import Bot, ChatAction, ParseMode
+from telegram.ext import CommandHandler, Filters, MessageHandler, RegexHandler, Updater
 
 from backend.backend import cache_date_format
 from canteens.canteen import FISH, MEAT, VEGAN, VEGGIE
 from omnomgram.tasks import send_message_to_admin
 from stats.tasks import log_to_influxdb
-from telegram import Bot, ChatAction, ParseMode
-from telegram.ext import CommandHandler, Filters, MessageHandler, RegexHandler, Updater
 
 logging.getLogger('JobQueue').setLevel(logging.INFO)
 logging.getLogger('telegram').setLevel(logging.INFO)

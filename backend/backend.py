@@ -1,7 +1,8 @@
+from os import environ
+
 from celery import Celery
 from celery.schedules import crontab
 from celery.utils.log import get_task_logger
-from os import environ
 from redis import Redis
 
 logger = get_task_logger(__name__)
@@ -51,7 +52,6 @@ app.conf.beat_schedule = {
         'schedule': crontab(minute=3)
     }
 }
-
 
 if __name__ == '__main__':
     app.start()

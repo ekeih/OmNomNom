@@ -1,7 +1,9 @@
-from backend.backend import app
-from celery.utils.log import get_task_logger
 from os import environ
+
+from celery.utils.log import get_task_logger
 from telegram import Bot, ParseMode
+
+from backend.backend import app
 
 logger = get_task_logger(__name__)
 

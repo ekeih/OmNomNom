@@ -1,14 +1,16 @@
-import bs4
 import datetime
-import fake_useragent
 import random
 import re
-import requests
 import time
+
+import bs4
+import fake_useragent
+import requests
+from celery.utils.log import get_task_logger
+
+from backend.backend import app, cache, cache_date_format, cache_interval
 from canteens.canteen import get_current_week, get_next_week, FISH, MEAT, VEGAN, VEGGIE
 from omnomgram.tasks import send_message_to_admin
-from backend.backend import app, cache, cache_date_format, cache_interval
-from celery.utils.log import get_task_logger
 
 logger = get_task_logger(__name__)
 
@@ -109,6 +111,7 @@ def __parse_menu(id_, date=False):
     except Exception:
         time.sleep(5)
         return ''
+
 
 mapping = {
     534: {"name": "Mensa ASH Berlin Hellersdorf", "command": "ash_hellersdorf"},
