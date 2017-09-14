@@ -168,7 +168,7 @@ def get_date_range():
 
 
 @app.task(bind=True, default_retry_delay=30)
-def update_all_studierendenwerk_canteens(self):
+def update_all_studierendenwerk_canteens(_):
     for id_, canteen in mapping.items():
         update_studierendenwerk.delay(id_)
 

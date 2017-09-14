@@ -119,7 +119,7 @@ bot_instance = Bot(token)
 dispatcher = updater.dispatcher
 
 
-def __log_incoming_messages(bot, update):
+def __log_incoming_messages(_, update):
     chat = update.message.chat
     target_chat = ''
     if chat.type == 'group':
@@ -142,12 +142,12 @@ def __send_typing_action(bot, update):
     bot.sendChatAction(chat_id=update.message.chat_id, action=ChatAction.TYPING)
 
 
-def __about(bot, update):
+def __about(_, update):
     message_logger.info('Out: Sending <about> message')
     update.message.reply_text(text=ABOUT_TEXT, parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
 
 
-def __error_handler(bot, update, error):
+def __error_handler(_, update, error):
     error_message = """\
                     *Some Frontend Error*
                     *Update*
@@ -203,7 +203,7 @@ def __deprecated_commands(bot, update):
     update.message.reply_text(text=reply, parse_mode=ParseMode.MARKDOWN)
 
 
-def __help(bot, update):
+def __help(_, update):
     message_logger.info('Send <help> message')
     update.message.reply_text(text=textwrap.dedent(HELP_TEXT), parse_mode=ParseMode.MARKDOWN,
                               disable_web_page_preview=True)
