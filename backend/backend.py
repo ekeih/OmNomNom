@@ -1,4 +1,5 @@
 from celery import Celery
+from celery.schedules import  crontab
 from celery.utils.log import get_task_logger
 from os import environ
 from redis import Redis
@@ -31,23 +32,23 @@ app.conf.timezone = 'Europe/Berlin'
 app.conf.beat_schedule = {
     'update cafenero': {
         'task': 'canteens.cafenero.update_cafenero',
-        'schedule': cache_interval
+        'schedule': crontab(minute=3)
     },
     'update singh': {
         'task': 'canteens.singh.update_singh',
-        'schedule': cache_interval
+        'schedule': crontab(minute=3)
     },
     'update personalkantine': {
         'task': 'canteens.personalkantine.update_personalkantine',
-        'schedule': cache_interval
+        'schedule': crontab(minute=3)
     },
     'update en canteen': {
         'task': 'canteens.personalkantine.update_en_canteen',
-        'schedule': cache_interval
+        'schedule': crontab(minute=3)
     },
     'update studierendenwerk': {
         'task': 'canteens.studierendenwerk.update_all_studierendenwerk_canteens',
-        'schedule': cache_interval
+        'schedule': crontab(minute=3)
     }
 }
 
