@@ -1,15 +1,17 @@
-from bs4 import BeautifulSoup
-from canteens.canteen import MEAT, VEGAN, VEGGIE
 from datetime import datetime
 from urllib.request import urlopen
-from backend.backend import app, cache, cache_interval
+
+from bs4 import BeautifulSoup
 from celery.utils.log import get_task_logger
+
+from backend.backend import app, cache, cache_date_format, cache_interval
+from canteens.canteen import MEAT, VEGAN, VEGGIE, get_current_week, get_next_week
 
 logger = get_task_logger(__name__)
 URL = 'http://singh-catering.de/cafe/'
 
 
-def __parse_menu_items(items):
+def parse_menu_items(items):
     text = ''
     for item in items.find_all('li', class_='menu-list__item'):
         title = item.find('span', class_='item_title').get_text()
@@ -26,34 +28,41 @@ def __parse_menu_items(items):
     return text
 
 
-def __parse_menu():
-    today = datetime.now().weekday()
+def get_menu():
     html = urlopen(URL).read()
     soup = BeautifulSoup(html, 'html.parser')
     menu_items = soup.find_all('ul', class_='menu-list__items')
 
     menu = {
-        0: __parse_menu_items(menu_items[0]),  # Monday
-        1: __parse_menu_items(menu_items[3]),  # Tuesday
-        2: __parse_menu_items(menu_items[1]),  # Wednesday
-        3: __parse_menu_items(menu_items[4]),  # Thursday
-        4: __parse_menu_items(menu_items[2]),  # Friday
-        5: 'Heute geschlossen.\nMontag gibt es:\n%s' % __parse_menu_items(menu_items[0]),  # Saturday
-        6: 'Heute geschlossen.\nMontag gibt es:\n%s' % __parse_menu_items(menu_items[0]),  # Sunday
+        0: '[Singh Catering](%s) (bis 18:00)\n%s' % (URL, parse_menu_items(menu_items[0])),  # Monday
+        1: '[Singh Catering](%s) (bis 18:00)\n%s' % (URL, parse_menu_items(menu_items[3])),  # Tuesday
+        2: '[Singh Catering](%s) (bis 18:00)\n%s' % (URL, parse_menu_items(menu_items[1])),  # Wednesday
+        3: '[Singh Catering](%s) (bis 18:00)\n%s' % (URL, parse_menu_items(menu_items[4])),  # Thursday
+        4: '[Singh Catering](%s) (bis 18:00)\n%s' % (URL, parse_menu_items(menu_items[2])),  # Friday
     }
-    return '[Singh Catering](%s) (bis 18:00)\n%s' % (URL, menu[today])
+    return menu
+
+
+def get_date_range():
+    if datetime.now().weekday() > 4:
+        return get_next_week()
+    else:
+        return get_current_week()
 
 
 @app.task(bind=True, default_retry_delay=30)
 def update_singh(self):
     try:
         logger.info('[Update] TU Singh')
-        menu = __parse_menu()
-        if menu:
-            cache.set('tu_singh', menu, ex=cache_interval * 4)
+        menu = get_menu()
+        for day in get_date_range():
+            day_menu = menu.get(day.weekday())
+            if day_menu:
+                cache.hset(day.strftime(cache_date_format), 'tu_singh', day_menu)
+                cache.expire(day.strftime(cache_date_format), cache_interval * 4)
     except Exception as ex:
         raise self.retry(exc=ex)
 
 
 if __name__ == '__main__':
-    print(__parse_menu())
+    print(get_menu())
