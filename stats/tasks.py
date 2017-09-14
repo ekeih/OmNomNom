@@ -18,7 +18,9 @@ else:
 
 
 @app.task(bind=True, default_retry_delay=30)
-def log_to_influxdb(self, measurement, fields, tags={}):
+def log_to_influxdb(self, measurement, fields, tags=None):
+    if tags is None:
+        tags = {}
     if influxdb_client:
         try:
             entry = {
