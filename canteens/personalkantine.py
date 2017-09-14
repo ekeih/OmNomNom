@@ -1,10 +1,12 @@
 import datetime
 import re
 import urllib.request
+
 from bs4 import BeautifulSoup
-from canteens.canteen import VEGGIE, MEAT, get_next_week, get_current_week
-from backend.backend import app, cache, cache_date_format, cache_interval
 from celery.utils.log import get_task_logger
+
+from backend.backend import app, cache, cache_date_format, cache_interval
+from canteens.canteen import VEGGIE, MEAT, get_next_week, get_current_week
 
 EMPLOYEE_CANTEEN = 0
 EN_CANTEEN = 1
