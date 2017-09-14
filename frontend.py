@@ -24,7 +24,7 @@ import sys
 import textwrap
 
 from backend.backend import cache_date_format
-from canteens.canteen import FISH,MEAT, VEGAN, VEGGIE
+from canteens.canteen import FISH, MEAT, VEGAN, VEGGIE
 from omnomgram.tasks import send_message_to_admin
 from stats.tasks import log_to_influxdb
 from telegram import Bot, ChatAction, ParseMode
@@ -89,8 +89,10 @@ HELP_TEXT = """\
 
             Für die Mensa der TU-Berlin ist das zum Beispiel: /tu\_mensa.
 
-            Alle verfügbaren Mensen und andere Befehle (wie zum Beispiel /help oder /about) findest du über die Auto-Vervollständigung von Telegram, wenn du anfängst eine Nachricht zu tippen, die mit `/` beginnt.
-            Außerdem gibt es in den meisten Telegram-Clients neben dem Textfeld einen viereckigen Button, der einen `/` enthält, über den du alle verfügbaren Befehle auswählen kannst.
+            Alle verfügbaren Mensen und andere Befehle (wie zum Beispiel /help oder /about) findest du über die \
+            Auto-Vervollständigung von Telegram, wenn du anfängst eine Nachricht zu tippen, die mit `/` beginnt.
+            Außerdem gibt es in den meisten Telegram-Clients neben dem Textfeld einen viereckigen Button, der einen \
+            `/` enthält, über den du alle verfügbaren Befehle auswählen kannst.
 
             Übrigens kannst du mich auch in Gruppen einladen, sodass mich dort jeder nach den Speiseplänen fragen kann.
 
@@ -106,12 +108,14 @@ HELP_TEXT = """\
 
             PS: Es gibt auch eine Webseite: https://omnbot.io
 
-            PPS: Der Bot ist OpenSource (GNU AGPL v3) und den Code findest du auf [GitHub](https://github.com/ekeih/OmNomNom). %s
-            """ % (VEGAN, VEGGIE, MEAT, FISH, emoji.emojize(':cake:', use_aliases=True), emoji.emojize(':smile:', use_aliases=True))
+            PPS: Der Bot ist OpenSource (GNU AGPL v3) und den Code findest du auf \
+            [GitHub](https://github.com/ekeih/OmNomNom). %s
+            """ % (VEGAN, VEGGIE, MEAT, FISH, emoji.emojize(':cake:', use_aliases=True),
+                   emoji.emojize(':smile:', use_aliases=True))
 
 frontend_logger.debug('Initialize API')
 updater = Updater(token=token)
-bot = Bot(token)
+bot_instance = Bot(token)
 dispatcher = updater.dispatcher
 
 
@@ -201,7 +205,8 @@ def __deprecated_commands(bot, update):
 
 def __help(bot, update):
     message_logger.info('Send <help> message')
-    update.message.reply_text(text=textwrap.dedent(HELP_TEXT), parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
+    update.message.reply_text(text=textwrap.dedent(HELP_TEXT), parse_mode=ParseMode.MARKDOWN,
+                              disable_web_page_preview=True)
 
 
 def __join(bot, update):
@@ -235,7 +240,7 @@ Firstname: %s
 Lastname: %s
 Username: %s
 Name: %s
-""" % (bot.id, bot.first_name, bot.last_name, bot.username, bot.name)
+""" % (bot_instance.id, bot_instance.first_name, bot_instance.last_name, bot_instance.username, bot_instance.name)
 
 send_message_to_admin.delay(start_message)
 

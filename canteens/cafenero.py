@@ -54,7 +54,8 @@ def __parse_menu():
                     if 'mittagstisch' in line or '---' in line or 'schonkost' in line:
                         line = '%s\n' % line
                     else:
-                        if line.endswith(('€', 'vegetarisch', 'schweinefleisch', 'rindfleisch', 'fisch', 'vegan', '(vegan)')):
+                        if line.endswith(('€', 'vegetarisch', 'schweinefleisch', 'rindfleisch',
+                                          'fisch', 'vegan', '(vegan)')):
                             line = '%s\n' % line
                         else:
                             line = '%s ' % line

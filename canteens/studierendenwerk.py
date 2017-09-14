@@ -17,7 +17,8 @@ def __parse_menu(id_, date=False):
     day = date or datetime.date.today()
     day_api = day.strftime('%Y-%m-%d')
     day_human = day.strftime('%d.%m.%Y')
-    useragent = fake_useragent.UserAgent(fallback='Mozilla/5.0 (X11; OpenBSD amd64; rv:28.0) Gecko/20100101 Firefox/28.0')
+    useragent = fake_useragent.UserAgent(fallback=
+                                         'Mozilla/5.0 (X11; OpenBSD amd64; rv:28.0) Gecko/20100101 Firefox/28.0')
     params = {'resources_id': id_, 'date': day_api}
     headers = {'user-agent': useragent.random}
 
@@ -77,7 +78,8 @@ def __parse_menu(id_, date=False):
 
     def get_business_hours():
         business_hours = ''
-        request = requests.post('https://www.stw.berlin/xhr/speiseplan-und-standortdaten.html', data=params, headers=headers)
+        request = requests.post('https://www.stw.berlin/xhr/speiseplan-und-standortdaten.html',
+                                data=params, headers=headers)
         time.sleep(0.5)
         if request.status_code == requests.codes.ok:
             soup = bs4.BeautifulSoup(request.text, 'html.parser')
@@ -88,7 +90,8 @@ def __parse_menu(id_, date=False):
             if time_icon:
                 business_hours += '\n*Öffnungszeiten*'
                 for sib in time_icon.parent.parent.next_siblings:
-                    if type(sib) == bs4.Tag and transfer_icon not in sib.descendants and education_icon not in sib.descendants:
+                    if type(sib) == bs4.Tag and transfer_icon not in sib.descendants and \
+                                    education_icon not in sib.descendants:
                         for item in sib.find_all('div', class_='col-xs-10'):
                             for string in item.stripped_strings:
                                 business_hours += '\n%s' % string
@@ -99,7 +102,8 @@ def __parse_menu(id_, date=False):
         return business_hours.strip()
 
     try:
-        result = '*%s* (%s)\n\n%s\n\n%s\n\n%s' % (mapping[id_]['name'], day_human, get_menu(), get_business_hours(), get_notes())
+        result = '*%s* (%s)\n\n%s\n\n%s\n\n%s' % (mapping[id_]['name'], day_human, get_menu(),
+                                                  get_business_hours(), get_notes())
         return re.sub(r'\n\s*\n', '\n\n', result)
     except Exception:
         time.sleep(5)
