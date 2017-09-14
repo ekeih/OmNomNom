@@ -101,6 +101,7 @@ def __parse_menu(id_, date=False):
             raise Exception
         return business_hours.strip()
 
+    # noinspection PyBroadException
     try:
         result = '*%s* (%s)\n\n%s\n\n%s\n\n%s' % (mapping[id_]['name'], day_human, get_menu(),
                                                   get_business_hours(), get_notes())
