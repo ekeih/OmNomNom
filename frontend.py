@@ -90,10 +90,8 @@ HELP_TEXT = """\
 
             Für die Mensa der TU-Berlin ist das zum Beispiel: /tu\_mensa.
 
-            Alle verfügbaren Mensen und andere Befehle (wie zum Beispiel /help oder /about) findest du über die \
-            Auto-Vervollständigung von Telegram, wenn du anfängst eine Nachricht zu tippen, die mit `/` beginnt.
-            Außerdem gibt es in den meisten Telegram-Clients neben dem Textfeld einen viereckigen Button, der einen \
-            `/` enthält, über den du alle verfügbaren Befehle auswählen kannst.
+            Alle verfügbaren Mensen und andere Befehle (wie zum Beispiel /help oder /about) findest du über die Auto-Vervollständigung von Telegram, wenn du anfängst eine Nachricht zu tippen, die mit `/` beginnt.
+            Außerdem gibt es in den meisten Telegram-Clients neben dem Textfeld einen viereckigen Button, der einen `/` enthält, über den du alle verfügbaren Befehle auswählen kannst.
 
             Übrigens kannst du mich auch in Gruppen einladen, sodass mich dort jeder nach den Speiseplänen fragen kann.
 
@@ -109,8 +107,7 @@ HELP_TEXT = """\
 
             PS: Es gibt auch eine Webseite: https://omnbot.io
 
-            PPS: Der Bot ist OpenSource (GNU AGPL v3) und den Code findest du auf \
-            [GitHub](https://github.com/ekeih/OmNomNom). %s
+            PPS: Der Bot ist OpenSource (GNU AGPL v3) und den Code findest du auf [GitHub](https://github.com/ekeih/OmNomNom). %s
             """ % (VEGAN, VEGGIE, MEAT, FISH, emoji.emojize(':cake:', use_aliases=True),
                    emoji.emojize(':smile:', use_aliases=True))
 
