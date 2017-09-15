@@ -71,12 +71,12 @@ ABOUT_TEXT = """*OmNomNom*
 
 OmNomNom is a Telegram bot to get canteen information. Currently it supports only canteens in Berlin (Germany) \
 and most of its answers are in German.
-The "official" version of this bot is available as [@OmnBot](https://telegram.me/OmnBot). Feel free to talk to it and \
-invite it to your groups.
+The bot is available as [@OmnBot](https://telegram.me/OmnBot). Feel free to talk to it and invite it to your groups.
+
 Find out more about it on [Github](https://github.com/ekeih/OmNomNom). Pull requests and issues are always welcome. If \
 you have questions you can talk to me via [Telegram](https://telegram.me/ekeih).
 
-There is also a website: https://omnbot.io
+Check out the website for more details: https://omnbot.io
 
 OmNomNom is licensed under the [GNU AGPL v3](https://github.com/ekeih/OmNomNom#license).
 """
