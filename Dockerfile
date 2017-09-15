@@ -2,7 +2,7 @@ FROM python:3.6-alpine
 
 WORKDIR /app
 
-RUN apk update && apk add poppler-utils
+RUN apk update && apk add gcc musl-dev poppler-utils
 
 COPY requirements.txt requirements.txt
 RUN pip3 install -r requirements.txt

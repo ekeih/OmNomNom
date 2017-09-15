@@ -1,9 +1,11 @@
 beautifulsoup4
 celery[redis]
+dateparser
 emoji
 fake-useragent
 flower
 influxdb
+parsedatetime
 python-telegram-bot
 redis
 requests
