@@ -21,6 +21,9 @@ import os
 import sys
 import textwrap
 
+import dateparser
+import parsedatetime
+
 import emoji
 import redis
 from telegram import Bot, ChatAction, ParseMode
@@ -117,6 +120,27 @@ bot_instance = Bot(token)
 dispatcher = updater.dispatcher
 
 
+def get_canteen_and_date(message):
+    def parse_date(date_string):
+        def try_dateparser(d):
+            settings = {'PREFER_DATES_FROM': 'future', 'DATE_ORDER': 'DMY'}
+            return dateparser.parse(d, settings=settings)
+
+        def try_parsedatetime(d):
+            pass
+
+        return try_dateparser(date_string)
+
+    s = message.split()
+    canteen = s.pop(0)[1:]
+    date = datetime.date.today()
+    if len(s) > 0:
+        try_date = parse_date(' '.join(s))
+        if try_date:
+            date = try_date
+    return canteen, date.strftime(cache_date_format)
+
+
 def __log_incoming_messages(_, update):
     chat = update.message.chat
     target_chat = ''
@@ -163,9 +187,9 @@ def __error_handler(_, update, error):
 
 def __menu(bot, update):
     if update.message.text:
-        requested_canteen = update.message.text[1:].replace(bot.name, '')
+        requested_canteen, requested_date = get_canteen_and_date(update.message.text.replace(bot.name, ''))
         frontend_logger.debug('Requested Canteen: %s' % requested_canteen)
-        reply = cache.hget(datetime.date.today().strftime(cache_date_format), requested_canteen)
+        reply = cache.hget(requested_date, requested_canteen)
         if not reply or reply.strip() == '':
             error_message = """\
                             *Chat*
