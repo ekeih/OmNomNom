@@ -127,18 +127,33 @@ def get_canteen_and_date(message):
             return dateparser.parse(d, settings=settings)
 
         def try_parsedatetime(d):
-            pass
+            cal = parsedatetime.Calendar()
+            time_struct, parse_status = cal.parse(d)
+            if parse_status > 0:
+                return datetime.datetime(*time_struct[:6])
+            else:
+                return False
 
-        return try_dateparser(date_string)
+        try_date = try_dateparser(date_string)
+        if try_date:
+            return try_date
+        else:
+            try_date = try_parsedatetime(date_string)
+            if try_date:
+                return try_date
+            else:
+                return False
 
     s = message.split()
     canteen = s.pop(0)[1:]
-    date = datetime.date.today()
     if len(s) > 0:
-        try_date = parse_date(' '.join(s))
-        if try_date:
-            date = try_date
-    return canteen, date.strftime(cache_date_format)
+        date = parse_date(' '.join(s))
+        if date:
+            return canteen, date.strftime(cache_date_format)
+        else:
+            return canteen, False
+    else:
+        return canteen, datetime.date.today().strftime(cache_date_format)
 
 
 def __log_incoming_messages(_, update):
@@ -188,8 +203,13 @@ def __error_handler(_, update, error):
 def __menu(bot, update):
     if update.message.text:
         requested_canteen, requested_date = get_canteen_and_date(update.message.text.replace(bot.name, ''))
-        frontend_logger.debug('Requested Canteen: %s' % requested_canteen)
-        reply = cache.hget(requested_date, requested_canteen)
+        frontend_logger.debug('Requested Canteen: %s (%s)' % (requested_canteen, requested_date))
+        if requested_date:
+            reply = cache.hget(requested_date, requested_canteen)
+        else:
+            reply = 'Sorry, leider habe ich das Datum nicht verstanden. Probier es doch einmal mit `/%s morgen`, ' \
+                    '`/%s dienstag`, `/%s yesterday` oder `/%s next friday`.' % (requested_canteen, requested_canteen,
+                                                                                 requested_canteen, requested_canteen)
         if not reply or reply.strip() == '':
             error_message = """\
                             *Chat*
