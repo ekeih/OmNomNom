@@ -117,6 +117,7 @@ HELP_TEXT = """\
 frontend_logger.debug('Initialize API')
 updater = Updater(token=token)
 bot_instance = Bot(token)
+bot_name = bot_instance.get_me().name
 dispatcher = updater.dispatcher
 
 
@@ -144,7 +145,7 @@ def get_canteen_and_date(message):
             else:
                 return False
 
-    s = message.split()
+    s = message.replace(bot_name, '').split()
     canteen = s.pop(0)[1:]
     if len(s) > 0:
         date = parse_date(' '.join(s))
@@ -200,9 +201,9 @@ def __error_handler(_, update, error):
     frontend_logger.error(error)
 
 
-def __menu(bot, update):
+def __menu(_, update):
     if update.message.text:
-        requested_canteen, requested_date = get_canteen_and_date(update.message.text.replace(bot.name, ''))
+        requested_canteen, requested_date = get_canteen_and_date(update.message.text)
         frontend_logger.debug('Requested Canteen: %s (%s)' % (requested_canteen, requested_date))
         if requested_date:
             reply = cache.hget(requested_date, requested_canteen)
@@ -231,8 +232,8 @@ def __menu(bot, update):
         update.message.reply_text(text=reply, parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
 
 
-def __deprecated_commands(bot, update):
-    requested_canteen = update.message.text[1:].replace(bot.name, '')
+def __deprecated_commands(_, update):
+    requested_canteen, _ = get_canteen_and_date(update.message.text)
     if requested_canteen == 'tu_mar':
         reply = 'Sorry: /tu\_mar heißt nun /tu\_marchstr.'
     elif requested_canteen == 'tu_tel':
