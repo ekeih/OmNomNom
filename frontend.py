@@ -70,6 +70,10 @@ if not ADMIN:
     sys.exit()
 frontend_logger.debug('Admin ID: %s' % ADMIN)
 
+updater = Updater(token=token)
+bot_instance = Bot(token)
+dispatcher = updater.dispatcher
+
 ABOUT_TEXT = """*OmNomNom*
 
 OmNomNom is a Telegram bot to get canteen information. Currently it supports only canteens in Berlin (Germany) \
@@ -114,11 +118,14 @@ HELP_TEXT = """\
             """ % (VEGAN, VEGGIE, MEAT, FISH, emoji.emojize(':cake:', use_aliases=True),
                    emoji.emojize(':smile:', use_aliases=True))
 
-frontend_logger.debug('Initialize API')
-updater = Updater(token=token)
-bot_instance = Bot(token)
-bot_name = bot_instance.get_me().name
-dispatcher = updater.dispatcher
+START_TEXT = """*Bot Started*
+
+ID: %s
+Firstname: %s
+Lastname: %s
+Username: %s
+Name: %s
+""" % (bot_instance.id, bot_instance.first_name, bot_instance.last_name, bot_instance.username, bot_instance.name)
 
 
 def get_canteen_and_date(message):
@@ -145,7 +152,7 @@ def get_canteen_and_date(message):
             else:
                 return False
 
-    s = message.replace(bot_name, '').split()
+    s = message.replace(bot_instance.name, '').split()
     canteen = s.pop(0)[1:]
     if len(s) > 0:
         date = parse_date(' '.join(s))
@@ -157,7 +164,7 @@ def get_canteen_and_date(message):
         return canteen, datetime.date.today().strftime(cache_date_format)
 
 
-def __log_incoming_messages(_, update):
+def log_incoming_messages(_, update):
     chat = update.message.chat
     target_chat = ''
     if chat.type == 'group':
@@ -175,33 +182,23 @@ def __log_incoming_messages(_, update):
     log_to_influxdb.delay('messages', fields, tags)
 
 
-def __send_typing_action(bot, update):
+def send_typing_action(bot, update):
     frontend_logger.debug("Send typing")
     bot.sendChatAction(chat_id=update.message.chat_id, action=ChatAction.TYPING)
 
 
-def __about(_, update):
+def about(_, update):
     message_logger.info('Out: Sending <about> message')
     update.message.reply_text(text=ABOUT_TEXT, parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
 
 
-def __error_handler(_, update, error):
-    error_message = """\
-                    *Some Frontend Error*
-                    *Update*
-                    ```
-                    %s
-                    ```
-                    *Error*
-                    ```
-                    %s
-                    ```
-                    """ % (update, error)
-    send_message_to_admin.delay(textwrap.dedent(error_message))
+def error_handler(_, update, error):
+    error_message = '*Some Frontend Error*\n\n*Update*\n```\n%s\n```\n*Error*\n```\n%s\n```' % (update, error)
+    send_message_to_admin.delay(error_message)
     frontend_logger.error(error)
 
 
-def __menu(_, update):
+def menu(_, update):
     if update.message.text:
         requested_canteen, requested_date = get_canteen_and_date(update.message.text)
         frontend_logger.debug('Requested Canteen: %s (%s)' % (requested_canteen, requested_date))
@@ -232,7 +229,7 @@ def __menu(_, update):
         update.message.reply_text(text=reply, parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
 
 
-def __deprecated_commands(_, update):
+def deprecated_commands(_, update):
     requested_canteen, _ = get_canteen_and_date(update.message.text)
     if requested_canteen == 'tu_mar':
         reply = 'Sorry: /tu\_mar heißt nun /tu\_marchstr.'
@@ -246,13 +243,13 @@ def __deprecated_commands(_, update):
     update.message.reply_text(text=reply, parse_mode=ParseMode.MARKDOWN)
 
 
-def __help(_, update):
+def help_message(_, update):
     message_logger.info('Send <help> message')
     update.message.reply_text(text=textwrap.dedent(HELP_TEXT), parse_mode=ParseMode.MARKDOWN,
                               disable_web_page_preview=True)
 
 
-def __join(bot, update):
+def join(bot, update):
     frontend_logger.info('Group members changed')
     frontend_logger.debug(update)
     my_id = bot.get_me().id
@@ -260,32 +257,23 @@ def __join(bot, update):
         for member in update.message.new_chat_members:
             if member.id == my_id:
                 frontend_logger.info('I was invited to a group :)')
-                __help(bot, update)
+                help_message(bot, update)
 
 
 frontend_logger.debug('Adding API callbacks')
-dispatcher.add_error_handler(__error_handler)
-dispatcher.add_handler(CommandHandler('start', __help), 2)
-dispatcher.add_handler(CommandHandler('about', __about), 2)
-dispatcher.add_handler(CommandHandler('help', __help), 2)
-dispatcher.add_handler(RegexHandler('.*', __send_typing_action), 0)
-dispatcher.add_handler(RegexHandler('.*', __log_incoming_messages), 1)
-dispatcher.add_handler(CommandHandler('tu_mar', __deprecated_commands), 2)
-dispatcher.add_handler(CommandHandler('tu_tel', __deprecated_commands), 2)
-dispatcher.add_handler(RegexHandler('/.*', __menu), 2)
-dispatcher.add_handler(MessageHandler(Filters.group, __join), 2)
-dispatcher.add_handler(MessageHandler(Filters.text, __help), 2)
+dispatcher.add_error_handler(error_handler)
+dispatcher.add_handler(CommandHandler('start', help_message), 2)
+dispatcher.add_handler(CommandHandler('about', about), 2)
+dispatcher.add_handler(CommandHandler('help', help_message), 2)
+dispatcher.add_handler(RegexHandler('.*', send_typing_action), 0)
+dispatcher.add_handler(RegexHandler('.*', log_incoming_messages), 1)
+dispatcher.add_handler(CommandHandler('tu_mar', deprecated_commands), 2)
+dispatcher.add_handler(CommandHandler('tu_tel', deprecated_commands), 2)
+dispatcher.add_handler(RegexHandler('/.*', menu), 2)
+dispatcher.add_handler(MessageHandler(Filters.group, join), 2)
+dispatcher.add_handler(MessageHandler(Filters.text, help_message), 2)
 
-start_message = """*Bot Started*
-
-ID: %s
-Firstname: %s
-Lastname: %s
-Username: %s
-Name: %s
-""" % (bot_instance.id, bot_instance.first_name, bot_instance.last_name, bot_instance.username, bot_instance.name)
-
-send_message_to_admin.delay(start_message)
+send_message_to_admin.delay(START_TEXT)
 
 frontend_logger.info('Start polling')
 updater.start_polling()
