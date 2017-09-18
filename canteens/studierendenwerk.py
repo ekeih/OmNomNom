@@ -8,7 +8,7 @@ import fake_useragent
 import requests
 from celery.utils.log import get_task_logger
 
-from backend.backend import app, cache, cache_date_format, cache_interval
+from backend.backend import app, cache, cache_date_format, cache_ttl
 from canteens.canteen import get_current_week, get_next_week, FISH, MEAT, VEGAN, VEGGIE
 from omnomgram.tasks import send_message_to_admin
 
@@ -189,7 +189,7 @@ def update_studierendenwerk_by_date(self, id_, date):
         else:
             logger.info('Caching %s (%s)' % (mapping[id_]['name'], date))
             cache.hset(day.strftime(cache_date_format), mapping[id_]['command'], menu)
-            cache.expire(day.strftime(cache_date_format), cache_interval * 4)
+            cache.expire(day.strftime(cache_date_format), cache_ttl)
     except Exception as ex:
         raise self.retry(exc=ex)
 

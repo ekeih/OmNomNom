@@ -4,7 +4,7 @@ from urllib.request import urlopen
 from bs4 import BeautifulSoup
 from celery.utils.log import get_task_logger
 
-from backend.backend import app, cache, cache_date_format, cache_interval
+from backend.backend import app, cache, cache_date_format, cache_ttl
 from canteens.canteen import MEAT, VEGAN, VEGGIE, get_current_week, get_next_week
 
 logger = get_task_logger(__name__)
@@ -59,7 +59,7 @@ def update_singh(self):
             day_menu = menu.get(day.weekday())
             if day_menu:
                 cache.hset(day.strftime(cache_date_format), 'tu_singh', day_menu)
-                cache.expire(day.strftime(cache_date_format), cache_interval * 4)
+                cache.expire(day.strftime(cache_date_format), cache_ttl)
     except Exception as ex:
         raise self.retry(exc=ex)
 

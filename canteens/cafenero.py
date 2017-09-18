@@ -6,7 +6,7 @@ import bs4
 import requests
 from celery.utils.log import get_task_logger
 
-from backend.backend import app, cache, cache_date_format, cache_interval
+from backend.backend import app, cache, cache_date_format, cache_ttl
 from canteens.canteen import FISH, MEAT, VEGAN, VEGGIE
 
 logger = get_task_logger(__name__)
@@ -94,7 +94,7 @@ def update_cafenero(self):
         menu = __parse_menu()
         if menu:
             cache.hset(datetime.date.today().strftime(cache_date_format), 'tu_cafenero', menu)
-            cache.expire(datetime.date.today().strftime(cache_date_format), cache_interval * 4)
+            cache.expire(datetime.date.today().strftime(cache_date_format), cache_ttl)
     except Exception as ex:
         raise self.retry(exc=ex)
 
