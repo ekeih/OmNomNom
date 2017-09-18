@@ -15,7 +15,7 @@ from omnomgram.tasks import send_message_to_admin
 logger = get_task_logger(__name__)
 
 
-def __parse_menu(id_, date=False):
+def __parse_menu(id_, date=None):
     day = date or datetime.date.today()
     day_api = day.strftime('%Y-%m-%d')
     day_human = day.strftime('%d.%m.%Y')
@@ -171,26 +171,31 @@ def get_date_range():
     return get_current_week() + get_next_week()
 
 
-@app.task(bind=True, default_retry_delay=30)
-def update_all_studierendenwerk_canteens(_):
+@app.task()
+def update_all_studierendenwerk_canteens():
     for id_, canteen in mapping.items():
         update_studierendenwerk.delay(id_)
 
 
-@app.task(bind=True, rate_limit='15/m', default_retry_delay=30, max_retries=20)
-def update_studierendenwerk(self, id_):
+@app.task(bind=True, rate_limit='20/m', default_retry_delay=30, max_retries=20)
+def update_studierendenwerk_by_date(self, id_, date):
     try:
-        time.sleep(random.randint(1, 4))
-        logger.info('[Update] %s' % mapping[id_]['name'])
-        for day in get_date_range():
-            menu = __parse_menu(id_, date=day)
-            if menu.strip() == '':
-                logger.info('No menu for %s' % mapping[id_]['name'])
-                raise self.retry()
-            else:
-                logger.info('Caching %s' % mapping[id_]['name'])
-                cache.hset(day.strftime(cache_date_format), mapping[id_]['command'], menu)
-                cache.expire(day.strftime(cache_date_format), cache_interval * 4)
-            time.sleep(0.5)
+        day = datetime.datetime.strptime(date, "%Y-%m-%d")
+        logger.info('[Update] %s (%s)' % (mapping[id_]['name'], date))
+        menu = __parse_menu(id_, date=day)
+        if menu.strip() == '':
+            logger.info('No menu for %s (%s)' % (mapping[id_]['name'], date))
+            raise self.retry()
+        else:
+            logger.info('Caching %s (%s)' % (mapping[id_]['name'], date))
+            cache.hset(day.strftime(cache_date_format), mapping[id_]['command'], menu)
+            cache.expire(day.strftime(cache_date_format), cache_interval * 4)
     except Exception as ex:
         raise self.retry(exc=ex)
+
+
+@app.task()
+def update_studierendenwerk(id_):
+    logger.info('[Update] %s' % mapping[id_]['name'])
+    for day in get_date_range():
+        update_studierendenwerk_by_date.delay(id_, day.strftime(cache_date_format))
