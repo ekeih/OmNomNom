@@ -32,7 +32,14 @@ app = Celery('backend',
                  'stats.tasks'
              ]
              )
+
 app.conf.timezone = 'Europe/Berlin'
+
+app.conf.task_default_queue = 'housekeeping'
+app.conf.task_routes = {
+    'canteens.*': {'queue': 'canteens'}
+}
+
 app.conf.beat_schedule = {
     'update cafenero': {
         'task': 'canteens.cafenero.update_cafenero',

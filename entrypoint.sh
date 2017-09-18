@@ -12,7 +12,10 @@ case "$1" in
     exec python3 frontend.py
     ;;
   "worker")
-    exec celery -A backend.backend worker -l info
+    exec celery -A backend.backend worker -l info -Q canteens
+    ;;
+  "housekeeping")
+    exec celery -A backend.backend worker -l info -Q housekeeping
     ;;
   *)
     echo "You need to pass beat, frontend or worker as an argument!" >&2
