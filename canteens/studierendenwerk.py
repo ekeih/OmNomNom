@@ -177,7 +177,7 @@ def update_all_studierendenwerk_canteens():
         update_studierendenwerk.delay(id_)
 
 
-@app.task(bind=True, rate_limit='20/m', default_retry_delay=30, max_retries=20)
+@app.task(bind=True, rate_limit='60/m', default_retry_delay=30, max_retries=20)
 def update_studierendenwerk_by_date(self, id_, date):
     try:
         day = datetime.datetime.strptime(date, "%Y-%m-%d")
