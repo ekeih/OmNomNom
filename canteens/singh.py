@@ -32,13 +32,19 @@ def get_menu():
     html = urlopen(URL).read()
     soup = BeautifulSoup(html, 'html.parser')
     menu_items = soup.find_all('ul', class_='menu-list__items')
+    date_range = get_date_range()
 
     menu = {
-        0: '[Singh Catering](%s) (bis 18:00)\n%s' % (URL, parse_menu_items(menu_items[0])),  # Monday
-        1: '[Singh Catering](%s) (bis 18:00)\n%s' % (URL, parse_menu_items(menu_items[3])),  # Tuesday
-        2: '[Singh Catering](%s) (bis 18:00)\n%s' % (URL, parse_menu_items(menu_items[1])),  # Wednesday
-        3: '[Singh Catering](%s) (bis 18:00)\n%s' % (URL, parse_menu_items(menu_items[4])),  # Thursday
-        4: '[Singh Catering](%s) (bis 18:00)\n%s' % (URL, parse_menu_items(menu_items[2])),  # Friday
+        0: '[Singh Catering](%s) (%s) (08:00-18:00)\n%s' % (URL, date_range[0].strftime('%d.%m.%Y'),
+                                                            parse_menu_items(menu_items[0])),  # Monday
+        1: '[Singh Catering](%s) (%s) (08:00-18:00)\n%s' % (URL, date_range[1].strftime('%d.%m.%Y'),
+                                                            parse_menu_items(menu_items[3])),  # Tuesday
+        2: '[Singh Catering](%s) (%s) (08:00-18:00)\n%s' % (URL, date_range[2].strftime('%d.%m.%Y'),
+                                                            parse_menu_items(menu_items[1])),  # Wednesday
+        3: '[Singh Catering](%s) (%s) (08:00-18:00)\n%s' % (URL, date_range[3].strftime('%d.%m.%Y'),
+                                                            parse_menu_items(menu_items[4])),  # Thursday
+        4: '[Singh Catering](%s) (%s) (08:00-18:00)\n%s' % (URL, date_range[4].strftime('%d.%m.%Y'),
+                                                            parse_menu_items(menu_items[2])),  # Friday
     }
     return menu
 
