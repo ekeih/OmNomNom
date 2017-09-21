@@ -1,11 +1,12 @@
 from datetime import datetime
-from urllib.request import urlopen
 
+import requests
 from bs4 import BeautifulSoup
 from celery.utils.log import get_task_logger
 
 from backend.backend import app, cache, cache_date_format, cache_ttl
 from canteens.canteen import MEAT, VEGAN, VEGGIE, get_current_week, get_next_week
+from omnomgram.tasks import send_message_to_admin
 
 logger = get_task_logger(__name__)
 URL = 'http://singh-catering.de/cafe/'
@@ -29,24 +30,33 @@ def parse_menu_items(items):
 
 
 def get_menu():
-    html = urlopen(URL).read()
-    soup = BeautifulSoup(html, 'html.parser')
-    menu_items = soup.find_all('ul', class_='menu-list__items')
-    date_range = get_date_range()
+    try:
+        request = requests.get(URL)
+        request.raise_for_status()
+    except (requests.exceptions.ConnectionError, requests.exceptions.HTTPError) as ex:
+        send_message_to_admin('```\n%s\n```' % ex)
+        raise ex
+    if request.status_code == requests.codes.ok:
+        soup = BeautifulSoup(request.text, 'html.parser')
+        menu_items = soup.find_all('ul', class_='menu-list__items')
+        date_range = get_date_range()
 
-    menu = {
-        0: '[Singh Catering](%s) (%s) (08:00-18:00)\n%s' % (URL, date_range[0].strftime('%d.%m.%Y'),
-                                                            parse_menu_items(menu_items[0])),  # Monday
-        1: '[Singh Catering](%s) (%s) (08:00-18:00)\n%s' % (URL, date_range[1].strftime('%d.%m.%Y'),
-                                                            parse_menu_items(menu_items[3])),  # Tuesday
-        2: '[Singh Catering](%s) (%s) (08:00-18:00)\n%s' % (URL, date_range[2].strftime('%d.%m.%Y'),
-                                                            parse_menu_items(menu_items[1])),  # Wednesday
-        3: '[Singh Catering](%s) (%s) (08:00-18:00)\n%s' % (URL, date_range[3].strftime('%d.%m.%Y'),
-                                                            parse_menu_items(menu_items[4])),  # Thursday
-        4: '[Singh Catering](%s) (%s) (08:00-18:00)\n%s' % (URL, date_range[4].strftime('%d.%m.%Y'),
-                                                            parse_menu_items(menu_items[2])),  # Friday
-    }
-    return menu
+        menu = {
+            0: '[Singh Catering](%s) (%s) (08:00-18:00)\n%s' % (URL, date_range[0].strftime('%d.%m.%Y'),
+                                                                parse_menu_items(menu_items[0])),  # Monday
+            1: '[Singh Catering](%s) (%s) (08:00-18:00)\n%s' % (URL, date_range[1].strftime('%d.%m.%Y'),
+                                                                parse_menu_items(menu_items[3])),  # Tuesday
+            2: '[Singh Catering](%s) (%s) (08:00-18:00)\n%s' % (URL, date_range[2].strftime('%d.%m.%Y'),
+                                                                parse_menu_items(menu_items[1])),  # Wednesday
+            3: '[Singh Catering](%s) (%s) (08:00-18:00)\n%s' % (URL, date_range[3].strftime('%d.%m.%Y'),
+                                                                parse_menu_items(menu_items[4])),  # Thursday
+            4: '[Singh Catering](%s) (%s) (08:00-18:00)\n%s' % (URL, date_range[4].strftime('%d.%m.%Y'),
+                                                                parse_menu_items(menu_items[2])),  # Friday
+        }
+        return menu
+    else:
+        send_message_to_admin('Could not update Singh with status code %s' % request.status_code)
+        raise Exception
 
 
 def get_date_range():
@@ -56,7 +66,7 @@ def get_date_range():
         return get_current_week()
 
 
-@app.task(bind=True, default_retry_delay=30)
+@app.task(bind=True, default_retry_delay=30, max_retries=20)
 def update_singh(self):
     try:
         logger.info('[Update] TU Singh')
