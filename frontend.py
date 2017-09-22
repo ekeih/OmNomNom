@@ -233,6 +233,11 @@ def menu(_, update):
                             """ % (update.effective_chat, update.effective_message, update.effective_user)
             send_message_to_admin.delay(textwrap.dedent(error_message))
             reply = 'Leider kenne ich keinen passenden Speiseplan. Wenn das ein Fehler ist, wende dich an @ekeih.'
+        else:
+            reply = '%s\n\n*Datums Support*\nDu kannst jetzt auch nach Speiseplänen aus der Zukunft fragen. Zum ' \
+                    'Beispiel: `/tu_mensa montag`, `/tu_marchstr tomorrow` oder `/tu_skyline next friday`.\nOb das ' \
+                    'wirklich klappt, hängt davon ab, ob die Kantinen einen Speiseplan für den Tag bereitstellen.'\
+                    % reply.strip()
         message_logger.debug('Out: %s' % reply)
         update.message.reply_text(text=reply, parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
 
