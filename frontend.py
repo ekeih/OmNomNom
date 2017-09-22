@@ -97,6 +97,14 @@ HELP_TEXT = """\
 
             Für die Mensa der TU-Berlin ist das zum Beispiel: /tu\_mensa.
 
+            Außerdem kannst du in gewissem Rahmen auch nach Speiseplänen aus der Zukunft fragen. Ob diese wirklich verfügbar sind, hängt davon ab, ob die Kantinen sie bereitstellen. Zum Beispiel:
+
+            ```
+            /tu_mensa montag
+            /tu_mensa tomorrow
+            /tu_mensa next friday
+            ```
+
             Alle verfügbaren Mensen und andere Befehle (wie zum Beispiel /help oder /about) findest du über die Auto-Vervollständigung von Telegram, wenn du anfängst eine Nachricht zu tippen, die mit `/` beginnt.
             Außerdem gibt es in den meisten Telegram-Clients neben dem Textfeld einen viereckigen Button, der einen `/` enthält, über den du alle verfügbaren Befehle auswählen kannst.
 
