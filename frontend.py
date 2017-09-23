@@ -26,6 +26,7 @@ import parsedatetime
 
 import emoji
 import redis
+import telegram.error
 from telegram import Bot, ChatAction, ParseMode
 from telegram.ext import CommandHandler, Filters, MessageHandler, RegexHandler, Updater
 
@@ -201,9 +202,24 @@ def about(_, update):
 
 
 def error_handler(_, update, error):
-    error_message = '*Some Frontend Error*\n\n*Update*\n```\n%s\n```\n*Error*\n```\n%s\n```' % (update, error)
-    send_message_to_admin.delay(error_message)
-    frontend_logger.error(error)
+    # noinspection PyBroadException
+    try:
+        raise error
+    except telegram.error.TimedOut:
+        frontend_logger.error(error)
+        fields = {
+            'error': error,
+            'update': ''
+        }
+        tags = {
+            'module': 'frontend',
+            'type': 'timeout'
+        }
+        log_to_influxdb('errors', fields=fields, tags=tags)
+    except:
+        error_message = '*Some Frontend Error*\n\n*Update*\n```\n%s\n```\n*Error*\n```\n%s\n```' % (update, error)
+        send_message_to_admin.delay(error_message)
+        frontend_logger.error(error)
 
 
 def menu(_, update):
