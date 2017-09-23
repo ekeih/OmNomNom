@@ -214,7 +214,7 @@ def error_handler(_, update, error):
             'module': 'frontend',
             'type': 'timeout'
         }
-        log_to_influxdb('errors', fields=fields, tags=tags)
+        log_to_influxdb.delay('errors', fields=fields, tags=tags)
     except:
         error_message = '*Some Frontend Error*\n\n*Update*\n```\n%s\n```\n*Error*\n```\n%s\n```' % (update, error)
         send_message_to_admin.delay(error_message)
