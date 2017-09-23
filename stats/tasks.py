@@ -21,13 +21,15 @@ else:
 def log_to_influxdb(self, measurement, fields, tags=None):
     if tags is None:
         tags = {}
+    entry = {
+        'measurement': measurement,
+        'fields': fields,
+        'tags': tags
+    }
     if influxdb_client:
         try:
-            entry = {
-                'measurement': measurement,
-                'fields': fields,
-                'tags': tags
-            }
             influxdb_client.write_points([entry])
         except Exception as ex:
             raise self.retry(exc=ex)
+    else:
+        logger.info('Would log to InfluxDB: %s' % entry)
