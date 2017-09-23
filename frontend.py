@@ -22,9 +22,8 @@ import sys
 import textwrap
 
 import dateparser
-import parsedatetime
-
 import emoji
+import parsedatetime
 import redis
 import telegram.error
 from telegram import Bot, ChatAction, ParseMode
