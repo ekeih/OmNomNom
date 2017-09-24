@@ -207,7 +207,9 @@ def error_handler(_, update, error):
     except telegram.error.TimedOut:
         frontend_logger.error(error)
         fields = {
-            'error': str(error)
+            'error': str(error),
+            'module': 'frontend',
+            'type': 'timeout'
         }
         tags = {
             'module': 'frontend',
