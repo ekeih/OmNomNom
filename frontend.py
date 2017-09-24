@@ -208,7 +208,7 @@ def error_handler(_, update, error):
 
 def menu(_, update):
     if update.message.text:
-        requested_canteen, requested_date = get_canteen_and_date(update.message.text)
+        requested_canteen, requested_date = get_canteen_and_date(update.message.text.lower())
         frontend_logger.debug('Requested Canteen: %s (%s)' % (requested_canteen, requested_date))
         if requested_date:
             reply = cache.hget(requested_date, requested_canteen)
