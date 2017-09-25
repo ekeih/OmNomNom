@@ -160,7 +160,7 @@ def get_canteen_and_date(message):
             else:
                 return False
 
-    s = message.replace(bot_instance.name, '').split()
+    s = message.replace(bot_instance.name.lower(), '').split()
     canteen = s.pop(0)[1:]
     if len(s) > 0:
         date = parse_date(' '.join(s))
