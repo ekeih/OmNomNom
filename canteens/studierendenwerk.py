@@ -9,6 +9,7 @@ from celery.utils.log import get_task_logger
 
 from backend.backend import app, cache, cache_date_format, cache_ttl
 from canteens.canteen import get_current_week, get_next_week, FISH, MEAT, VEGAN, VEGGIE
+from stats.tasks import log_error
 from omnomgram.tasks import send_message_to_admin
 
 logger = get_task_logger(__name__)
@@ -57,8 +58,10 @@ def __parse_menu(id_, date=None):
                 text = '\n'.join(lines)
                 return '*Speiseplan*%s' % text
         else:
-            send_message_to_admin.delay('Could not update menu %s with status code %s.'
-                                        % (mapping[id_]['name'], request.status_code))
+            error_message = 'Could not update menu %s with status code %s.' % \
+                            (mapping[id_]['name'], request.status_code)
+            send_message_to_admin.delay(error_message)
+            log_error(error_message, 'studierendenwerk', 'parser')
             raise Exception
 
     def get_notes():
@@ -69,8 +72,10 @@ def __parse_menu(id_, date=None):
             soup.find('article', {'data-hid': '6046-1'}).decompose()
             notes = soup.get_text().strip()
         else:
-            send_message_to_admin('Could not fetch notes about %s with status code %s'
-                                  % (mapping[id_]['name'], request.status_code))
+            error_message = 'Could not fetch notes about %s with status code %s' \
+                            % (mapping[id_]['name'], request.status_code)
+            send_message_to_admin.delay(error_message)
+            log_error(error_message, 'studierendenwerk', 'parser')
             raise Exception
         if notes == '':
             return ''
@@ -97,11 +102,12 @@ def __parse_menu(id_, date=None):
                             for string in item.stripped_strings:
                                 business_hours += '\n%s' % string
         else:
-            send_message_to_admin('Could not fetch business hours for %s with status code %s'
-                                  % (mapping[id_]['name'], request.status_code))
+            error_message = 'Could not fetch business hours for %s with status code %s' \
+                            % (mapping[id_]['name'], request.status_code)
+            send_message_to_admin(error_message)
+            log_error(error_message, 'studierendenwerk', 'parser')
             raise Exception
         return business_hours.strip()
-
     # noinspection PyBroadException
     try:
         result = '*%s* (%s)\n\n%s\n\n%s\n\n%s' % (mapping[id_]['name'], day_human, get_menu(),

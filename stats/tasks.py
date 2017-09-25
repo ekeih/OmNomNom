@@ -33,3 +33,17 @@ def log_to_influxdb(self, measurement, fields, tags=None):
             raise self.retry(exc=ex)
     else:
         logger.info('Would log to InfluxDB: %s' % entry)
+
+
+@app.task(bind=True, default_retry_delay=30)
+def log_error(_, error_message, module_, type_):
+    fields = {
+        'error': error_message,
+        'module': module_,
+        'type': type_
+    }
+    tags = {
+        'module': module_,
+        'type': type_
+    }
+    log_to_influxdb('errors', fields=fields, tags=tags)
