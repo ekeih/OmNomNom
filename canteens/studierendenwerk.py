@@ -57,8 +57,8 @@ def __parse_menu(id_, date=None):
                 text = '\n'.join(lines)
                 return '*Speiseplan*%s' % text
         else:
-            log_error('Could not update menu of %s with status code %s.' % (mapping[id_]['name'], request.status_code),
-                      'studierendenwerk', 'parser')
+            log_error.delay('Could not update menu of %s with status code %s.' %
+                            (mapping[id_]['name'],request.status_code), 'studierendenwerk', 'parser')
             raise Exception
 
     def get_notes():
@@ -69,8 +69,8 @@ def __parse_menu(id_, date=None):
             soup.find('article', {'data-hid': '6046-1'}).decompose()
             notes = soup.get_text().strip()
         else:
-            log_error('Could not fetch notes of %s with status code %s' % (mapping[id_]['name'], request.status_code),
-                      'studierendenwerk', 'parser')
+            log_error.delay('Could not fetch notes of %s with status code %s' %
+                            (mapping[id_]['name'], request.status_code), 'studierendenwerk', 'parser')
             raise Exception
         if notes == '':
             return ''
@@ -97,8 +97,8 @@ def __parse_menu(id_, date=None):
                             for string in item.stripped_strings:
                                 business_hours += '\n%s' % string
         else:
-            log_error('Could not fetch business hours of %s with status code %s' %
-                      (mapping[id_]['name'], request.status_code), 'studierendenwerk', 'parser')
+            log_error.delay('Could not fetch business hours of %s with status code %s' %
+                            (mapping[id_]['name'], request.status_code), 'studierendenwerk', 'parser')
             raise Exception
         return business_hours.strip()
 
