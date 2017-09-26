@@ -18,7 +18,7 @@ case "$1" in
     exec celery -A backend.backend worker -l info -Q housekeeping
     ;;
   *)
-    echo "You need to pass beat, frontend or worker as an argument!" >&2
+    echo "You need to pass beat, frontend, housekeeping or worker as an argument!" >&2
     exit 1
     ;;
 esac
