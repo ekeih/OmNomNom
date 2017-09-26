@@ -204,6 +204,9 @@ def error_handler(_, update, error):
     # noinspection PyBroadException
     try:
         raise error
+    except telegram.error.BadRequest:
+        frontend_logger.error(error)
+        log_error.delay(str(error), 'frontend', 'badrequest')
     except telegram.error.TimedOut:
         frontend_logger.error(error)
         fields = {
