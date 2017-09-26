@@ -32,7 +32,7 @@ from telegram.ext import CommandHandler, Filters, MessageHandler, RegexHandler, 
 from backend.backend import cache_date_format
 from canteens.canteen import FISH, MEAT, VEGAN, VEGGIE
 from omnomgram.tasks import send_message_to_admin
-from stats.tasks import log_to_influxdb
+from stats.tasks import log_error, log_to_influxdb
 
 logging.getLogger('JobQueue').setLevel(logging.INFO)
 logging.getLogger('telegram').setLevel(logging.INFO)
@@ -209,16 +209,7 @@ def error_handler(_, update, error):
         log_error.delay(str(error), 'frontend', 'badrequest')
     except telegram.error.TimedOut:
         frontend_logger.error(error)
-        fields = {
-            'error': str(error),
-            'module': 'frontend',
-            'type': 'timeout'
-        }
-        tags = {
-            'module': 'frontend',
-            'type': 'timeout'
-        }
-        log_to_influxdb.delay('errors', fields=fields, tags=tags)
+        log_error.delay(str(error), 'frontend', 'timeout')
     except:
         error_message = '*Some Frontend Error*\n\n*Update*\n```\n%s\n```\n*Error*\n```\n%s\n```' % (update, error)
         send_message_to_admin.delay(error_message)
