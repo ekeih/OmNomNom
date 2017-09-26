@@ -26,8 +26,9 @@ import emoji
 import parsedatetime
 import redis
 import telegram.error
-from telegram import Bot, ChatAction, ParseMode
-from telegram.ext import CommandHandler, Filters, MessageHandler, RegexHandler, Updater
+from telegram import Bot, ChatAction, ParseMode, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram.ext import CallbackQueryHandler, CommandHandler, Filters, MessageHandler, RegexHandler, Updater
+from telegram.utils.helpers import escape_markdown
 
 from backend.backend import cache_date_format
 from canteens.canteen import FISH, MEAT, VEGAN, VEGGIE
@@ -216,40 +217,46 @@ def error_handler(_, update, error):
         frontend_logger.error(error)
 
 
+def report_results(bot, update):
+    query = update.callback_query
+    send_message_to_admin('Menu was reported as wrong by "%s":\n\n %s' %
+                          (query.from_user.name, escape_markdown(query.message.text)))
+    bot.edit_message_text(text='%s\n\n*Speiseplan als fehlerhaft gemeldet von %s. Danke!*\n'
+                               'Wenn du weitere Infos zu dem Fehler hast, wende dich gern an @ekeih.' %
+                               (escape_markdown(query.message.text), query.from_user.name),
+                          chat_id=query.message.chat_id,
+                          message_id=query.message.message_id,
+                          parse_mode=ParseMode.MARKDOWN)
+
+
 def menu(_, update):
     if update.message.text:
         requested_canteen, requested_date = get_canteen_and_date(update.message.text.lower())
         frontend_logger.debug('Requested Canteen: %s (%s)' % (requested_canteen, requested_date))
         if requested_date:
             reply = cache.hget(requested_date, requested_canteen)
+            if not reply or reply.strip() == '':
+                error_message = "\n*Chat*\n```\n%s\n```\n*Message*\n```\n%s\n```\n*User*\n```\n%s\n```" % \
+                                (update.effective_chat, update.effective_message, update.effective_user)
+                send_message_to_admin.delay(error_message)
+                reply = 'Leider kenne ich keinen passenden Speiseplan. Wenn das ein Fehler ist, wende dich an @ekeih.'
+                update.message.reply_text(text=reply, parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
+                message_logger.debug('Out: %s' % reply)
+            else:
+                reply = '%s\n\n*Datums Support*\nDu kannst jetzt auch nach Speiseplänen aus der Zukunft fragen. Zum ' \
+                        'Beispiel: `/tu_mensa montag`, `/tu_marchstr tomorrow` oder `/tu_skyline next friday`.\nOb das ' \
+                        'wirklich klappt, hängt davon ab, ob die Kantinen einen Speiseplan für den Tag bereitstellen.' \
+                        % reply.strip()
+                keyboard = [[InlineKeyboardButton("Falschen Speiseplan melden", callback_data='1')]]
+                update.message.reply_text(text=reply, parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True,
+                                          reply_markup=InlineKeyboardMarkup(keyboard))
+                message_logger.debug('Out: %s' % reply)
         else:
             reply = 'Sorry, leider habe ich das Datum nicht verstanden. Probier es doch einmal mit `/%s morgen`, ' \
                     '`/%s dienstag`, `/%s yesterday` oder `/%s next friday`.' % (requested_canteen, requested_canteen,
                                                                                  requested_canteen, requested_canteen)
-        if not reply or reply.strip() == '':
-            error_message = """\
-                            *Chat*
-                            ```
-                            %s
-                            ```
-                            *Message*
-                            ```
-                            %s
-                            ```
-                            *User*
-                            ```
-                            %s
-                            ```
-                            """ % (update.effective_chat, update.effective_message, update.effective_user)
-            send_message_to_admin.delay(textwrap.dedent(error_message))
-            reply = 'Leider kenne ich keinen passenden Speiseplan. Wenn das ein Fehler ist, wende dich an @ekeih.'
-        else:
-            reply = '%s\n\n*Datums Support*\nDu kannst jetzt auch nach Speiseplänen aus der Zukunft fragen. Zum ' \
-                    'Beispiel: `/tu_mensa montag`, `/tu_marchstr tomorrow` oder `/tu_skyline next friday`.\nOb das ' \
-                    'wirklich klappt, hängt davon ab, ob die Kantinen einen Speiseplan für den Tag bereitstellen.' \
-                    % reply.strip()
-        message_logger.debug('Out: %s' % reply)
-        update.message.reply_text(text=reply, parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
+            update.message.reply_text(text=reply, parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
+            message_logger.debug('Out: %s' % reply)
 
 
 def deprecated_commands(_, update):
@@ -295,6 +302,7 @@ dispatcher.add_handler(CommandHandler('tu_tel', deprecated_commands), 2)
 dispatcher.add_handler(RegexHandler('/.*', menu), 2)
 dispatcher.add_handler(MessageHandler(Filters.group, join), 2)
 dispatcher.add_handler(MessageHandler(Filters.text, help_message), 2)
+dispatcher.add_handler(CallbackQueryHandler(report_results))
 
 send_message_to_admin.delay(START_TEXT)
 
