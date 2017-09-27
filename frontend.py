@@ -289,8 +289,8 @@ def join(bot, update):
                 frontend_logger.info('I was invited to a group :)')
                 help_message(bot, update)
 
-if __name__ == '__main__':
 
+def main():
     frontend_logger.debug('Adding API callbacks')
     dispatcher.add_error_handler(error_handler)
     dispatcher.add_handler(CommandHandler('start', help_message), 2)

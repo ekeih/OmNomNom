@@ -63,5 +63,14 @@ app.conf.beat_schedule = {
     }
 }
 
-if __name__ == '__main__':
-    app.start()
+
+def beat():
+    app.start(argv=['celery', 'beat', '-l', 'info'])
+
+
+def housekeeping():
+    app.start(argv=['celery', 'worker', '-l', 'info', '-Q', 'housekeeping'])
+
+
+def worker():
+    app.start(argv=['celery', 'worker', '-l', 'info', '-Q', 'canteens'])
