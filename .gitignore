@@ -8,4 +8,5 @@ build/
 celerybeat-schedule
 celerybeat.pid
 dist/
+omnbot.egg-info/
 logs/*
