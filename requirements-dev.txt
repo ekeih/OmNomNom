@@ -3,5 +3,6 @@ ipython
 pytest
 pytest-freezegun
 pypandoc
+tox
 twine
 wheel

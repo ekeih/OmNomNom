@@ -3,6 +3,7 @@
 *.py[cod]
 *.swp
 .cache/
+.tox/
 __pycache__/
 build/
 celerybeat-schedule
