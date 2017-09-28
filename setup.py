@@ -14,7 +14,7 @@ def requirements():
 
 setup(
     name='omnbot',
-    version='2017.1',
+    version='2017.3',
     description='OmNomNom - A simple Telegram bot to get canteen information',
     long_description=readme(),
     url='https://omnbot.io',
@@ -32,7 +32,7 @@ setup(
             'omnbot-worker=backend.backend:worker',
             'omnbot-housekeeping=backend.backend:housekeeping',
             'omnbot-beat=backend.backend:beat',
-            'omnbot-frontend=frontend:main'
+            'omnbot-frontend=frontend.frontend:main'
         ]
     }
 )
