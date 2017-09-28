@@ -3,7 +3,14 @@ from setuptools import find_packages, setup
 
 def readme():
     with open('README.md') as f:
-        return f.read()
+        content = f.read()
+        try:
+            # noinspection PyUnresolvedReferences
+            from pypandoc import convert
+            return convert(content, 'rst', 'md')
+        except ImportError:
+            print("warning: pypandoc module not found, could not convert Markdown to RST")
+            return content
 
 
 def requirements():
@@ -14,7 +21,7 @@ def requirements():
 
 setup(
     name='omnbot',
-    version='2017.3',
+    version='2017.4',
     description='OmNomNom - A simple Telegram bot to get canteen information',
     long_description=readme(),
     url='https://omnbot.io',

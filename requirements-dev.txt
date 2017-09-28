@@ -1,3 +1,4 @@
 ipython
+pypandoc
 twine
 wheel
