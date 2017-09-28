@@ -1,4 +1,7 @@
+freezegun
 ipython
+pytest
+pytest-freezegun
 pypandoc
 twine
 wheel
