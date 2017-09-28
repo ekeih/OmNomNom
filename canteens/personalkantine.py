@@ -16,9 +16,13 @@ logger = get_task_logger(__name__)
 URL = 'http://personalkantine.personalabteilung.tu-berlin.de/#speisekarte'
 
 
+def get_website():
+    return urllib.request.urlopen(URL).read()
+
+
 def main(date, canteen=EMPLOYEE_CANTEEN):
     dishes = []
-    html = urllib.request.urlopen(URL).read()
+    html = get_website()
     menus = BeautifulSoup(html, 'html.parser').find_all('ul', class_='Menu__accordion')
 
     for day in menus[canteen].children:
