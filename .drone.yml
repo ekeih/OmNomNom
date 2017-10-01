@@ -1,0 +1,9 @@
+pipeline:
+  test:
+    image: python:3.6-alpine
+    commands:
+      - apk add --update gcc musl-dev
+      - pip install -r requirements-dev.txt
+      - mkdir logs
+      - tox
+    secrets: [ omnomnom_auth_token, omnomnom_admin ]

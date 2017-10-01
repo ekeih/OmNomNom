@@ -2,7 +2,7 @@ freezegun
 ipython
 pytest
 pytest-freezegun
-pypandoc
+#pypandoc
 tox
 twine
 wheel
