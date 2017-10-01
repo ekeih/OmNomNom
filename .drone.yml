@@ -7,6 +7,9 @@ pipeline:
       - mkdir logs
       - tox
     secrets: [ omnomnom_auth_token, omnomnom_admin ]
+    when:
+      branch: [ master, dev ]
+      event: push
   docker:
     image: plugins/docker
     repo: ekeih/omnomnom
@@ -15,3 +18,8 @@ pipeline:
     when:
       branch: [ master, dev ]
       event: push
+  telegram:
+    image: appleboy/drone-telegram
+    token: ${TELEGRAM_NOTIFY_TOKEN}
+    to: ${TELEGRAM_NOTIFY_CHAT}
+    secrets: [ telegram_notify_token, telegram_notify_chat ]
