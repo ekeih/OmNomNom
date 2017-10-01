@@ -7,3 +7,11 @@ pipeline:
       - mkdir logs
       - tox
     secrets: [ omnomnom_auth_token, omnomnom_admin ]
+  docker:
+    image: plugins/docker
+    repo: ekeih/omnomnom
+    secrets: [ docker_username, docker_password ]
+    tag: ${DRONE_BRANCH/\//-}
+    when:
+      branch: [ master, dev ]
+      event: push
