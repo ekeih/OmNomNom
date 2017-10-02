@@ -20,6 +20,6 @@ pipeline:
       event: push
   telegram:
     image: appleboy/drone-telegram
-    token: ${TELEGRAM_NOTIFY_TOKEN}
-    to: ${TELEGRAM_NOTIFY_CHAT}
-    secrets: [ telegram_notify_token, telegram_notify_chat ]
+    token: ${TG_NOTIFY_TOKEN}
+    to: ${TG_NOTIFY_CHAT}
+    secrets: [ tg_notify_chat, tg_notify_token]
