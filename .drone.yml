@@ -1,25 +1,29 @@
 pipeline:
+#  test:
+#    image: python:3.6-alpine
+#    commands:
+#      - apk add --update gcc musl-dev
+#      - pip install -r requirements-dev.txt
+#      - mkdir logs
+#      - tox
+#    secrets: [ omnomnom_auth_token, omnomnom_admin ]
+#    when:
+#      branch: [ master, dev ]
+#      event: push
+#  docker:
+#    image: plugins/docker
+#    repo: ekeih/omnomnom
+#    secrets: [ docker_username, docker_password ]
+#    tag: ${DRONE_BRANCH/\//-}
+#    when:
+#      branch: [ master, dev ]
+#      event: push
   test:
-    image: python:3.6-alpine
+    image: alpine
     commands:
-      - apk add --update gcc musl-dev
-      - pip install -r requirements-dev.txt
-      - mkdir logs
-      - tox
-    secrets: [ omnomnom_auth_token, omnomnom_admin ]
-    when:
-      branch: [ master, dev ]
-      event: push
-  docker:
-    image: plugins/docker
-    repo: ekeih/omnomnom
-    secrets: [ docker_username, docker_password ]
-    tag: ${DRONE_BRANCH/\//-}
-    when:
-      branch: [ master, dev ]
-      event: push
+      - exit 1
   telegram:
     image: appleboy/drone-telegram
-    token: ${TG_NOTIFY_TOKEN}
-    to: ${TG_NOTIFY_CHAT}
-    secrets: [ tg_notify_chat, tg_notify_token]
+    secrets: [ telegram_token, telegram_to ]
+    when:
+      status: [ success, failure ]
