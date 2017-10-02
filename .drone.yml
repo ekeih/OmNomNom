@@ -9,7 +9,12 @@ pipeline:
     secrets: [ omnomnom_auth_token, omnomnom_admin ]
     when:
       branch: [ master, dev ]
-      event: push
+  bdist_wheel:
+    image: python:3.6-alpine
+    commands:
+      - python setup.py bdist_wheel
+    when:
+      branch: [ master, dev ]
   docker:
     image: plugins/docker
     repo: ekeih/omnomnom
@@ -17,7 +22,6 @@ pipeline:
     tag: ${DRONE_BRANCH/\//-}
     when:
       branch: [ master, dev ]
-      event: push
   telegram:
     image: appleboy/drone-telegram
     secrets: [ telegram_token, telegram_to ]
