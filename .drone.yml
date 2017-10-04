@@ -32,7 +32,6 @@ pipeline:
       - sha256
       - sha512
     when:
-      branch: master
       event: tag
   telegram:
     image: appleboy/drone-telegram
