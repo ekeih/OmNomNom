@@ -22,6 +22,18 @@ pipeline:
     tag: ${DRONE_BRANCH/\//-}
     when:
       branch: [ master, dev ]
+  github_release:
+    image: plugins/github-release
+    secrets: [ github_token ]
+    files: dist/*
+    checksum:
+      - md5
+      - sha1
+      - sha256
+      - sha512
+    when:
+      branch: master
+      event: tag
   telegram:
     image: appleboy/drone-telegram
     secrets: [ telegram_token, telegram_to ]
