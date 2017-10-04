@@ -8,20 +8,20 @@ pipeline:
       - tox
     secrets: [ omnomnom_auth_token, omnomnom_admin ]
     when:
-      branch: [ master, dev ]
+      event: [ push, tag ]
   bdist_wheel:
     image: python:3.6-alpine
     commands:
       - python setup.py bdist_wheel
     when:
-      branch: [ master, dev ]
+      event: [ push, tag ]
   docker:
     image: plugins/docker
     repo: ekeih/omnomnom
     secrets: [ docker_username, docker_password ]
     tag: ${DRONE_BRANCH/\//-}
     when:
-      branch: [ master, dev ]
+      event: [ push, tag ]
   github_release:
     image: plugins/github-release
     secrets: [ github_token ]
