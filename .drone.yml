@@ -19,7 +19,7 @@ pipeline:
     image: plugins/docker
     repo: ekeih/omnomnom
     secrets: [ docker_username, docker_password ]
-    tag: ${DRONE_BRANCH/\//-}
+    tag: ${DRONE_BRANCH}
     when:
       event: push
   github_release:
