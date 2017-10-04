@@ -21,7 +21,7 @@ pipeline:
     secrets: [ docker_username, docker_password ]
     tag: ${DRONE_BRANCH/\//-}
     when:
-      event: [ push, tag ]
+      event: push
   github_release:
     image: plugins/github-release
     secrets: [ github_token ]
