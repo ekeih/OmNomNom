@@ -2,7 +2,7 @@ pipeline:
   test:
     image: python:3.6-alpine
     commands:
-      - apk add --update gcc musl-dev
+      - apk add --update gcc musl-dev libmagic
       - pip install -r requirements-dev.txt
       - mkdir logs
       - tox
