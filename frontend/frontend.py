@@ -243,10 +243,10 @@ def menu(_, update):
                 update.message.reply_text(text=reply, parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
                 message_logger.debug('Out: %s' % reply)
             else:
-                reply = '%s\n\n*Datums Support*\nDu kannst jetzt auch nach Speiseplänen aus der Zukunft fragen. Zum ' \
-                        'Beispiel: `/tu_mensa montag`, `/tu_marchstr tomorrow` oder `/tu_skyline next friday`.\nOb das ' \
-                        'wirklich klappt, hängt davon ab, ob die Kantinen einen Speiseplan für den Tag bereitstellen.' \
-                        % reply.strip()
+                # reply = '%s\n\n*Datums Support*\nDu kannst jetzt auch nach Speiseplänen aus der Zukunft fragen. Zum ' \
+                #         'Beispiel: `/tu_mensa montag`, `/tu_marchstr tomorrow` oder `/tu_skyline next friday`.\nOb das ' \
+                #         'wirklich klappt, hängt davon ab, ob die Kantinen einen Speiseplan für den Tag bereitstellen.' \
+                #         % reply.strip()
                 # keyboard = [[InlineKeyboardButton("Falschen Speiseplan melden", callback_data='1')]]
                 update.message.reply_text(text=reply, parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
                 # reply_markup=InlineKeyboardMarkup(keyboard))
