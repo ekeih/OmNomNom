@@ -91,7 +91,7 @@ def pdf_to_text(tmpdir):
     return menu
 
 
-def clean_newlines(text):
+def text_to_menu_list(text):
     """
     Unfortunately it is not easy to detect reliable if a menu entry spans multiple lines. So this function does some
     parsing that should work in most cases. It tries to remove all unnecessary newlines and returns a list of strings
@@ -103,18 +103,27 @@ def clean_newlines(text):
     Returns:
         A list of strings with one item for every menu entry.
     """
+
+    def remove_multiple_spaces(s):
+        return ' '.join(s.split())
+
     cleaned_result = []
+    tmp_item = ''
     for line in text.splitlines():
         if not line == '' and 'cafeneroinder' not in line:
-            if 'mittagstisch' in line or '---' in line or 'schonkost' in line:
-                line = '%s\n' % line
+            if 'mittagstisch' in line or 'schonkost' in line:
+                cleaned_result.append(remove_multiple_spaces(line))
+            elif '---' in line:
+                for i in line.split('---'):
+                    cleaned_result.append(remove_multiple_spaces(i))
             else:
+                tmp_item = '%s %s' % (tmp_item, line)
                 if line.endswith(('€', 'vegetarisch', 'schweinefleisch', 'rindfleisch',
                                   'fisch', 'vegan', '(vegan)')):
-                    line = '%s\n' % line
-                else:
-                    line = '%s ' % line
-            cleaned_result.append(line)
+                    cleaned_result.append(remove_multiple_spaces(tmp_item))
+                    tmp_item = ''
+    if len(tmp_item) > 0:
+        cleaned_result.append(remove_multiple_spaces(tmp_item))
     return cleaned_result
 
 
@@ -159,7 +168,7 @@ def main():
     link = extract_dropbox_link(html)
     tmpdir_of_pdf_file = get_pdf(link)
     text_of_pdf_menu = pdf_to_text(tmpdir_of_pdf_file)
-    cleaned_text = clean_newlines(text_of_pdf_menu)
+    cleaned_text = text_to_menu_list(text_of_pdf_menu)
     return annotate_menu(cleaned_text)
 
 

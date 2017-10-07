@@ -59,3 +59,35 @@ def test_get_pdf__with_connect_timeout():
 def test_pdf_to_text(pdf_file):
     menu = cafenero.pdf_to_text(pdf_file)
     assert menu != ''
+
+
+def test_text_to_menu_list():
+    text = 'cafeneroindervolkswagenuniversitätsbibliothekberlin\nmittagstisch – freitag den 06. oktober 2017 von ' \
+           '12:00 bis 20:00 uhr\nkleine portion suppe 2,80 € --- kleine portion nudeln 3,60 €\nschonkost: ' \
+           'pellkartoffeln mit hausgemachtem kräuterquark, leinoel und salat 4,40 €\n\n\nrussische ' \
+           'gemüse-bortschtsch mit\ndill, schmand, lauchzwiebeln + biomehrkornbrot      3,80 €                  ' \
+           '                          vegetarisch\n\n\n\nspaghetti bolognese\nmit frühlingszwiebeln + petersilie + ' \
+           'parmesankäse     4,80 €                                                rindfleisch\n\n\n\nspaghetti mit ' \
+           'tomaten,\nartischocken, lauchzwiebeln+ (parmesan)         4,80 €                          ' \
+           'vegetarisch (vegan)\n\n\n\nspaghetti mit salbei-olivenoel und (parmesankäse)        4,80 €              ' \
+           '                                vegetarisch (vegan)\n\n\n\nkartoffel-rosenkohl-quiche\nmit gorgonzola ' \
+           'und gemischtem salat                               vegetarisch    6,00 €\nfilet vom schwarzen heilbutt ' \
+           'mit chili-koriander-dip\nauf basmatireis mit zucchini-kirschtomaten-gemüse                              ' \
+           '                                     fisch   6,50 €\n\x0c'
+
+    expected_items = [
+        'mittagstisch – freitag den 06. oktober 2017 von 12:00 bis 20:00 uhr',
+        'kleine portion suppe 2,80 €',
+        'kleine portion nudeln 3,60 €',
+        'schonkost: pellkartoffeln mit hausgemachtem kräuterquark, leinoel und salat 4,40 €',
+        'russische gemüse-bortschtsch mit dill, schmand, lauchzwiebeln + biomehrkornbrot 3,80 € vegetarisch',
+        'spaghetti bolognese mit frühlingszwiebeln + petersilie + parmesankäse 4,80 € rindfleisch',
+        'spaghetti mit tomaten, artischocken, lauchzwiebeln+ (parmesan) 4,80 € vegetarisch (vegan)',
+        'spaghetti mit salbei-olivenoel und (parmesankäse) 4,80 € vegetarisch (vegan)',
+        'kartoffel-rosenkohl-quiche mit gorgonzola und gemischtem salat vegetarisch 6,00 €',
+        'filet vom schwarzen heilbutt mit chili-koriander-dip auf basmatireis mit zucchini-kirschtomaten-gemüse '
+        'fisch 6,50 €'
+    ]
+
+    menu = cafenero.text_to_menu_list(text)
+    assert menu == expected_items
