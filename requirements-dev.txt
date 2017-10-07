@@ -1,8 +1,11 @@
+flaky
 freezegun
 ipython
 pytest
 pytest-freezegun
+python-magic
 #pypandoc
+requests-mock
 tox
 twine
 wheel
