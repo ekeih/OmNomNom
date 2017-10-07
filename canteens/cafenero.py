@@ -111,7 +111,10 @@ def text_to_menu_list(text):
     tmp_item = ''
     for line in text.splitlines():
         if not line == '' and 'cafeneroinder' not in line:
-            if 'mittagstisch' in line or 'schonkost' in line:
+            if 'mittagstisch' in line:
+                cleaned_result.append(remove_multiple_spaces(line))
+                cleaned_result.append('\n')
+            elif 'schonkost' in line:
                 cleaned_result.append(remove_multiple_spaces(line))
             elif '---' in line:
                 for i in line.split('---'):
@@ -138,8 +141,9 @@ def annotate_menu(menu):
         One string containing the complete menu with all annotations.
     """
     result = ''
+    before_schonkost = True
     for entry in menu:
-        if 'mittagstisch' in entry or '---' in entry or 'schonkost' in entry:
+        if before_schonkost:
             annotation = ''
         elif 'vegan' in entry:
             annotation = '%s ' % VEGAN
@@ -149,6 +153,8 @@ def annotate_menu(menu):
             annotation = '%s ' % FISH
         else:
             annotation = '%s ' % MEAT
+        if 'schonkost' in entry:
+            before_schonkost = False
         entry = entry.replace('vegetarisch', '')
         entry = entry.replace('(vegan)', '')
         entry = entry.replace('fisch', '')
@@ -157,7 +163,7 @@ def annotate_menu(menu):
         entry = entry.replace('schweinefleisch', '')
         entry = ' '.join(entry.split())
         result += '%s%s\n' % (annotation, entry)
-    return result
+    return result.strip()
 
 
 def main():
