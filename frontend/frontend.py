@@ -247,9 +247,9 @@ def menu(_, update):
                         'Beispiel: `/tu_mensa montag`, `/tu_marchstr tomorrow` oder `/tu_skyline next friday`.\nOb das ' \
                         'wirklich klappt, hängt davon ab, ob die Kantinen einen Speiseplan für den Tag bereitstellen.' \
                         % reply.strip()
-                keyboard = [[InlineKeyboardButton("Falschen Speiseplan melden", callback_data='1')]]
-                update.message.reply_text(text=reply, parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True,
-                                          reply_markup=InlineKeyboardMarkup(keyboard))
+                # keyboard = [[InlineKeyboardButton("Falschen Speiseplan melden", callback_data='1')]]
+                update.message.reply_text(text=reply, parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
+                # reply_markup=InlineKeyboardMarkup(keyboard))
                 message_logger.debug('Out: %s' % reply)
         else:
             reply = 'Sorry, leider habe ich das Datum nicht verstanden. Probier es doch einmal mit `/%s morgen`, ' \
