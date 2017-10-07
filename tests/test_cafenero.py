@@ -7,6 +7,14 @@ from flaky import flaky
 from canteens import cafenero
 
 
+@pytest.fixture(scope='module')
+def pdf_file():
+    html = cafenero.download_website()
+    link = cafenero.extract_dropbox_link(html)
+    tmpdir_of_pdf = cafenero.get_pdf(link)
+    return tmpdir_of_pdf
+
+
 @flaky
 def test_download_website_with_live_site():
     html = cafenero.download_website()
@@ -33,11 +41,8 @@ def test_extract_dropbox_link():
 
 
 @flaky
-def test_get_pdf():
-    html = cafenero.download_website()
-    link = cafenero.extract_dropbox_link(html)
-    tmpdir_of_pdf = cafenero.get_pdf(link)
-    filetype = magic.from_file('%s/cafenero.pdf' % tmpdir_of_pdf, mime=True)
+def test_get_pdf(pdf_file):
+    filetype = magic.from_file('%s/cafenero.pdf' % pdf_file, mime=True)
     assert filetype == 'application/pdf'
 
 
@@ -48,3 +53,9 @@ def test_get_pdf__with_connect_timeout():
             html = cafenero.download_website()
             link = cafenero.extract_dropbox_link(html)
             cafenero.get_pdf(link)
+
+
+@flaky
+def test_pdf_to_text(pdf_file):
+    menu = cafenero.pdf_to_text(pdf_file)
+    assert menu != ''
