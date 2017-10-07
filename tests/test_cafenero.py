@@ -76,16 +76,16 @@ def test_text_to_menu_list():
     expected_items = [
         'mittagstisch – freitag den 06. oktober 2017 von 12:00 bis 20:00 uhr',
         '\n',
-        'kleine portion suppe 2,80 €',
-        'kleine portion nudeln 3,60 €',
-        'schonkost: pellkartoffeln mit hausgemachtem kräuterquark, leinoel und salat 4,40 €',
-        'russische gemüse-bortschtsch mit dill, schmand, lauchzwiebeln + biomehrkornbrot 3,80 € vegetarisch',
-        'spaghetti bolognese mit frühlingszwiebeln + petersilie + parmesankäse 4,80 € rindfleisch',
-        'spaghetti mit tomaten, artischocken, lauchzwiebeln+ (parmesan) 4,80 € vegetarisch (vegan)',
-        'spaghetti mit salbei-olivenoel und (parmesankäse) 4,80 € vegetarisch (vegan)',
-        'kartoffel-rosenkohl-quiche mit gorgonzola und gemischtem salat vegetarisch 6,00 €',
+        'kleine portion suppe 2,80€',
+        'kleine portion nudeln 3,60€',
+        'schonkost: pellkartoffeln mit hausgemachtem kräuterquark, leinoel und salat 4,40€',
+        'russische gemüse-bortschtsch mit dill, schmand, lauchzwiebeln + biomehrkornbrot 3,80€ vegetarisch',
+        'spaghetti bolognese mit frühlingszwiebeln + petersilie + parmesankäse 4,80€ rindfleisch',
+        'spaghetti mit tomaten, artischocken, lauchzwiebeln+ (parmesan) 4,80€ vegetarisch (vegan)',
+        'spaghetti mit salbei-olivenoel und (parmesankäse) 4,80€ vegetarisch (vegan)',
+        'kartoffel-rosenkohl-quiche mit gorgonzola und gemischtem salat vegetarisch 6,00€',
         'filet vom schwarzen heilbutt mit chili-koriander-dip auf basmatireis mit zucchini-kirschtomaten-gemüse '
-        'fisch 6,50 €'
+        'fisch 6,50€'
     ]
 
     menu = cafenero.text_to_menu_list(text)
@@ -96,30 +96,30 @@ def test_annotate_menu():
     menu = [
         'mittagstisch – freitag den 06. oktober 2017 von 12:00 bis 20:00 uhr',
         '\n',
-        'kleine portion suppe 2,80 €',
-        'kleine portion nudeln 3,60 €',
-        'schonkost: pellkartoffeln mit hausgemachtem kräuterquark, leinoel und salat 4,40 €',
-        'russische gemüse-bortschtsch mit dill, schmand, lauchzwiebeln + biomehrkornbrot 3,80 € vegetarisch',
-        'spaghetti bolognese mit frühlingszwiebeln + petersilie + parmesankäse 4,80 € rindfleisch',
-        'spaghetti mit tomaten, artischocken, lauchzwiebeln+ (parmesan) 4,80 € vegetarisch (vegan)',
-        'spaghetti mit salbei-olivenoel und (parmesankäse) 4,80 € vegetarisch (vegan)',
-        'kartoffel-rosenkohl-quiche mit gorgonzola und gemischtem salat vegetarisch 6,00 €',
+        'kleine portion suppe 2,80€',
+        'kleine portion nudeln 3,60€',
+        'schonkost: pellkartoffeln mit hausgemachtem kräuterquark, leinoel und salat 4,40€',
+        'russische gemüse-bortschtsch mit dill, schmand, lauchzwiebeln + biomehrkornbrot 3,80€ vegetarisch',
+        'spaghetti bolognese mit frühlingszwiebeln + petersilie + parmesankäse 4,80€ rindfleisch',
+        'spaghetti mit tomaten, artischocken, lauchzwiebeln+ (parmesan) 4,80€ vegetarisch (vegan)',
+        'spaghetti mit salbei-olivenoel und (parmesankäse) 4,80€ vegetarisch (vegan)',
+        'kartoffel-rosenkohl-quiche mit gorgonzola und gemischtem salat vegetarisch 6,00€',
         'filet vom schwarzen heilbutt mit chili-koriander-dip auf basmatireis mit zucchini-kirschtomaten-gemüse '
-        'fisch 6,50 €'
+        'fisch 6,50€'
     ]
 
     expected_annotations = 'mittagstisch – freitag den 06. oktober 2017 von 12:00 bis 20:00 uhr\n\n' \
-                           'kleine portion suppe 2,80 €\n' \
-                           'kleine portion nudeln 3,60 €\n' \
-                           'schonkost: pellkartoffeln mit hausgemachtem kräuterquark, leinoel und salat 4,40 €\n' \
+                           'kleine portion suppe 2,80€\n' \
+                           'kleine portion nudeln 3,60€\n' \
+                           'schonkost: pellkartoffeln mit hausgemachtem kräuterquark, leinoel und salat 4,40€\n' \
                            '%s russische gemüse-bortschtsch mit dill, schmand, lauchzwiebeln + biomehrkornbrot ' \
-                           '3,80 €\n' \
-                           '%s spaghetti bolognese mit frühlingszwiebeln + petersilie + parmesankäse 4,80 €\n' \
-                           '%s spaghetti mit tomaten, artischocken, lauchzwiebeln+ (parmesan) 4,80 €\n' \
-                           '%s spaghetti mit salbei-olivenoel und (parmesankäse) 4,80 €\n' \
-                           '%s kartoffel-rosenkohl-quiche mit gorgonzola und gemischtem salat 6,00 €\n' \
+                           '3,80€\n' \
+                           '%s spaghetti bolognese mit frühlingszwiebeln + petersilie + parmesankäse 4,80€\n' \
+                           '%s spaghetti mit tomaten, artischocken, lauchzwiebeln+ (parmesan) 4,80€\n' \
+                           '%s spaghetti mit salbei-olivenoel und (parmesankäse) 4,80€\n' \
+                           '%s kartoffel-rosenkohl-quiche mit gorgonzola und gemischtem salat 6,00€\n' \
                            '%s filet vom schwarzen heilbutt mit chili-koriander-dip auf basmatireis mit ' \
-                           'zucchini-kirschtomaten-gemüse 6,50 €' % (VEGGIE, MEAT, VEGAN, VEGAN, VEGGIE, FISH)
+                           'zucchini-kirschtomaten-gemüse 6,50€' % (VEGGIE, MEAT, VEGAN, VEGAN, VEGGIE, FISH)
 
     annotated_menu = cafenero.annotate_menu(menu)
     assert annotated_menu == expected_annotations

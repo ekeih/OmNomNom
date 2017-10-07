@@ -104,29 +104,29 @@ def text_to_menu_list(text):
         A list of strings with one item for every menu entry.
     """
 
-    def remove_multiple_spaces(s):
-        return ' '.join(s.split())
+    def remove_unnecessary_spaces(s):
+        return ' '.join(s.split()).replace(' €', '€')
 
     cleaned_result = []
     tmp_item = ''
     for line in text.splitlines():
         if not line == '' and 'cafeneroinder' not in line:
             if 'mittagstisch' in line:
-                cleaned_result.append(remove_multiple_spaces(line))
+                cleaned_result.append(remove_unnecessary_spaces(line))
                 cleaned_result.append('\n')
             elif 'schonkost' in line:
-                cleaned_result.append(remove_multiple_spaces(line))
+                cleaned_result.append(remove_unnecessary_spaces(line))
             elif '---' in line:
                 for i in line.split('---'):
-                    cleaned_result.append(remove_multiple_spaces(i))
+                    cleaned_result.append(remove_unnecessary_spaces(i))
             else:
                 tmp_item = '%s %s' % (tmp_item, line)
                 if line.endswith(('€', 'vegetarisch', 'schweinefleisch', 'rindfleisch',
                                   'fisch', 'vegan', '(vegan)')):
-                    cleaned_result.append(remove_multiple_spaces(tmp_item))
+                    cleaned_result.append(remove_unnecessary_spaces(tmp_item))
                     tmp_item = ''
     if len(tmp_item) > 0:
-        cleaned_result.append(remove_multiple_spaces(tmp_item))
+        cleaned_result.append(remove_unnecessary_spaces(tmp_item))
     return cleaned_result
 
 
