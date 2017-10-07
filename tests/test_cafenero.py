@@ -18,10 +18,7 @@ def pdf_file():
 @flaky
 def test_download_website_with_live_site():
     html = cafenero.download_website()
-    if '<iframe src="https://www.dropbox.com' in html:
-        assert True
-    else:
-        assert False
+    assert '<iframe src="https://www.dropbox.com' in html
 
 
 def test_download_website__with_connect_timeout():
