@@ -3,116 +3,16 @@ import re
 import time
 
 import bs4
-import fake_useragent
 import requests
 from celery.utils.log import get_task_logger
 
 from backend.backend import app, cache, cache_date_format, cache_ttl
-from canteens.canteen import get_current_week, get_next_week, FISH, MEAT, VEGAN, VEGGIE
-from stats.tasks import log_error
+from canteens.canteen import get_current_week, get_next_week, get_useragent, FISH, MEAT, VEGAN, VEGGIE
 
 logger = get_task_logger(__name__)
 
-
-def __parse_menu(id_, date=None):
-    day = date or datetime.date.today()
-    day_api = day.strftime('%Y-%m-%d')
-    day_human = day.strftime('%d.%m.%Y')
-    useragent = fake_useragent.UserAgent(fallback=
-                                         'Mozilla/5.0 (X11; OpenBSD amd64; rv:28.0) Gecko/20100101 Firefox/28.0')
-    params = {'resources_id': id_, 'date': day_api}
-    headers = {'user-agent': useragent.random}
-
-    def get_menu():
-        request = requests.post('https://www.stw.berlin/xhr/speiseplan-wochentag.html', data=params, headers=headers)
-        time.sleep(0.5)
-        if request.status_code == requests.codes.ok:
-            text = ''
-            soup = bs4.BeautifulSoup(request.text, 'html.parser')
-            menu_groups = soup.find_all('div', class_='splGroupWrapper')
-            for group in menu_groups:
-                menu_items = group.find_all('div', class_='splMeal')
-                for item in menu_items:
-                    veggie = item.find_all('img', class_='splIcon')
-                    annotation = None
-                    for icon in veggie:
-                        if 'icons/15.png' in icon.attrs['src']:
-                            annotation = VEGAN
-                        elif 'icons/1.png' in icon.attrs['src']:
-                            annotation = VEGGIE
-                        elif 'icons/38.png' in icon.attrs['src']:
-                            annotation = FISH
-                    if annotation is None:
-                        annotation = MEAT
-                    title = item.find('span', class_='bold').text.strip()
-                    price = item.find('div', class_='text-right').text.strip()
-                    price_exp = re.compile(r'€ (\d,\d+).*$')
-                    price = price_exp.sub('*\g<1>€*', price)
-                    text = '%s%s %s: %s\n' % (text, annotation, title, price)
-            if text.strip() == '':
-                return text.strip()
-            else:
-                lines = text.split('\n')
-                lines.sort()
-                text = '\n'.join(lines)
-                return '*Speiseplan*%s' % text
-        else:
-            log_error.delay('Could not update menu of %s with status code %s.' %
-                            (mapping[id_]['name'],request.status_code), 'studierendenwerk', 'parser')
-            raise Exception
-
-    def get_notes():
-        request = requests.post('https://www.stw.berlin/xhr/hinweise.html', data=params, headers=headers)
-        time.sleep(0.5)
-        if request.status_code == requests.codes.ok:
-            soup = bs4.BeautifulSoup(request.text, 'html.parser')
-            soup.find('article', {'data-hid': '6046-1'}).decompose()
-            notes = soup.get_text().strip()
-        else:
-            log_error.delay('Could not fetch notes of %s with status code %s' %
-                            (mapping[id_]['name'], request.status_code), 'studierendenwerk', 'parser')
-            raise Exception
-        if notes == '':
-            return ''
-        else:
-            return '*Hinweise*\n%s' % notes
-
-    def get_business_hours():
-        business_hours = ''
-        request = requests.post('https://www.stw.berlin/xhr/speiseplan-und-standortdaten.html',
-                                data=params, headers=headers)
-        time.sleep(0.5)
-        if request.status_code == requests.codes.ok:
-            soup = bs4.BeautifulSoup(request.text, 'html.parser')
-            time_icon = soup.find(class_='glyphicon-time')
-            transfer_icon = soup.find(class_='glyphicon-transfer')
-            education_icon = soup.find(class_='glyphicon-education')
-
-            if time_icon:
-                business_hours += '\n*Öffnungszeiten*'
-                for sib in time_icon.parent.parent.next_siblings:
-                    if type(sib) == bs4.Tag and transfer_icon not in sib.descendants and \
-                                    education_icon not in sib.descendants:
-                        for item in sib.find_all('div', class_='col-xs-10'):
-                            for string in item.stripped_strings:
-                                business_hours += '\n%s' % string
-        else:
-            log_error.delay('Could not fetch business hours of %s with status code %s' %
-                            (mapping[id_]['name'], request.status_code), 'studierendenwerk', 'parser')
-            raise Exception
-        return business_hours.strip()
-
-    # noinspection PyBroadException
-    try:
-        result = '*%s* (%s)\n\n%s\n\n%s\n\n%s' % (mapping[id_]['name'], day_human, get_menu(),
-                                                  get_business_hours(), get_notes())
-        return re.sub(r'\n\s*\n', '\n\n', result)
-    except Exception:
-        time.sleep(5)
-        return ''
-
-
-mapping = {
+DATE_FORMAT_API = '%Y-%m-%d'
+CANTEENS = {
     534: {"name": "Mensa ASH Berlin Hellersdorf", "command": "ash_hellersdorf"},
     535: {"name": "Mensa Beuth Hochschule für Technik Kurfürstenstraße", "command": "beuth_kurfuerstenstr"},
     527: {"name": "Mensa Beuth Hochschule für Technik Luxemburger Straße", "command": "beuth_luxembugerstr"},
@@ -166,28 +66,133 @@ mapping = {
 }
 
 
+def download_menu(canteen_id, date):
+    url = 'https://www.stw.berlin/xhr/speiseplan-wochentag.html'
+    params = {'resources_id': canteen_id, 'date': date}
+    headers = {'user-agent': get_useragent()}
+    request = requests.post(url, data=params, headers=headers)
+    request.raise_for_status()
+    return request.text
+
+
+def download_notes(canteen_id):
+    url = 'https://www.stw.berlin/xhr/hinweise.html'
+    params = {'resources_id': canteen_id, 'date': datetime.date.today().strftime(DATE_FORMAT_API)}
+    headers = {'user-agent': get_useragent()}
+    request = requests.post(url, data=params, headers=headers)
+    request.raise_for_status()
+    return request.text
+
+
+def download_business_hours(canteen_id):
+    url = 'https://www.stw.berlin/xhr/speiseplan-und-standortdaten.html'
+    params = {'resources_id': canteen_id, 'date': datetime.date.today().strftime(DATE_FORMAT_API)}
+    headers = {'user-agent': get_useragent()}
+    request = requests.post(url, data=params, headers=headers)
+    request.raise_for_status()
+    return request.text
+
+
+def parse_menu(menu_html):
+    text = ''
+    soup = bs4.BeautifulSoup(menu_html, 'html.parser')
+    menu_groups = soup.find_all('div', class_='splGroupWrapper')
+    for group in menu_groups:
+        menu_items = group.find_all('div', class_='splMeal')
+        for item in menu_items:
+            veggie = item.find_all('img', class_='splIcon')
+            annotation = None
+            for icon in veggie:
+                if 'icons/15.png' in icon.attrs['src']:
+                    annotation = VEGAN
+                elif 'icons/1.png' in icon.attrs['src']:
+                    annotation = VEGGIE
+                elif 'icons/38.png' in icon.attrs['src']:
+                    annotation = FISH
+            if annotation is None:
+                annotation = MEAT
+            title = item.find('span', class_='bold').text.strip()
+            price = item.find('div', class_='text-right').text.strip()
+            price_exp = re.compile(r'€ (\d,\d+).*$')
+            price = price_exp.sub('*\g<1>€*', price)
+            text = '%s%s %s: %s\n' % (text, annotation, title, price)
+    if text.strip() == '':
+        return ''
+    else:
+        lines = text.split('\n')
+        lines.sort()
+        text = '\n'.join(lines)
+        return '*Speiseplan*%s' % text
+
+
+def parse_notes(notes_html):
+    soup = bs4.BeautifulSoup(notes_html, 'html.parser')
+    bookmarking_note = soup.find('article', {'data-hid': '6046-1'})
+    if bookmarking_note:
+        bookmarking_note.decompose()
+    notes = soup.get_text().strip()
+    if notes == '':
+        return ''
+    else:
+        return '*Hinweise*\n%s' % notes
+
+
+def parse_business_hours(business_hours_html):
+    business_hours = ''
+    soup = bs4.BeautifulSoup(business_hours_html, 'html.parser')
+    time_icon = soup.find(class_='glyphicon-time')
+    transfer_icon = soup.find(class_='glyphicon-transfer')
+    education_icon = soup.find(class_='glyphicon-education')
+
+    if time_icon:
+        business_hours += '\n*Öffnungszeiten*'
+        for sib in time_icon.parent.parent.next_siblings:
+            if type(sib) == bs4.Tag and transfer_icon not in sib.descendants and education_icon not in sib.descendants:
+                for item in sib.find_all('div', class_='col-xs-10'):
+                    for string in item.stripped_strings:
+                        business_hours += '\n%s' % string
+    return business_hours.strip()
+
+
+def get_full_text(canteen_id, canteen_business_hours, canteen_notes, date=None):
+    day = date or datetime.date.today()
+    date_api = day.strftime(DATE_FORMAT_API)
+    date_human = day.strftime('%d.%m.%Y')
+
+    menu_html = download_menu(canteen_id, date_api)
+    menu = parse_menu(menu_html)
+
+    result = '*%s* (%s)\n\n%s\n\n%s\n\n%s' % (CANTEENS[canteen_id]['name'], date_human, menu, canteen_business_hours,
+                                              canteen_notes)
+    return re.sub(r'\n\s*\n', '\n\n', result)
+
+
 def get_date_range():
     return get_current_week() + get_next_week()
 
 
 @app.task()
 def update_all_studierendenwerk_canteens():
-    for id_, canteen in mapping.items():
+    for id_, canteen in CANTEENS.items():
         update_studierendenwerk.delay(id_)
 
 
 @app.task(bind=True, rate_limit='60/m', default_retry_delay=30, max_retries=20)
-def update_studierendenwerk_by_date(self, id_, date):
+def update_studierendenwerk_by_date(self, canteen_id, date):
     try:
-        day = datetime.datetime.strptime(date, "%Y-%m-%d")
-        logger.info('[Update] %s (%s)' % (mapping[id_]['name'], date))
-        menu = __parse_menu(id_, date=day)
+        day = datetime.datetime.strptime(date, DATE_FORMAT_API)
+        logger.info('[Update] %s (%s)' % (CANTEENS[canteen_id]['name'], date))
+        notes = parse_notes(download_notes(canteen_id))
+        time.sleep(0.5)
+        business_hours = parse_business_hours(download_business_hours(canteen_id))
+        time.sleep(0.5)
+        menu = get_full_text(canteen_id, business_hours, notes, date=day)
         if menu.strip() == '':
-            logger.info('No menu for %s (%s)' % (mapping[id_]['name'], date))
+            logger.info('No menu for %s (%s)' % (CANTEENS[canteen_id]['name'], date))
             raise self.retry()
         else:
-            logger.info('Caching %s (%s)' % (mapping[id_]['name'], date))
-            cache.hset(day.strftime(cache_date_format), mapping[id_]['command'], menu)
+            logger.info('Caching %s (%s)' % (CANTEENS[canteen_id]['name'], date))
+            cache.hset(day.strftime(cache_date_format), CANTEENS[canteen_id]['command'], menu)
             cache.expire(day.strftime(cache_date_format), cache_ttl)
     except Exception as ex:
         raise self.retry(exc=ex)
@@ -195,6 +200,6 @@ def update_studierendenwerk_by_date(self, id_, date):
 
 @app.task()
 def update_studierendenwerk(id_):
-    logger.info('[Update] %s' % mapping[id_]['name'])
+    logger.info('[Update] %s' % CANTEENS[id_]['name'])
     for day in get_date_range():
         update_studierendenwerk_by_date.delay(id_, day.strftime(cache_date_format))
