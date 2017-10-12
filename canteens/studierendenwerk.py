@@ -173,19 +173,15 @@ def get_date_range():
 
 @app.task()
 def update_all_studierendenwerk_canteens():
-    for id_, canteen in CANTEENS.items():
-        update_studierendenwerk.delay(id_)
+    for canteen_id, canteen in CANTEENS.items():
+        update_studierendenwerk.delay(canteen_id)
 
 
 @app.task(bind=True, rate_limit='60/m', default_retry_delay=30, max_retries=20)
-def update_studierendenwerk_by_date(self, canteen_id, date):
+def update_studierendenwerk_by_date(self, canteen_id, date, business_hours, notes):
     try:
         day = datetime.datetime.strptime(date, DATE_FORMAT_API)
         logger.info('[Update] %s (%s)' % (CANTEENS[canteen_id]['name'], date))
-        notes = parse_notes(download_notes(canteen_id))
-        time.sleep(0.5)
-        business_hours = parse_business_hours(download_business_hours(canteen_id))
-        time.sleep(0.5)
         menu = get_full_text(canteen_id, business_hours, notes, date=day)
         if menu.strip() == '':
             logger.info('No menu for %s (%s)' % (CANTEENS[canteen_id]['name'], date))
@@ -198,8 +194,15 @@ def update_studierendenwerk_by_date(self, canteen_id, date):
         raise self.retry(exc=ex)
 
 
-@app.task()
-def update_studierendenwerk(id_):
-    logger.info('[Update] %s' % CANTEENS[id_]['name'])
-    for day in get_date_range():
-        update_studierendenwerk_by_date.delay(id_, day.strftime(cache_date_format))
+@app.task(bind=True, default_retry_delay=30, max_retries=20)
+def update_studierendenwerk(self, canteen_id):
+    try:
+        logger.info('[Update] %s' % CANTEENS[canteen_id]['name'])
+        notes = parse_notes(download_notes(canteen_id))
+        time.sleep(0.5)
+        business_hours = parse_business_hours(download_business_hours(canteen_id))
+        time.sleep(0.5)
+        for day in get_date_range():
+            update_studierendenwerk_by_date.delay(canteen_id, day.strftime(cache_date_format), business_hours, notes)
+    except Exception as ex:
+        raise self.retry(exc=ex)
