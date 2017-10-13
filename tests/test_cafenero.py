@@ -17,7 +17,7 @@ def pdf_file():
 
 
 @flaky
-def test_download_website_with_live_site():
+def test_download_website__with_live_site():
     html = cafenero.download_website()
     assert '<iframe src="https://www.dropbox.com' in html
 
