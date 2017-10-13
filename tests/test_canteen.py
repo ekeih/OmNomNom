@@ -1,5 +1,7 @@
-import pytest
 import datetime
+import re
+
+import pytest
 
 from canteens import canteen
 
@@ -47,3 +49,10 @@ def test_get_week_range():
     ]
     week_range = canteen.get_week_range(datetime.date(2017, 10, 1))
     assert week_range == expected_range
+
+
+@pytest.mark.parametrize('count', range(100))
+def test_get_useragent__with_100_random_useragents(count):
+    pattern = re.compile('.+/.+\(.+')
+    agent = canteen.get_useragent()
+    assert pattern.match(agent) is not None
