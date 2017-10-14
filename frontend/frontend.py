@@ -236,12 +236,28 @@ def menu(_, update):
         if requested_date:
             reply = cache.hget(requested_date, requested_canteen)
             if not reply or reply.strip() == '':
-                error_message = "\n*Chat*\n```\n%s\n```\n*Message*\n```\n%s\n```\n*User*\n```\n%s\n```" % \
-                                (update.effective_chat, update.effective_message, update.effective_user)
-                send_message_to_admin.delay(error_message)
-                reply = 'Leider kenne ich keinen passenden Speiseplan. Wenn das ein Fehler ist, wende dich an @ekeih.'
-                update.message.reply_text(text=reply, parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
-                message_logger.debug('Out: %s' % reply)
+                possible_canteens = []
+                for canteen, menu in cache.hscan_iter(requested_date, '*%s*' % requested_canteen):
+                    possible_canteens.append((canteen, menu))
+                if len(possible_canteens) == 1:
+                    reply = possible_canteens.pop()[1]
+                    update.message.reply_text(text=reply, parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
+                    message_logger.debug('Out: %s' % reply)
+                elif len(possible_canteens) > 1:
+                    reply = 'Meintest du vielleicht:\n'
+                    for canteen in possible_canteens:
+                        reply += '\n /%s' % canteen[0]
+                    update.message.reply_text(text=reply)
+                    message_logger.debug('Out: %s' % reply)
+                else:
+                    print(possible_canteens)
+                    error_message = "\n*Chat*\n```\n%s\n```\n*Message*\n```\n%s\n```\n*User*\n```\n%s\n```" % \
+                                    (update.effective_chat, update.effective_message, update.effective_user)
+                    send_message_to_admin.delay(error_message)
+                    reply = 'Leider kenne ich keinen passenden Speiseplan. ' \
+                            'Wenn das ein Fehler ist, wende dich an @ekeih.'
+                    update.message.reply_text(text=reply, parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
+                    message_logger.debug('Out: %s' % reply)
             else:
                 # reply = '%s\n\n*Datums Support*\nDu kannst jetzt auch nach Speiseplänen aus der Zukunft fragen. Zum ' \
                 #         'Beispiel: `/tu_mensa montag`, `/tu_marchstr tomorrow` oder `/tu_skyline next friday`.\nOb das ' \
