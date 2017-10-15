@@ -19,19 +19,16 @@ import datetime
 import logging
 import os
 import sys
-import textwrap
 
 import dateparser
-import emoji
 import parsedatetime
 import redis
 import telegram.error
-from telegram import Bot, ChatAction, ParseMode, InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.ext import CallbackQueryHandler, CommandHandler, Filters, MessageHandler, RegexHandler, Updater
-from telegram.utils.helpers import escape_markdown
+from telegram import Bot, ChatAction, ParseMode
+from telegram.ext import CommandHandler, Filters, MessageHandler, RegexHandler, Updater
 
 from backend.backend import cache_date_format
-from canteens.canteen import FISH, MEAT, VEGAN, VEGGIE
+from frontend.strings import about_text, help_text
 from omnomgram.tasks import send_message_to_admin
 from stats.tasks import log_error, log_to_influxdb
 
@@ -74,58 +71,6 @@ frontend_logger.debug('Admin ID: %s' % ADMIN)
 updater = Updater(token=token)
 bot_instance = Bot(token)
 dispatcher = updater.dispatcher
-
-ABOUT_TEXT = """*OmNomNom*
-
-OmNomNom is a Telegram bot to get canteen information. Currently it supports only canteens in Berlin (Germany) \
-and most of its answers are in German.
-The bot is available as [@OmnBot](https://telegram.me/OmnBot). Feel free to talk to it and invite it to your groups.
-
-Find out more about it on [Github](https://github.com/ekeih/OmNomNom). Pull requests and issues are always welcome. If \
-you have questions you can talk to me via [Telegram](https://telegram.me/ekeih).
-
-Check out the website for more details: https://omnbot.io
-
-OmNomNom is licensed under the [GNU AGPL v3](https://github.com/ekeih/OmNomNom#license).
-"""
-
-HELP_TEXT = """\
-            *OmNomNom - Hilfe*
-
-            Hallo,
-
-            für jede Mensa gibt es einen Befehl, den du mir schicken kannst.
-
-            Für die Mensa der TU-Berlin ist das zum Beispiel: /tu\_mensa.
-
-            Außerdem kannst du in gewissem Rahmen auch nach Speiseplänen aus der Zukunft fragen. Ob diese wirklich verfügbar sind, hängt davon ab, ob die Kantinen sie bereitstellen. Zum Beispiel:
-
-            ```
-            /tu_mensa montag
-            /tu_mensa tomorrow
-            /tu_mensa next friday
-            ```
-
-            Alle verfügbaren Mensen und andere Befehle (wie zum Beispiel /help oder /about) findest du über die Auto-Vervollständigung von Telegram, wenn du anfängst eine Nachricht zu tippen, die mit `/` beginnt.
-            Außerdem gibt es in den meisten Telegram-Clients neben dem Textfeld einen viereckigen Button, der einen `/` enthält, über den du alle verfügbaren Befehle auswählen kannst.
-
-            Übrigens kannst du mich auch in Gruppen einladen, sodass mich dort jeder nach den Speiseplänen fragen kann.
-
-            Ich markiere Gerichte nach bestem Gewissen, aber ohne Garantie, mit folgenden Symbolen:
-
-            %s = Vegan
-            %s = Vegetarisch
-            %s = Fleisch
-            %s = Fisch
-
-            Viel Spaß und guten Appetit! %s
-            Bei Problemen sprich einfach @ekeih an.
-
-            PS: Es gibt auch eine Webseite: https://omnbot.io
-
-            PPS: Der Bot ist OpenSource (GNU AGPL v3) und den Code findest du auf [GitHub](https://github.com/ekeih/OmNomNom). %s
-            """ % (VEGAN, VEGGIE, MEAT, FISH, emoji.emojize(':cake:', use_aliases=True),
-                   emoji.emojize(':smile:', use_aliases=True))
 
 START_TEXT = """*Bot Started*
 
@@ -192,16 +137,84 @@ def log_incoming_messages(_, update):
 
 
 def send_typing_action(bot, update):
-    frontend_logger.debug("Send typing")
-    bot.sendChatAction(chat_id=update.message.chat_id, action=ChatAction.TYPING)
+    if not update.message.reply_to_message:
+        frontend_logger.debug("Send typing")
+        bot.sendChatAction(chat_id=update.message.chat_id, action=ChatAction.TYPING)
 
 
 def about(_, update):
     message_logger.info('Out: Sending <about> message')
-    update.message.reply_text(text=ABOUT_TEXT, parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
+    update.message.reply_text(text=about_text, parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
+
+
+def help_message(_, update):
+    message_logger.info('Send <help> message')
+    update.message.reply_text(text=help_text, parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
+
+
+def menu(_, update):
+    """
+    Todo:
+        Reduce complexity!
+    """
+    if update.message.text:
+        requested_canteen, requested_date = get_canteen_and_date(update.message.text.lower())
+        frontend_logger.info('Requested Canteen: %s (%s)' % (requested_canteen, requested_date))
+        if requested_date:
+            reply = cache.hget(requested_date, requested_canteen)
+            if not reply or reply.strip() == '':
+                possible_canteens = []
+                for canteen, canteen_menu in cache.hscan_iter(requested_date, '*%s*' % requested_canteen):
+                    possible_canteens.append((canteen, canteen_menu))
+                if len(possible_canteens) == 1:
+                    reply = possible_canteens.pop()[1]
+                    update.message.reply_text(text=reply, parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
+                    message_logger.debug('Out: %s' % reply)
+                elif len(possible_canteens) > 1:
+                    reply = 'Meintest du vielleicht:\n'
+                    for canteen in possible_canteens:
+                        reply += '\n /%s' % canteen[0]
+                    update.message.reply_text(text=reply)
+                    message_logger.debug('Out: %s' % reply)
+                else:
+                    error_message = "\n*Chat*\n```\n%s\n```\n*Message*\n```\n%s\n```\n*User*\n```\n%s\n```" % \
+                                    (update.effective_chat, update.effective_message, update.effective_user)
+                    send_message_to_admin.delay(error_message)
+                    reply = 'Leider kenne ich keinen passenden Speiseplan. ' \
+                            'Wenn das ein Fehler ist, wende dich an @ekeih.'
+                    update.message.reply_text(text=reply, parse_mode=ParseMode.MARKDOWN)
+                    message_logger.debug('Out: %s' % reply)
+            else:
+                update.message.reply_text(text=reply, parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
+                message_logger.debug('Out: %s' % reply)
+        else:
+            reply = 'Sorry, leider habe ich das Datum nicht verstanden. Probier es doch einmal mit `/%s morgen`, ' \
+                    '`/%s dienstag`, `/%s yesterday` oder `/%s next friday`.' % (requested_canteen, requested_canteen,
+                                                                                 requested_canteen, requested_canteen)
+            update.message.reply_text(text=reply, parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
+            message_logger.debug('Out: %s' % reply)
+
+
+def group_message_handler(bot, update):
+    """
+    Handle events that are specific for groups. Currently it only sends a help message when the bot is invited to a new
+    group.
+    """
+    frontend_logger.info('Group members changed')
+    frontend_logger.debug(update)
+    my_id = bot.get_me().id
+    if update.message.new_chat_members:
+        for member in update.message.new_chat_members:
+            if member.id == my_id:
+                frontend_logger.info('I was invited to a group :)')
+                help_message(bot, update)
 
 
 def error_handler(_, update, error):
+    """
+    Handle errors in the dispatcher and decide which errors are just logged and which errors are important enough to
+    trigger a message to the admin.
+    """
     # noinspection PyBroadException
     try:
         raise error
@@ -217,106 +230,32 @@ def error_handler(_, update, error):
         frontend_logger.error(error)
 
 
-def report_results(bot, update):
-    query = update.callback_query
-    send_message_to_admin('Menu was reported as wrong by "%s":\n\n %s' %
-                          (query.from_user.name, escape_markdown(query.message.text)))
-    bot.edit_message_text(text='%s\n\n*Speiseplan als fehlerhaft gemeldet von %s. Danke!*\n'
-                               'Wenn du weitere Infos zu dem Fehler hast, wende dich gern an @ekeih.' %
-                               (escape_markdown(query.message.text), query.from_user.name),
-                          chat_id=query.message.chat_id,
-                          message_id=query.message.message_id,
-                          parse_mode=ParseMode.MARKDOWN)
-
-
-def menu(_, update):
-    if update.message.text:
-        requested_canteen, requested_date = get_canteen_and_date(update.message.text.lower())
-        frontend_logger.debug('Requested Canteen: %s (%s)' % (requested_canteen, requested_date))
-        if requested_date:
-            reply = cache.hget(requested_date, requested_canteen)
-            if not reply or reply.strip() == '':
-                possible_canteens = []
-                for canteen, menu in cache.hscan_iter(requested_date, '*%s*' % requested_canteen):
-                    possible_canteens.append((canteen, menu))
-                if len(possible_canteens) == 1:
-                    reply = possible_canteens.pop()[1]
-                    update.message.reply_text(text=reply, parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
-                    message_logger.debug('Out: %s' % reply)
-                elif len(possible_canteens) > 1:
-                    reply = 'Meintest du vielleicht:\n'
-                    for canteen in possible_canteens:
-                        reply += '\n /%s' % canteen[0]
-                    update.message.reply_text(text=reply)
-                    message_logger.debug('Out: %s' % reply)
-                else:
-                    print(possible_canteens)
-                    error_message = "\n*Chat*\n```\n%s\n```\n*Message*\n```\n%s\n```\n*User*\n```\n%s\n```" % \
-                                    (update.effective_chat, update.effective_message, update.effective_user)
-                    send_message_to_admin.delay(error_message)
-                    reply = 'Leider kenne ich keinen passenden Speiseplan. ' \
-                            'Wenn das ein Fehler ist, wende dich an @ekeih.'
-                    update.message.reply_text(text=reply, parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
-                    message_logger.debug('Out: %s' % reply)
-            else:
-                # reply = '%s\n\n*Datums Support*\nDu kannst jetzt auch nach Speiseplänen aus der Zukunft fragen. Zum ' \
-                #         'Beispiel: `/tu_mensa montag`, `/tu_marchstr tomorrow` oder `/tu_skyline next friday`.\nOb das ' \
-                #         'wirklich klappt, hängt davon ab, ob die Kantinen einen Speiseplan für den Tag bereitstellen.' \
-                #         % reply.strip()
-                # keyboard = [[InlineKeyboardButton("Falschen Speiseplan melden", callback_data='1')]]
-                update.message.reply_text(text=reply, parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
-                # reply_markup=InlineKeyboardMarkup(keyboard))
-                message_logger.debug('Out: %s' % reply)
-        else:
-            reply = 'Sorry, leider habe ich das Datum nicht verstanden. Probier es doch einmal mit `/%s morgen`, ' \
-                    '`/%s dienstag`, `/%s yesterday` oder `/%s next friday`.' % (requested_canteen, requested_canteen,
-                                                                                 requested_canteen, requested_canteen)
-            update.message.reply_text(text=reply, parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
-            message_logger.debug('Out: %s' % reply)
-
-
-def deprecated_commands(_, update):
-    requested_canteen, _ = get_canteen_and_date(update.message.text)
-    if requested_canteen == 'tu_tel':
-        reply = 'Sorry: /tu\_tel heißt nun /tu\_skyline.'
-    else:
-        send_message_to_admin.delay('Deprecated canteen procedure for no deprecated canteen...')
-        reply = 'Wooops, something went wrong. Sorry!'
-    send_message_to_admin.delay('%s\n\n`%s`' % (reply, update.effective_user))
-    frontend_logger.warning('Deprecated command: %s' % reply)
-    update.message.reply_text(text=reply, parse_mode=ParseMode.MARKDOWN)
-
-
-def help_message(_, update):
-    message_logger.info('Send <help> message')
-    update.message.reply_text(text=textwrap.dedent(HELP_TEXT), parse_mode=ParseMode.MARKDOWN,
-                              disable_web_page_preview=True)
-
-
-def join(bot, update):
-    frontend_logger.info('Group members changed')
-    frontend_logger.debug(update)
-    my_id = bot.get_me().id
-    if update.message.new_chat_members:
-        for member in update.message.new_chat_members:
-            if member.id == my_id:
-                frontend_logger.info('I was invited to a group :)')
-                help_message(bot, update)
-
-
 def main():
-    frontend_logger.debug('Adding API callbacks')
+    """
+    The entrypoint for omnbot-frontend. The main function adds all handlers to the telegram dispatcher, informs the
+    admin about the startup and runs the dispatcher forever.
+    """
+
+    # Add an error handler to log and report errors
     dispatcher.add_error_handler(error_handler)
+
+    # React to /start, /about and /help messages
     dispatcher.add_handler(CommandHandler('start', help_message), 2)
     dispatcher.add_handler(CommandHandler('about', about), 2)
     dispatcher.add_handler(CommandHandler('help', help_message), 2)
+
+    # Send typing action and log incoming messages
     dispatcher.add_handler(RegexHandler('.*', send_typing_action), 0)
     dispatcher.add_handler(RegexHandler('.*', log_incoming_messages), 1)
-    dispatcher.add_handler(CommandHandler('tu_tel', deprecated_commands), 2)
+
+    # Handle all messages beginning with a '/'
     dispatcher.add_handler(RegexHandler('/.*', menu), 2)
-    dispatcher.add_handler(MessageHandler(Filters.group, join), 2)
-    dispatcher.add_handler(MessageHandler(Filters.text, help_message), 2)
-    dispatcher.add_handler(CallbackQueryHandler(report_results))
+
+    # Handle normal text messages that are no reply and answer with a help_message
+    dispatcher.add_handler(MessageHandler(Filters.text & (~ Filters.reply), help_message), 2)
+
+    # Handle group member changes
+    dispatcher.add_handler(MessageHandler(Filters.group & (~ Filters.reply), group_message_handler), 3)
 
     send_message_to_admin.delay(START_TEXT)
 
