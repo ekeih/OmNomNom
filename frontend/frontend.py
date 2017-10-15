@@ -277,9 +277,7 @@ def menu(_, update):
 
 def deprecated_commands(_, update):
     requested_canteen, _ = get_canteen_and_date(update.message.text)
-    if requested_canteen == 'tu_mar':
-        reply = 'Sorry: /tu\_mar heißt nun /tu\_marchstr.'
-    elif requested_canteen == 'tu_tel':
+    if requested_canteen == 'tu_tel':
         reply = 'Sorry: /tu\_tel heißt nun /tu\_skyline.'
     else:
         send_message_to_admin.delay('Deprecated canteen procedure for no deprecated canteen...')
@@ -314,7 +312,6 @@ def main():
     dispatcher.add_handler(CommandHandler('help', help_message), 2)
     dispatcher.add_handler(RegexHandler('.*', send_typing_action), 0)
     dispatcher.add_handler(RegexHandler('.*', log_incoming_messages), 1)
-    dispatcher.add_handler(CommandHandler('tu_mar', deprecated_commands), 2)
     dispatcher.add_handler(CommandHandler('tu_tel', deprecated_commands), 2)
     dispatcher.add_handler(RegexHandler('/.*', menu), 2)
     dispatcher.add_handler(MessageHandler(Filters.group, join), 2)
