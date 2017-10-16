@@ -1,5 +1,5 @@
 pipeline:
-  test:
+  run_tests:
     image: python:3.6-alpine
     commands:
       - apk add --update gcc musl-dev libmagic poppler-utils
@@ -9,20 +9,35 @@ pipeline:
     secrets: [ omnomnom_auth_token, omnomnom_admin ]
     when:
       event: [ push, tag ]
-  bdist_wheel:
+  build_python_package:
     image: python:3.6-alpine
     commands:
       - python setup.py bdist_wheel
     when:
       event: [ push, tag ]
-  docker:
+  build_docs:
+    image: python:3.6-alpine
+    commands:
+      - apk add --update gcc musl-dev make
+      - pip install -r requirements.txt -r docs/requirements.txt
+      - cd docs && make html
+    when:
+      event: tag
+  build_docs_docker_image:
+    image: plugins/docker
+    repo: ekeih/omnomnom-docs
+    secrets: [ docker_username, docker_password ]
+    context: docs
+    when:
+      event: tag
+  build_docker_image:
     image: plugins/docker
     repo: ekeih/omnomnom
     secrets: [ docker_username, docker_password ]
     tag: ${DRONE_BRANCH}
     when:
       event: push
-  github_release:
+  push_github_release:
     image: plugins/github-release
     secrets: [ github_token ]
     files: dist/*
@@ -33,7 +48,7 @@ pipeline:
       - sha512
     when:
       event: tag
-  telegram:
+  telegram_hook:
     image: appleboy/drone-telegram
     secrets: [ telegram_token, telegram_to ]
     when:
