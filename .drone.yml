@@ -29,7 +29,7 @@ pipeline:
     repo: ekeih/omnomnom-docs
     secrets: [ docker_username, docker_password ]
     context: docs
-    dockerfile: docks/Dockerfile
+    dockerfile: docs/Dockerfile
     when:
       event: tag
   build_docker_image:
