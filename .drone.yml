@@ -21,6 +21,7 @@ pipeline:
       - apk add --update gcc musl-dev make
       - pip install -r requirements.txt -r docs/requirements.txt
       - cd docs && make html
+    secrets: [ omnomnom_auth_token, omnomnom_admin ]
     when:
       event: tag
   build_docs_docker_image:
@@ -28,6 +29,7 @@ pipeline:
     repo: ekeih/omnomnom-docs
     secrets: [ docker_username, docker_password ]
     context: docs
+    dockerfile: docks/Dockerfile
     when:
       event: tag
   build_docker_image:
