@@ -59,12 +59,25 @@ cache = redis.Redis(host=redis_host, decode_responses=True)
 
 
 def get_canteen_and_date(message):
+    """
+    Extract canteen and date from a message.
+
+    Args:
+        message (str): The message from the user. It should have the format '/mensa date' (without @BotName).
+
+    Returns:
+         canteen (str): The requested canteen.
+         date (str): The date in the format '2017-10-16'.
+    """
+
     def parse_date(date_string):
+        """Try to extract the date with dateparser."""
         def try_dateparser(d):
             settings = {'PREFER_DATES_FROM': 'future', 'DATE_ORDER': 'DMY'}
             return dateparser.parse(d, settings=settings)
 
         def try_parsedatetime(d):
+            """Try to extract the date with parsedatetime."""
             cal = parsedatetime.Calendar()
             time_struct, parse_status = cal.parse(d)
             if parse_status > 0:
@@ -95,6 +108,7 @@ def get_canteen_and_date(message):
 
 
 def log_incoming_messages(_, update):
+    """Log incoming messages to a log file and influxdb."""
     frontend_logger.debug('incoming messages: %s' % update)
     chat = update.message.chat
     target_chat = ''
@@ -114,23 +128,28 @@ def log_incoming_messages(_, update):
 
 
 def send_typing_action(bot, update):
+    """Send 'typing...' message to chat as long as it is not a reply message."""
     if not update.message.reply_to_message:
         frontend_logger.debug("Send typing")
         bot.sendChatAction(chat_id=update.message.chat_id, action=ChatAction.TYPING)
 
 
 def about(_, update):
+    """Send the 'About' text about the bot."""
     message_logger.info('Out: Sending <about> message')
     update.message.reply_text(text=about_text, parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
 
 
 def help_message(_, update):
+    """Send a help message with usage instructions."""
     message_logger.info('Send <help> message')
     update.message.reply_text(text=help_text, parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
 
 
 def menu(bot, update):
     """
+    Process the message and reply with the menu or error messages.
+
     Todo:
         Reduce complexity!
     """
