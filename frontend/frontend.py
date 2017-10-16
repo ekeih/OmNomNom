@@ -41,21 +41,10 @@ formatter = logging.Formatter(logging_format)
 logging.basicConfig(level=logging.INFO, format=logging_format)
 
 frontend_logger = logging.getLogger('frontend')
-frontend_fh = logging.handlers.TimedRotatingFileHandler('logs/frontend.log', when='midnight', backupCount=60)
-frontend_fh.setLevel(logging.DEBUG)
-frontend_fh.setFormatter(formatter)
-frontend_logger.addHandler(frontend_fh)
-
+frontend_fh = None
 message_logger = logging.getLogger('frontend.messages')
-message_fh = logging.handlers.TimedRotatingFileHandler('logs/messages.log', when='midnight', backupCount=60)
-message_fh.setLevel(logging.DEBUG)
-message_fh.setFormatter(formatter)
-message_logger.addHandler(message_fh)
-
-redis_host = os.environ.get('OMNOMNOM_REDIS_HOST') or 'localhost'
-frontend_logger.debug('Redis host: %s' % redis_host)
-
-cache = redis.Redis(host=redis_host, decode_responses=True)
+message_fh = None
+cache = None
 
 
 def get_canteen_and_date(message):
@@ -66,8 +55,11 @@ def get_canteen_and_date(message):
         message (str): The message from the user. It should have the format '/mensa date' (without @BotName).
 
     Returns:
-         canteen (str): The requested canteen.
-         date (str): The date in the format '2017-10-16'.
+        (tuple): Tuple containing:
+
+            canteen(str): The requested canteen.
+
+            date(str): The date in the format '2017-10-16'.
     """
 
     def parse_date(date_string):
@@ -233,6 +225,25 @@ def main():
     The entrypoint for omnbot-frontend. The main function adds all handlers to the telegram dispatcher, informs the
     admin about the startup and runs the dispatcher forever.
     """
+    global frontend_fh
+    global message_fh
+    global cache
+
+    frontend_fh = logging.handlers.TimedRotatingFileHandler('logs/frontend.log', when='midnight', backupCount=60)
+    frontend_fh.setLevel(logging.DEBUG)
+    frontend_fh.setFormatter(formatter)
+    frontend_logger.addHandler(frontend_fh)
+
+    message_fh = logging.handlers.TimedRotatingFileHandler('logs/messages.log', when='midnight', backupCount=60)
+    message_fh.setLevel(logging.DEBUG)
+    message_fh.setFormatter(formatter)
+    message_logger.addHandler(message_fh)
+
+    redis_host = os.environ.get('OMNOMNOM_REDIS_HOST') or 'localhost'
+    frontend_logger.debug('Redis host: %s' % redis_host)
+
+    cache = redis.Redis(host=redis_host, decode_responses=True)
+
     token = os.environ.get('OMNOMNOM_AUTH_TOKEN')
     if not token:
         frontend_logger.error('You have to set your auth token as environment variable in OMNOMNOM_AUTH_TOKEN')
