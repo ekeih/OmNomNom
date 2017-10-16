@@ -24,7 +24,7 @@ import dateparser
 import parsedatetime
 import redis
 import telegram.error
-from telegram import Bot, ChatAction, ParseMode
+from telegram import ChatAction, ParseMode
 from telegram.ext import CommandHandler, Filters, MessageHandler, RegexHandler, Updater
 
 from backend.backend import cache_date_format
@@ -57,30 +57,6 @@ frontend_logger.debug('Redis host: %s' % redis_host)
 
 cache = redis.Redis(host=redis_host, decode_responses=True)
 
-token = os.environ.get('OMNOMNOM_AUTH_TOKEN')
-if not token:
-    frontend_logger.error('You have to set your auth token as environment variable in OMNOMNOM_AUTH_TOKEN')
-    sys.exit()
-
-ADMIN = os.environ.get('OMNOMNOM_ADMIN')
-if not ADMIN:
-    frontend_logger.error('You have to specify an Admin account.')
-    sys.exit()
-frontend_logger.debug('Admin ID: %s' % ADMIN)
-
-updater = Updater(token=token)
-bot_instance = Bot(token)
-dispatcher = updater.dispatcher
-
-START_TEXT = """*Bot Started*
-
-ID: %s
-Firstname: %s
-Lastname: %s
-Username: %s
-Name: %s
-""" % (bot_instance.id, bot_instance.first_name, bot_instance.last_name, bot_instance.username, bot_instance.name)
-
 
 def get_canteen_and_date(message):
     def parse_date(date_string):
@@ -106,7 +82,7 @@ def get_canteen_and_date(message):
             else:
                 return False
 
-    s = message.replace(bot_instance.name.lower(), '').split()
+    s = message.split()
     canteen = s.pop(0)[1:]
     if len(s) > 0:
         date = parse_date(' '.join(s))
@@ -119,6 +95,7 @@ def get_canteen_and_date(message):
 
 
 def log_incoming_messages(_, update):
+    frontend_logger.debug('incoming messages: %s' % update)
     chat = update.message.chat
     target_chat = ''
     if chat.type == 'group':
@@ -152,13 +129,15 @@ def help_message(_, update):
     update.message.reply_text(text=help_text, parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
 
 
-def menu(_, update):
+def menu(bot, update):
     """
     Todo:
         Reduce complexity!
     """
+    frontend_logger.debug('menu called')
     if update.message.text:
-        requested_canteen, requested_date = get_canteen_and_date(update.message.text.lower())
+        message = update.message.text.lower().replace('@%s' % bot.username.lower(), '')
+        requested_canteen, requested_date = get_canteen_and_date(message)
         frontend_logger.info('Requested Canteen: %s (%s)' % (requested_canteen, requested_date))
         if requested_date:
             reply = cache.hget(requested_date, requested_canteen)
@@ -235,6 +214,19 @@ def main():
     The entrypoint for omnbot-frontend. The main function adds all handlers to the telegram dispatcher, informs the
     admin about the startup and runs the dispatcher forever.
     """
+    token = os.environ.get('OMNOMNOM_AUTH_TOKEN')
+    if not token:
+        frontend_logger.error('You have to set your auth token as environment variable in OMNOMNOM_AUTH_TOKEN')
+        sys.exit()
+
+    admin = os.environ.get('OMNOMNOM_ADMIN')
+    if not admin:
+        frontend_logger.error('You have to specify an Admin account.')
+        sys.exit()
+    frontend_logger.debug('Admin ID: %s' % admin)
+
+    updater = Updater(token=token)
+    dispatcher = updater.dispatcher
 
     # Add an error handler to log and report errors
     dispatcher.add_error_handler(error_handler)
@@ -257,7 +249,9 @@ def main():
     # Handle group member changes
     dispatcher.add_handler(MessageHandler(Filters.group & (~ Filters.reply), group_message_handler), 3)
 
-    send_message_to_admin.delay(START_TEXT)
+    send_message_to_admin.delay('*Bot Started*\n\nID: %s\nFirstname: %s\nLastname: %s\nUsername: %s\nName: %s' %
+                                (updater.bot.id, updater.bot.first_name, updater.bot.last_name,
+                                 updater.bot.username, updater.bot.name))
 
     frontend_logger.info('Start polling')
     updater.start_polling()
