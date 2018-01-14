@@ -149,7 +149,7 @@ def menu(bot, update):
     frontend_logger.debug('menu called')
     tvstud = emojize('*:zap::zap: TVSTUD Streik der studentischen Beschäftigten :zap::zap:*\n\n'
                      'Nach 17 Jahren Lohnstillstand und 5 gescheiterten Verhandlungsrunden streiken '
-                     'die studentischenBeschäftigten Berlins am Dienstag (16.01.) für einen neuen '
+                     'die studentischen Beschäftigten Berlins am Dienstag (16.01.) für einen neuen '
                      'Tarifvertrag.\n\n:mega: Streikt mit :mega:\n:bangbang: Solidarisiert euch '
                      ':bangbang:\n:point_right: [Informiert euch](https://tvstud.berlin/) '
                      ':point_left:\n\n', use_aliases=True)
