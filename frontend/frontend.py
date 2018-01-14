@@ -147,6 +147,12 @@ def menu(bot, update):
         Reduce complexity!
     """
     frontend_logger.debug('menu called')
+    tvstud = emojize('*:zap::zap: TVSTUD Streik der studentischen Beschäftigten :zap::zap:*\n\n'
+                     'Nach 17 Jahren Lohnstillstand und 5 gescheiterten Verhandlungsrunden streiken '
+                     'die studentischenBeschäftigten Berlins am Dienstag (16.01.) für einen neuen '
+                     'Tarifvertrag.\n\n:mega: Streikt mit :mega:\n:bangbang: Solidarisiert euch '
+                     ':bangbang:\n:point_right: [Informiert euch](https://tvstud.berlin/) '
+                     ':point_left:\n\n', use_aliases=True)
     if update.message.text:
         message = update.message.text.lower().replace('@%s' % bot.username.lower(), '')
         requested_canteen, requested_date = get_canteen_and_date(message)
@@ -158,12 +164,6 @@ def menu(bot, update):
                 for canteen, canteen_menu in cache.hscan_iter(requested_date, '*%s*' % requested_canteen):
                     possible_canteens.append((canteen, canteen_menu))
                 if len(possible_canteens) == 1:
-                    tvstud = emojize('*:zap::zap: TVSTUD Streik der studentischen Beschäftigten :zap::zap:*\n\n'
-                                     'Nach 17 Jahren Lohnstillstand und 5 gescheiterten Verhandlungsrunden streiken '
-                                     'die studentischenBeschäftigten Berlins am Dienstag (16.01.) für einen neuen '
-                                     'Tarifvertrag.\n\n:mega: Streikt mit :mega:\n:bangbang: Solidarisiert euch '
-                                     ':bangbang:\n:point_right: [Informiert euch](https://tvstud.berlin/) '
-                                     ':point_left:\n\n', use_aliases=True)
                     reply = '%s%s' % (tvstud, possible_canteens.pop()[1])
                     update.message.reply_text(text=reply, parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
                     message_logger.debug('Out: %s' % reply)
@@ -182,7 +182,8 @@ def menu(bot, update):
                     update.message.reply_text(text=reply, parse_mode=ParseMode.MARKDOWN)
                     message_logger.debug('Out: %s' % reply)
             else:
-                update.message.reply_text(text=reply, parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
+                update.message.reply_text(text='%s%s' % (tvstud, reply), parse_mode=ParseMode.MARKDOWN,
+                                          disable_web_page_preview=True)
                 message_logger.debug('Out: %s' % reply)
         else:
             reply = 'Sorry, leider habe ich das Datum nicht verstanden. Probier es doch einmal mit `/%s morgen`, ' \
