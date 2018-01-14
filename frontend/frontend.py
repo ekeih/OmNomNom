@@ -147,12 +147,12 @@ def menu(bot, update):
         Reduce complexity!
     """
     frontend_logger.debug('menu called')
-    tvstud = emojize('*:zap::zap: TVSTUD Streik der studentischen Beschäftigten :zap::zap:*\n\n'
+    tvstud = emojize('*:zap::zap: TVStud Streik der studentischen Beschäftigten :zap::zap:*\n\n'
                      'Nach 17 Jahren Lohnstillstand und 5 gescheiterten Verhandlungsrunden streiken '
                      'die studentischen Beschäftigten Berlins am Dienstag (16.01.) für einen neuen '
                      'Tarifvertrag.\n\n:mega: Streikt mit :mega:\n:bangbang: Solidarisiert euch '
-                     ':bangbang:\n:point_right: [Informiert euch](https://tvstud.berlin/) '
-                     ':point_left:\n\n', use_aliases=True)
+                     ':bangbang:\n:point_right: [Informiert euch](https://tvstud.berlin) '
+                     ':point_left:\n\n\n', use_aliases=True)
     if update.message.text:
         message = update.message.text.lower().replace('@%s' % bot.username.lower(), '')
         requested_canteen, requested_date = get_canteen_and_date(message)
