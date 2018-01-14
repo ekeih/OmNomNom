@@ -24,6 +24,7 @@ import dateparser
 import parsedatetime
 import redis
 import telegram.error
+from emoji import emojize
 from telegram import ChatAction, ParseMode
 from telegram.ext import CommandHandler, Filters, MessageHandler, RegexHandler, Updater
 
@@ -157,7 +158,13 @@ def menu(bot, update):
                 for canteen, canteen_menu in cache.hscan_iter(requested_date, '*%s*' % requested_canteen):
                     possible_canteens.append((canteen, canteen_menu))
                 if len(possible_canteens) == 1:
-                    reply = possible_canteens.pop()[1]
+                    tvstud = emojize('*:zap::zap: TVSTUD Streik der studentischen Beschäftigten :zap::zap:*\n\n'
+                                     'Nach 17 Jahren Lohnstillstand und 5 gescheiterten Verhandlungsrunden streiken '
+                                     'die studentischenBeschäftigten Berlins am Dienstag (16.01.) für einen neuen '
+                                     'Tarifvertrag.\n\n:mega: Streikt mit :mega:\n:bangbang: Solidarisiert euch '
+                                     ':bangbang:\n:point_right: [Informiert euch](https://tvstud.berlin/) '
+                                     ':point_left:\n\n', use_aliases=True)
+                    reply = '%s%s' % (tvstud, possible_canteens.pop()[1])
                     update.message.reply_text(text=reply, parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
                     message_logger.debug('Out: %s' % reply)
                 elif len(possible_canteens) > 1:
