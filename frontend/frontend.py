@@ -151,9 +151,9 @@ def menu(bot, update):
                      'Nach 17 Jahren Lohnstillstand und 5 gescheiterten Verhandlungsrunden streiken '
                      'die studentischen Beschäftigten Berlins vom 23.01. bis 25.01. für einen neuen '
                      'Tarifvertrag. Auch als Studierende könnt ihr helfen, indem ihr an den Kundgebungen teilnehmt '
-                     'und euch bei der Uni beschwert.\n\n:mega: Streikt mit :mega:\n:bangbang: Solidarisiert euch '
-                     ':bangbang:\n:point_right: [Informiert euch](https://tvstud.berlin) '
-                     ':point_left:\n\n\n', use_aliases=True)
+                     'und euch bei der Uni [beschwert](https://jetzt-streik.de).\n\n:mega: Streikt mit '
+                     ':mega:\n:bangbang: Solidarisiert euch :bangbang:\n'
+                     ':point_right: [Informiert euch](https://tvstud.berlin) :point_left:\n\n\n', use_aliases=True)
     if update.message.text:
         message = update.message.text.lower().replace('@%s' % bot.username.lower(), '')
         requested_canteen, requested_date = get_canteen_and_date(message)
