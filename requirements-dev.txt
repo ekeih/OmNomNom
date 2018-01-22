@@ -1,5 +1,6 @@
 flaky
 freezegun
+ipdb
 ipython
 pytest
 pytest-freezegun
