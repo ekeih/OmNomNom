@@ -24,12 +24,12 @@ import dateparser
 import parsedatetime
 import redis
 import telegram.error
-from emoji import emojize
 from telegram import ChatAction, ParseMode
 from telegram.ext import CommandHandler, Filters, MessageHandler, RegexHandler, Updater
 
 from backend.backend import cache_date_format
 from frontend.strings import about_text, help_text
+from frontend.strike import get_strike_message
 from omnomgram.tasks import send_message_to_admin
 from stats.tasks import log_error, log_to_influxdb
 
@@ -147,13 +147,6 @@ def menu(bot, update):
         Reduce complexity!
     """
     frontend_logger.debug('menu called')
-    tvstud = emojize('*:zap::zap: TVStud Streik der studentischen Beschäftigten :zap::zap:*\n\n'
-                     'Nach 17 Jahren Lohnstillstand und 5 gescheiterten Verhandlungsrunden streiken '
-                     'die studentischen Beschäftigten Berlins vom 23.01. bis 25.01. für einen neuen '
-                     'Tarifvertrag. Auch als Studierende könnt ihr helfen, indem ihr an den Kundgebungen teilnehmt '
-                     'und euch bei der Uni [beschwert](https://jetzt-streik.de).\n\n:mega: Streikt mit '
-                     ':mega:\n:bangbang: Solidarisiert euch :bangbang:\n'
-                     ':point_right: [Informiert euch](https://tvstud.berlin) :point_left:\n\n\n', use_aliases=True)
     if update.message.text:
         message = update.message.text.lower().replace('@%s' % bot.username.lower(), '')
         requested_canteen, requested_date = get_canteen_and_date(message)
@@ -165,7 +158,7 @@ def menu(bot, update):
                 for canteen, canteen_menu in cache.hscan_iter(requested_date, '*%s*' % requested_canteen):
                     possible_canteens.append((canteen, canteen_menu))
                 if len(possible_canteens) == 1:
-                    reply = '%s%s' % (tvstud, possible_canteens.pop()[1])
+                    reply = '%s%s' % (get_strike_message(), possible_canteens.pop()[1])
                     update.message.reply_text(text=reply, parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
                     message_logger.debug('Out: %s' % reply)
                 elif len(possible_canteens) > 1:
@@ -183,7 +176,7 @@ def menu(bot, update):
                     update.message.reply_text(text=reply, parse_mode=ParseMode.MARKDOWN)
                     message_logger.debug('Out: %s' % reply)
             else:
-                update.message.reply_text(text='%s%s' % (tvstud, reply), parse_mode=ParseMode.MARKDOWN,
+                update.message.reply_text(text='%s%s' % (get_strike_message(), reply), parse_mode=ParseMode.MARKDOWN,
                                           disable_web_page_preview=True)
                 message_logger.debug('Out: %s' % reply)
         else:
