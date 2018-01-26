@@ -54,6 +54,7 @@ def get_daily_schedule(date):
 
 
 def get_strike_message():
+    return ''
     today = datetime.now()
     if today.hour > 19:
         schedule = get_daily_schedule(today + timedelta(1))
