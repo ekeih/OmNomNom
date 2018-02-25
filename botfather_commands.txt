@@ -5,6 +5,7 @@ beuth_coffeebar - Coffeebar Beuth Hochschule
 beuth_coffeebar_haus_grashof - Coffeebar Beuth Hochschule Haus Grashof
 beuth_kurfuerstenstr - Mensa Beuth Hochschule für Technik Kurfürstenstraße
 beuth_luxembugerstr - Mensa Beuth Hochschule für Technik Luxemburger Straße
+bsr - Betriebsgastronomie der Berliner Stadtreinigungsbetriebe
 charite_zahnklinik - Mensa Charité Zahnklinik
 ehb_teltower_damm - Mensa EHB Teltower Damm
 ehb_teltower_damm_coffeebar - Coffeebar EHB Teltower Damm

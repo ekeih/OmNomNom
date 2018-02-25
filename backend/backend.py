@@ -28,6 +28,7 @@ app = Celery('backend',
                  'canteens.personalkantine',
                  'canteens.singh',
                  'canteens.studierendenwerk',
+                 'canteens.bsr',
                  'omnomgram.tasks',
                  'stats.tasks'
              ]
@@ -58,6 +59,10 @@ app.conf.beat_schedule = {
     'update studierendenwerk': {
         'task': 'canteens.studierendenwerk.update_all_studierendenwerk_canteens',
         'schedule': crontab(hour=refresh_hour, minute=refresh_minute)
+    },
+    'update bsr': {
+        'task': 'canteens.bsr.update_bsr',
+        'schedule': crontab(hour=refresh_hour, minute=refresh_minute)
     }
 }
 
@@ -71,11 +76,13 @@ def housekeeping():
     from canteens.personalkantine import update_personalkantine, update_en_canteen
     from canteens.singh import update_singh
     from canteens.studierendenwerk import update_all_studierendenwerk_canteens
+    from canteens.bsr import update_bsr
     update_cafenero.delay()
     update_personalkantine.delay()
     update_en_canteen.delay()
     update_singh.delay()
     update_all_studierendenwerk_canteens.delay()
+    update_bsr.delay()
     app.start(argv=['celery', 'worker', '-l', 'info', '-Q', 'housekeeping'])
 
 
