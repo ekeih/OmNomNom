@@ -13,7 +13,6 @@ import emoji
 WELLBALANCEDMEAL = emoji.emojize(':green_apple:')
 
 logger = get_task_logger(__name__)
-import logging as logger
 
 URL = 'https://www.bsr.de/bsr/speiseplan/internet_speiseplan.html'
 
