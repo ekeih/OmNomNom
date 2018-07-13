@@ -29,7 +29,6 @@ from telegram.ext import CommandHandler, Filters, MessageHandler, RegexHandler, 
 
 from backend.backend import cache_date_format
 from frontend.strings import about_text, help_text
-from frontend.strike import get_strike_message
 from omnomgram.tasks import send_message_to_admin
 from stats.tasks import log_error, log_to_influxdb
 
@@ -158,7 +157,7 @@ def menu(bot, update):
                 for canteen, canteen_menu in cache.hscan_iter(requested_date, '*%s*' % requested_canteen):
                     possible_canteens.append((canteen, canteen_menu))
                 if len(possible_canteens) == 1:
-                    reply = '%s%s' % (get_strike_message(), possible_canteens.pop()[1])
+                    reply = possible_canteens.pop()[1]
                     update.message.reply_text(text=reply, parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
                     message_logger.debug('Out: %s' % reply)
                 elif len(possible_canteens) > 1:
@@ -176,8 +175,7 @@ def menu(bot, update):
                     update.message.reply_text(text=reply, parse_mode=ParseMode.MARKDOWN)
                     message_logger.debug('Out: %s' % reply)
             else:
-                update.message.reply_text(text='%s%s' % (get_strike_message(), reply), parse_mode=ParseMode.MARKDOWN,
-                                          disable_web_page_preview=True)
+                update.message.reply_text(text=reply, parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
                 message_logger.debug('Out: %s' % reply)
         else:
             reply = 'Sorry, leider habe ich das Datum nicht verstanden. Probier es doch einmal mit `/%s morgen`, ' \
