@@ -33,7 +33,6 @@ sys.path.insert(0, os.path.abspath('../../'))
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = ['celery.contrib.sphinx',
-              'sphinxcontrib.fulltoc',
               'sphinx.ext.autodoc',
               'sphinx.ext.todo',
               'sphinx.ext.coverage',
