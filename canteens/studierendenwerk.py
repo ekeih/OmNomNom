@@ -130,6 +130,9 @@ def parse_notes(notes_html):
     bookmarking_note = soup.find('article', {'data-hid': '6046-1'})
     if bookmarking_note:
         bookmarking_note.decompose()
+    popup_note = soup.find(text=re.compile('erneut durch Leeren des Cache'))
+    if popup_note:
+        popup_note.parent.decompose()
     notes = soup.get_text().strip()
     if notes == '':
         return ''
