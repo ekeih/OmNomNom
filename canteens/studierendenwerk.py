@@ -98,6 +98,7 @@ def parse_menu(menu_html):
     soup = bs4.BeautifulSoup(menu_html, 'html.parser')
     menu_groups = soup.find_all('div', class_='splGroupWrapper')
     for group in menu_groups:
+        group_lines = []
         menu_items = group.find_all('div', class_='splMeal')
         for item in menu_items:
             veggie = item.find_all('img', class_='splIcon')
@@ -115,14 +116,13 @@ def parse_menu(menu_html):
             price = item.find('div', class_='text-right').text.strip()
             price_exp = re.compile(r'€ (\d,\d+).*$')
             price = price_exp.sub('*\g<1>€*', price)
-            text = '%s%s %s: %s\n' % (text, annotation, title, price)
-    if text.strip() == '':
-        return ''
-    else:
-        lines = text.split('\n')
-        lines.sort()
-        text = '\n'.join(lines)
-        return '*Speiseplan*%s' % text
+            group_lines.append('%s %s: %s' % (annotation, title, price))
+
+        if len(group_lines) > 0:
+            group_heading = group.find('div').find('div').text.strip()
+            group_text = '\n'.join(sorted(group_lines)).strip()
+            text += '\n*%s*\n%s\n' % (group_heading, group_text)
+    return text.strip()
 
 
 def parse_notes(notes_html):
