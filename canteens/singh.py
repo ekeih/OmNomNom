@@ -20,9 +20,9 @@ def parse_menu_items(items):
         veggie = item.find('span', class_='menu-list__item-highlight-title')
         annotation = MEAT
         if veggie:
-            if 'VEGAN!' in veggie:
+            if 'VEGAN' in veggie.text:
                 annotation = VEGAN
-            elif 'VEGETARISCH!' in veggie:
+            elif 'VEGETARISCH' in veggie.text:
                 annotation = VEGGIE
         description = item.find('span', class_='desc__content').get_text()
         text = '%s%s *%s: %s*\n_%s_\n' % (text, annotation, title, price, description)
