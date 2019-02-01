@@ -109,16 +109,19 @@ def text_to_menu_list(text):
 
     cleaned_result = []
     tmp_item = ''
+    before_daily_menu = True
     for line in text.splitlines():
-        if not line == '' and 'cafeneroinder' not in line:
+        if 'cafeneroinder' not in line:
             if 'mittagstisch' in line:
                 cleaned_result.append(remove_unnecessary_spaces(line))
                 cleaned_result.append('\n')
-            elif 'schonkost' in line:
-                cleaned_result.append(remove_unnecessary_spaces(line))
             elif '---' in line:
                 for i in line.split('---'):
-                    cleaned_result.append(remove_unnecessary_spaces(i))
+                    cleaned_result.append(remove_unnecessary_spaces('%s vegetarisch' % i))
+            elif len(line.strip()) == 0:
+                before_daily_menu = False
+            elif before_daily_menu:
+                cleaned_result.append(remove_unnecessary_spaces('%s vegetarisch' % line))
             else:
                 tmp_item = '%s %s' % (tmp_item, line)
                 if line.endswith(('€', 'vegetarisch', 'schweinefleisch', 'rindfleisch',
@@ -141,9 +144,8 @@ def annotate_menu(menu):
         One string containing the complete menu with all annotations.
     """
     result = ''
-    before_schonkost = True
     for entry in menu:
-        if before_schonkost:
+        if 'mittagstisch' in entry or len(entry.strip()) == 0:
             annotation = ''
         elif 'vegan' in entry:
             annotation = '%s ' % VEGAN
@@ -153,8 +155,6 @@ def annotate_menu(menu):
             annotation = '%s ' % FISH
         else:
             annotation = '%s ' % MEAT
-        if 'schonkost' in entry:
-            before_schonkost = False
         entry = entry.replace('vegetarisch', '')
         entry = entry.replace('(vegan)', '')
         entry = entry.replace('fisch', '')
