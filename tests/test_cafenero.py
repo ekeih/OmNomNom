@@ -61,7 +61,7 @@ def test_pdf_to_text(pdf_file):
 
 def test_text_to_menu_list():
     text = 'cafeneroindervolkswagenuniversitätsbibliothekberlin\nmittagstisch – freitag den 06. oktober 2017 von ' \
-           '12:00 bis 20:00 uhr\nkleine portion suppe 2,80 € --- kleine portion nudeln 3,60 €\nschonkost: ' \
+           '12:00 bis 20:00 uhr\nkleine portion suppe 2,80 € --- kleine portion nudeln 3,60 €\n' \
            'pellkartoffeln mit hausgemachtem kräuterquark, leinoel und salat 4,40 €\n\n\nrussische ' \
            'gemüse-bortschtsch mit\ndill, schmand, lauchzwiebeln + biomehrkornbrot      3,80 €                  ' \
            '                          vegetarisch\n\n\n\nspaghetti bolognese\nmit frühlingszwiebeln + petersilie + ' \
@@ -76,9 +76,9 @@ def test_text_to_menu_list():
     expected_items = [
         'mittagstisch – freitag den 06. oktober 2017 von 12:00 bis 20:00 uhr',
         '\n',
-        'kleine portion suppe 2,80€',
-        'kleine portion nudeln 3,60€',
-        'schonkost: pellkartoffeln mit hausgemachtem kräuterquark, leinoel und salat 4,40€',
+        'kleine portion suppe 2,80€ vegetarisch',
+        'kleine portion nudeln 3,60€ vegetarisch',
+        'pellkartoffeln mit hausgemachtem kräuterquark, leinoel und salat 4,40€ vegetarisch',
         'russische gemüse-bortschtsch mit dill, schmand, lauchzwiebeln + biomehrkornbrot 3,80€ vegetarisch',
         'spaghetti bolognese mit frühlingszwiebeln + petersilie + parmesankäse 4,80€ rindfleisch',
         'spaghetti mit tomaten, artischocken, lauchzwiebeln+ (parmesan) 4,80€ vegetarisch (vegan)',
@@ -96,9 +96,9 @@ def test_annotate_menu():
     menu = [
         'mittagstisch – freitag den 06. oktober 2017 von 12:00 bis 20:00 uhr',
         '\n',
-        'kleine portion suppe 2,80€',
-        'kleine portion nudeln 3,60€',
-        'schonkost: pellkartoffeln mit hausgemachtem kräuterquark, leinoel und salat 4,40€',
+        'kleine portion suppe 2,80€ vegetarisch',
+        'kleine portion nudeln 3,60€ vegetarisch',
+        'pellkartoffeln mit hausgemachtem kräuterquark, leinoel und salat 4,40€ vegetarisch',
         'russische gemüse-bortschtsch mit dill, schmand, lauchzwiebeln + biomehrkornbrot 3,80€ vegetarisch',
         'spaghetti bolognese mit frühlingszwiebeln + petersilie + parmesankäse 4,80€ rindfleisch',
         'spaghetti mit tomaten, artischocken, lauchzwiebeln+ (parmesan) 4,80€ vegetarisch (vegan)',
@@ -109,9 +109,9 @@ def test_annotate_menu():
     ]
 
     expected_annotations = 'mittagstisch – freitag den 06. oktober 2017 von 12:00 bis 20:00 uhr\n\n' \
-                           'kleine portion suppe 2,80€\n' \
-                           'kleine portion nudeln 3,60€\n' \
-                           'schonkost: pellkartoffeln mit hausgemachtem kräuterquark, leinoel und salat 4,40€\n' \
+                           '%s kleine portion suppe 2,80€\n' \
+                           '%s kleine portion nudeln 3,60€\n' \
+                           '%s pellkartoffeln mit hausgemachtem kräuterquark, leinoel und salat 4,40€\n' \
                            '%s russische gemüse-bortschtsch mit dill, schmand, lauchzwiebeln + biomehrkornbrot ' \
                            '3,80€\n' \
                            '%s spaghetti bolognese mit frühlingszwiebeln + petersilie + parmesankäse 4,80€\n' \
@@ -119,7 +119,7 @@ def test_annotate_menu():
                            '%s spaghetti mit salbei-olivenoel und (parmesankäse) 4,80€\n' \
                            '%s kartoffel-rosenkohl-quiche mit gorgonzola und gemischtem salat 6,00€\n' \
                            '%s filet vom schwarzen heilbutt mit chili-koriander-dip auf basmatireis mit ' \
-                           'zucchini-kirschtomaten-gemüse 6,50€' % (VEGGIE, MEAT, VEGAN, VEGAN, VEGGIE, FISH)
+                           'zucchini-kirschtomaten-gemüse 6,50€' % (VEGGIE, VEGGIE, VEGGIE, VEGGIE, MEAT, VEGAN, VEGAN, VEGGIE, FISH)
 
     annotated_menu = cafenero.annotate_menu(menu)
     assert annotated_menu == expected_annotations
