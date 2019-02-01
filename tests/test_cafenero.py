@@ -129,4 +129,3 @@ def test_annotate_menu():
 def test_main():
     menu = cafenero.main()
     assert 'mittagstisch' in menu
-    assert 'schonkost' in menu
