@@ -155,12 +155,12 @@ def annotate_menu(menu):
             annotation = '%s ' % FISH
         else:
             annotation = '%s ' % MEAT
-        entry = entry.replace('vegetarisch', '')
         entry = entry.replace('(vegetarisch)', '')
+        entry = entry.replace('vegetarisch', '')
         entry = entry.replace('(vegan)', '')
+        entry = entry.replace('vegan', '')
         entry = entry.replace('fisch', '')
         entry = entry.replace('rindfleisch', '')
-        entry = entry.replace('vegan', '')
         entry = entry.replace('schweinefleisch', '')
         entry = ' '.join(entry.split())
         result += '%s%s\n' % (annotation, entry)
