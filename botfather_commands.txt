@@ -46,7 +46,7 @@ tu_cafenero - Cafeteria in der Volkswagen Bibliothek
 tu_en_kantine - TU EN Kantine
 tu_marchstr - Cafeteria TU Marchstraße
 tu_mensa - Mensa TU Hardenbergstraße
-tu_mensa_cafeteria - Cafeteria TU Hardenbergstraße
+tu_veggie - Mensa TU Veggie 2.0
 tu_mensa_coffeebar - Coffeebar TU Hardenbergstraße
 tu_personalkantine - TU Personalkantine
 tu_singh - TU Singh

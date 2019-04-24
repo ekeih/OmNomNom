@@ -55,7 +55,7 @@ if request.status_code == requests.codes.ok:
         539: "tu_ackerstr",
         540: "tu_architektur",
         657: "tu_skyline",
-        631: "tu_mensa_cafeteria",
+        631: "tu_veggie",
         541: "tu_wetterleuchten",
         538: "tu_marchstr",
         722: "udk_jazz_cafe",
