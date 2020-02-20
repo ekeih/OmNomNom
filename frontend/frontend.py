@@ -229,12 +229,12 @@ def main():
     global message_fh
     global cache
 
-    frontend_fh = logging.handlers.TimedRotatingFileHandler('logs/frontend.log', when='midnight', backupCount=60)
+    frontend_fh = logging.StreamHandler(sys.stdout)
     frontend_fh.setLevel(logging.DEBUG)
     frontend_fh.setFormatter(formatter)
     frontend_logger.addHandler(frontend_fh)
 
-    message_fh = logging.handlers.TimedRotatingFileHandler('logs/messages.log', when='midnight', backupCount=60)
+    message_fh = logging.StreamHandler(sys.stdout)
     message_fh.setLevel(logging.DEBUG)
     message_fh.setFormatter(formatter)
     message_logger.addHandler(message_fh)
