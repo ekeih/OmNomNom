@@ -29,7 +29,7 @@ def download_website():
     Raises:
         HTTPError: When the underlying requests library fails we also raise a HTTPError.
     """
-    url = 'http://cafenero.net/speisen.html'
+    url = 'https://cafenero.net/speisekarte/'
     request = requests.get(url)
     request.raise_for_status()
     return request.text
@@ -46,8 +46,8 @@ def extract_dropbox_link(html):
         The link as string.
     """
     soup = bs4.BeautifulSoup(html, 'html.parser')
-    iframe = soup.find('iframe')
-    return iframe.attrs['src']
+    link = [a for a in soup.find_all('a', href=True) if 'dropbox' in a.get('href') and 'speisekarte.pdf' in a.get('href')][0].get('href')
+    return link
 
 
 def get_pdf(link):

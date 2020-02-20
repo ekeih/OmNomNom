@@ -19,7 +19,7 @@ def pdf_file():
 @flaky
 def test_download_website__with_live_site():
     html = cafenero.download_website()
-    assert '<iframe src="https://www.dropbox.com' in html
+    assert 'Speisekarte als' in html
 
 
 def test_download_website__with_connect_timeout():
@@ -30,12 +30,10 @@ def test_download_website__with_connect_timeout():
 
 
 def test_extract_dropbox_link():
-    html = '<html>\r\n\t<title>Café Nero Speisen</title>\r\n</html>\r\n<body>\r\n\t<iframe ' \
-           'src="https://www.dropbox.com/s/swkhko9vwkwlgn0/speisekarte.pdf?raw=1" border="0" width="100%" ' \
-           'height="2000px" />\r\n\t</body>\r\n</html>\r\n'
-    expected_link = 'https://www.dropbox.com/s/swkhko9vwkwlgn0/speisekarte.pdf?raw=1'
+    html = cafenero.download_website()
     link = cafenero.extract_dropbox_link(html)
-    assert link == expected_link
+    assert 'dropbox' in link
+    assert 'speisekarte.pdf' in link
 
 
 @flaky
