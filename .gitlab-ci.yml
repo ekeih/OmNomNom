@@ -1,0 +1,24 @@
+stages:
+  - build
+  - renovate
+
+default:
+  tags:
+    - hetzner
+
+include:
+  - project: max/ci-templates
+    file: renovate.yml
+  - project: max/ci-templates
+    file: docker.yml
+
+Renovate:
+  stage: renovate
+  extends: .renovate
+  variables:
+    RENOVATE_GIT_AUTHOR: "Renovate <ekeih@users.noreply.github.com>"
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule" && $TAG_WITH_DATE != "true"
+
+latest:
+  extends: .docker-release-latest
