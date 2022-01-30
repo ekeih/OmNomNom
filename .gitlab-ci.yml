@@ -22,3 +22,6 @@ Renovate:
 
 latest:
   extends: .docker-release-latest
+
+release:
+  extends: .docker-release-with-date
