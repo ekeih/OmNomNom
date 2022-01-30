@@ -63,7 +63,7 @@ app.conf.beat_schedule = {
 
 
 def beat():
-    app.start(argv=['celery', 'beat', '-l', 'info'])
+    app.start(argv=['beat', '-l', 'info'])
 
 
 def housekeeping():
@@ -77,8 +77,8 @@ def housekeeping():
     update_en_canteen.delay()
     update_singh.delay()
     update_all_studierendenwerk_canteens.delay()
-    app.start(argv=['celery', 'worker', '-l', 'info', '-Q', 'housekeeping'])
+    app.start(argv=['worker', '-l', 'info', '-Q', 'housekeeping'])
 
 
 def worker():
-    app.start(argv=['celery', 'worker', '-l', 'info', '-Q', 'canteens'])
+    app.start(argv=['worker', '-l', 'info', '-Q', 'canteens'])
