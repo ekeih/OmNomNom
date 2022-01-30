@@ -1,7 +1,6 @@
 import emoji
 from canteens.canteen import FISH, MEAT, VEGAN, VEGGIE
 
-
 about_text = """*OmNomNom*
 
 OmNomNom is a Telegram bot to get canteen information. Currently it supports only canteens in Berlin (Germany) \
@@ -10,8 +9,6 @@ The bot is available as [@OmnBot](https://telegram.me/OmnBot). Feel free to talk
 
 Find out more about it on [Github](https://github.com/ekeih/OmNomNom). Pull requests and issues are always welcome. If \
 you have questions you can talk to me via [Telegram](https://telegram.me/ekeih).
-
-Check out the website for more details: https://omnbot.io
 
 OmNomNom is licensed under the [GNU AGPL v3](https://github.com/ekeih/OmNomNom#license).
 """
@@ -51,8 +48,6 @@ Ich markiere Gerichte nach bestem Gewissen, aber ohne Garantie, mit folgenden Sy
 
 Viel Spaß und guten Appetit! %s
 Bei Problemen sprich einfach @ekeih an.
-
-PS: Es gibt auch eine Webseite: https://omnbot.io
 
 PPS: Der Bot ist OpenSource (GNU AGPL v3) und den Code findest du auf [GitHub](https://github.com/ekeih/OmNomNom). %s
 """ % (VEGAN, VEGGIE, MEAT, FISH, emoji.emojize(':cake:', use_aliases=True),

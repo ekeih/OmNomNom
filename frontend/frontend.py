@@ -24,13 +24,14 @@ import dateparser
 import parsedatetime
 import redis
 import telegram.error
-from telegram import ChatAction, ParseMode
-from telegram.ext import CommandHandler, Filters, MessageHandler, RegexHandler, Updater
-
 from backend.backend import cache_date_format
-from frontend.strings import about_text, help_text
 from omnomgram.tasks import send_message_to_admin
 from stats.tasks import log_error, log_to_influxdb
+from telegram import ChatAction, ParseMode
+from telegram.ext import (CommandHandler, Filters, MessageHandler,
+                          RegexHandler, Updater)
+
+from frontend.strings import about_text, help_text
 
 logging.getLogger('JobQueue').setLevel(logging.INFO)
 logging.getLogger('telegram').setLevel(logging.INFO)
@@ -99,7 +100,7 @@ def get_canteen_and_date(message):
         return canteen, datetime.date.today().strftime(cache_date_format)
 
 
-def log_incoming_messages(_, update):
+def log_incoming_messages(update, _):
     """Log incoming messages to a log file and influxdb."""
     frontend_logger.debug('incoming messages: %s' % update)
     chat = update.message.chat
@@ -119,26 +120,26 @@ def log_incoming_messages(_, update):
     log_to_influxdb.delay('messages', fields, tags)
 
 
-def send_typing_action(bot, update):
+def send_typing_action(update, context):
     """Send 'typing...' message to chat as long as it is not a reply message."""
     if not update.message.reply_to_message:
         frontend_logger.debug("Send typing")
-        bot.sendChatAction(chat_id=update.message.chat_id, action=ChatAction.TYPING)
+        context.bot.sendChatAction(chat_id=update.message.chat_id, action=ChatAction.TYPING)
 
 
-def about(_, update):
+def about(update, _):
     """Send the 'About' text about the bot."""
     message_logger.info('Out: Sending <about> message')
     update.message.reply_text(text=about_text, parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
 
 
-def help_message(_, update):
+def help_message(update, _):
     """Send a help message with usage instructions."""
     message_logger.info('Send <help> message')
     update.message.reply_text(text=help_text, parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
 
 
-def menu(bot, update):
+def menu(update, context):
     """
     Process the message and reply with the menu or error messages.
 
@@ -147,7 +148,7 @@ def menu(bot, update):
     """
     frontend_logger.debug('menu called')
     if update.message.text:
-        message = update.message.text.lower().replace('@%s' % bot.username.lower(), '')
+        message = update.message.text.lower().replace('@%s' % context.bot.username.lower(), '')
         requested_canteen, requested_date = get_canteen_and_date(message)
         frontend_logger.info('Requested Canteen: %s (%s)' % (requested_canteen, requested_date))
         if requested_date:
@@ -185,39 +186,39 @@ def menu(bot, update):
             message_logger.debug('Out: %s' % reply)
 
 
-def group_message_handler(bot, update):
+def group_message_handler(update, context):
     """
     Handle events that are specific for groups. Currently it only sends a help message when the bot is invited to a new
     group.
     """
     frontend_logger.info('Group members changed')
     frontend_logger.debug(update)
-    my_id = bot.get_me().id
+    my_id = context.bot.get_me().id
     if update.message.new_chat_members:
         for member in update.message.new_chat_members:
             if member.id == my_id:
                 frontend_logger.info('I was invited to a group :)')
-                help_message(bot, update)
+                help_message(context.bot, update)
 
 
-def error_handler(_, update, error):
+def error_handler(update, context):
     """
     Handle errors in the dispatcher and decide which errors are just logged and which errors are important enough to
     trigger a message to the admin.
     """
     # noinspection PyBroadException
     try:
-        raise error
+        raise context.error
     except telegram.error.BadRequest:
-        frontend_logger.error(error)
-        log_error.delay(str(error), 'frontend', 'badrequest')
+        frontend_logger.error(context.error)
+        log_error.delay(str(context.error), 'frontend', 'badrequest')
     except telegram.error.TimedOut:
-        frontend_logger.error(error)
-        log_error.delay(str(error), 'frontend', 'timeout')
+        frontend_logger.error(context.error)
+        log_error.delay(str(context.error), 'frontend', 'timeout')
     except:
-        error_message = '*Some Frontend Error*\n\n*Update*\n```\n%s\n```\n*Error*\n```\n%s\n```' % (update, error)
+        error_message = '*Some Frontend Error*\n\n*Update*\n```\n%s\n```\n*Error*\n```\n%s\n```' % (update, context.error)
         send_message_to_admin.delay(error_message)
-        frontend_logger.error(error)
+        frontend_logger.error(context.error)
 
 
 def main():
@@ -255,7 +256,7 @@ def main():
         sys.exit()
     frontend_logger.debug('Admin ID: %s' % admin)
 
-    updater = Updater(token=token)
+    updater = Updater(token=token, use_context=True)
     dispatcher = updater.dispatcher
 
     # Add an error handler to log and report errors

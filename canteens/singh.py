@@ -15,20 +15,20 @@ URL = 'http://mathe-cafe-tu.de/cafe/'
 
 def parse_menu_items(items):
     text = ''
-    for item in items.find_all('li', class_='menu-list__item'):
-        title = item.find('span', class_='item_title').get_text()
-        price = item.find('span', class_='menu-list__item-price').get_text()
-        veggie = item.find('span', class_='menu-list__item-highlight-title')
-        annotation = MEAT
-        if veggie:
-            if 'VEGAN' in veggie.text:
-                annotation = VEGAN
-            elif 'VEGETARISCH' in veggie.text:
-                annotation = VEGGIE
-        description = item.find('span', class_='desc__content').get_text()
-        text = '%s%s *%s: %s*\n_%s_\n' % (text, annotation, title, price, description)
-    return text
+    for dish in items.find_all('table'):
+        th = dish.find_all('th')
+        title = th[0].text.strip().title()
+        price = th[1].text.strip()
+        description = dish.parent.p.text.strip()
 
+        annotation = MEAT
+        annotation = ''
+        # if 'VEGAN' in veggie.text:
+        #     annotation = VEGAN
+        # elif 'VEGETARISCH' in veggie.text:
+        #     annotation = VEGGIE
+        text = '%s%s*%s: %s*\n_%s_\n' % (text, annotation, title, price, description)
+    return text
 
 def get_menu():
     try:
@@ -38,21 +38,26 @@ def get_menu():
         send_message_to_admin('```\n%s\n```' % ex)
         raise ex
     if request.status_code == requests.codes.ok:
-        soup = BeautifulSoup(request.text, 'html.parser')
-        menu_items = soup.find_all('ul', class_='menu-list__items')
         date_range = get_date_range()
+        soup = BeautifulSoup(request.text, 'html.parser')
+
+        monday = soup.find(text="MONTAG").parent.parent.parent.parent
+        tuesday = soup.find(text="DIENSTAG").parent.parent.parent.parent
+        wednesday = soup.find(text="MITTWOCH").parent.parent.parent.parent
+        thursday = soup.find(text="DONNERSTAG").parent.parent.parent.parent
+        friday = soup.find(text="FREITAG").parent.parent.parent.parent
 
         menu = {
             0: '[Singh Catering](%s) (%s) (08:00-18:00)\n%s' % (URL, date_range[0].strftime('%d.%m.%Y'),
-                                                                parse_menu_items(menu_items[0])),  # Monday
+                                                                parse_menu_items(monday)),  # Monday
             1: '[Singh Catering](%s) (%s) (08:00-18:00)\n%s' % (URL, date_range[1].strftime('%d.%m.%Y'),
-                                                                parse_menu_items(menu_items[3])),  # Tuesday
+                                                                parse_menu_items(tuesday)),  # Tuesday
             2: '[Singh Catering](%s) (%s) (08:00-18:00)\n%s' % (URL, date_range[2].strftime('%d.%m.%Y'),
-                                                                parse_menu_items(menu_items[1])),  # Wednesday
+                                                                parse_menu_items(wednesday)),  # Wednesday
             3: '[Singh Catering](%s) (%s) (08:00-18:00)\n%s' % (URL, date_range[3].strftime('%d.%m.%Y'),
-                                                                parse_menu_items(menu_items[4])),  # Thursday
+                                                                parse_menu_items(thursday)),  # Thursday
             4: '[Singh Catering](%s) (%s) (08:00-18:00)\n%s' % (URL, date_range[4].strftime('%d.%m.%Y'),
-                                                                parse_menu_items(menu_items[2])),  # Friday
+                                                                parse_menu_items(friday)),  # Friday
         }
         return menu
     else:
