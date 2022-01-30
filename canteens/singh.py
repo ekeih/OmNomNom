@@ -1,15 +1,16 @@
 from datetime import datetime
 
 import requests
+from backend.backend import app, cache, cache_date_format, cache_ttl
 from bs4 import BeautifulSoup
 from celery.utils.log import get_task_logger
-
-from backend.backend import app, cache, cache_date_format, cache_ttl
-from canteens.canteen import MEAT, VEGAN, VEGGIE, get_current_week, get_next_week
 from omnomgram.tasks import send_message_to_admin
 
+from canteens.canteen import (MEAT, VEGAN, VEGGIE, get_current_week,
+                              get_next_week)
+
 logger = get_task_logger(__name__)
-URL = 'http://singh-catering.de/cafe/'
+URL = 'http://mathe-cafe-tu.de/cafe/'
 
 
 def parse_menu_items(items):
