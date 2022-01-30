@@ -268,17 +268,17 @@ def main():
     dispatcher.add_handler(CommandHandler('help', help_message), 2)
 
     # Send typing action and log incoming messages
-    dispatcher.add_handler(RegexHandler('.*', send_typing_action), 0)
-    dispatcher.add_handler(RegexHandler('.*', log_incoming_messages), 1)
+    dispatcher.add_handler(MessageHandler(Filters.regex('.*'), send_typing_action), 0)
+    dispatcher.add_handler(MessageHandler(Filters.regex('.*'), log_incoming_messages), 1)
 
     # Handle all messages beginning with a '/'
-    dispatcher.add_handler(RegexHandler('/.*', menu), 2)
+    dispatcher.add_handler(MessageHandler(Filters.regex('/.*'), menu), 2)
 
     # Handle normal text messages that are no reply and answer with a help_message
     dispatcher.add_handler(MessageHandler(Filters.text & (~ Filters.reply), help_message), 2)
 
     # Handle group member changes
-    dispatcher.add_handler(MessageHandler(Filters.group & (~ Filters.reply), group_message_handler), 3)
+    dispatcher.add_handler(MessageHandler(Filters.chat_type.groups & (~ Filters.reply), group_message_handler), 3)
 
     send_message_to_admin.delay('*Bot Started*\n\nID: %s\nFirstname: %s\nLastname: %s\nUsername: %s\nName: %s' %
                                 (updater.bot.id, updater.bot.first_name, updater.bot.last_name,
