@@ -5,6 +5,6 @@ emoji
 fake-useragent
 influxdb
 parsedatetime
-python-telegram-bot==13.10
+python-telegram-bot==13.11
 redis
 requests
