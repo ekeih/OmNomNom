@@ -1,5 +1,5 @@
 beautifulsoup4
-celery[redis]==5.2.3
+celery[redis]==5.2.6
 dateparser
 emoji
 fake-useragent
