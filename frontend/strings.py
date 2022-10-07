@@ -50,5 +50,5 @@ Viel Spaß und guten Appetit! %s
 Bei Problemen sprich einfach @ekeih an.
 
 PPS: Der Bot ist OpenSource (GNU AGPL v3) und den Code findest du auf [GitHub](https://github.com/ekeih/OmNomNom). %s
-""" % (VEGAN, VEGGIE, MEAT, FISH, emoji.emojize(':cake:', use_aliases=True),
-       emoji.emojize(':smile:', use_aliases=True))
+""" % (VEGAN, VEGGIE, MEAT, FISH, emoji.emojize(':cake:', language='alias'),
+       emoji.emojize(':smile:', language='alias'))
