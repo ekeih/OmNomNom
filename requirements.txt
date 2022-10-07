@@ -1,10 +1,10 @@
-beautifulsoup4
+beautifulsoup4==4.11.1
 celery[redis]==5.2.7
-dateparser
+dateparser==1.1.1
 emoji==2.1.0
-fake-useragent
-influxdb
-parsedatetime
+fake-useragent==0.1.11
+influxdb==5.3.1
+parsedatetime==2.6
 python-telegram-bot==13.11
-redis
-requests
+redis==4.3.4
+requests==2.28.1
