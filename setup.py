@@ -24,7 +24,7 @@ def requirements():
 
 setup(
     name='omnbot',
-    version=getenv('DRONE_TAG', default=datetime.now().strftime('%Y.%m.%d.dev%H%M%S')),
+    version=getenv('GITHUB_REF_NAME', default=datetime.now().strftime('%Y.%m.%d.dev%H%M%S')),
     description='OmNomNom - A simple Telegram bot to get canteen information',
     long_description=readme(),
     url='https://github.com/ekeih/OmNomNom',
