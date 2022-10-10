@@ -40,7 +40,6 @@ setup(
     entry_points={
         'console_scripts': [
             'omnbot-worker=backend.backend:worker',
-            'omnbot-housekeeping=backend.backend:housekeeping',
             'omnbot-beat=backend.backend:beat',
             'omnbot-frontend=frontend.frontend:main'
         ]

@@ -28,14 +28,7 @@ app = Celery('backend',
              ]
              )
 
-app.conf.task_default_queue = 'housekeeping'
-app.conf.task_routes = {
-    'canteens.*': {'queue': 'canteens'}
-}
-
-def housekeeping():
-    app.start(argv=['worker', '-l', 'info', '-Q', 'housekeeping'])
-
+app.conf.task_default_queue = 'canteens'
 
 def worker():
     app.start(argv=['worker', '-l', 'info', '-Q', 'canteens'])
