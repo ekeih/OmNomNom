@@ -1,11 +1,9 @@
+import logging
 from os import environ
 
 import influxdb
-from celery.utils.log import get_task_logger
 
-from backend.backend import app
-
-logger = get_task_logger(__name__)
+logger = logging.getLogger(__name__)
 
 host = environ.get('OMNOMNOM_INFLUXDB_HOST')
 database = environ.get('OMNOMNOM_INFLUXDB_DATABASE')
@@ -17,8 +15,7 @@ else:
     influxdb_client = None
 
 
-@app.task(bind=True, default_retry_delay=30)
-def log_to_influxdb(self, measurement, fields, tags=None):
+def log_to_influxdb(measurement, fields, tags=None):
     if tags is None:
         tags = {}
     entry = {
@@ -30,13 +27,12 @@ def log_to_influxdb(self, measurement, fields, tags=None):
         try:
             influxdb_client.write_points([entry])
         except Exception as ex:
-            raise self.retry(exc=ex)
+            raise ex
     else:
         logger.info('Would log to InfluxDB: %s' % entry)
 
 
-@app.task(bind=True, default_retry_delay=30)
-def log_error(_, error_message, module_, type_):
+def log_error(error_message, module_, type_):
     fields = {
         'error': error_message,
         'module': module_,

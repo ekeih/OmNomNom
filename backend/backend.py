@@ -24,8 +24,7 @@ app = Celery('backend',
                  'canteens.cafenero',
                  'canteens.personalkantine',
                  'canteens.singh',
-                 'canteens.studierendenwerk',
-                 'stats.tasks'
+                 'canteens.studierendenwerk'
              ]
              )
 

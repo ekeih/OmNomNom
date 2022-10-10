@@ -121,7 +121,7 @@ def log_incoming_messages(update: Update, _: CallbackContext) -> None:
     message_logger.info('In: %s: %s' % (target_chat, update.message.text))
     fields = {'message': update.message.text}
     tags = {'chat': target_chat}
-    log_to_influxdb.delay('messages', fields, tags)
+    log_to_influxdb('messages', fields, tags)
 
 
 def send_typing_action(update: Update, context: CallbackContext) -> None:
@@ -215,10 +215,10 @@ def error_handler(update: Update, context: CallbackContext) -> None:
         raise context.error
     except telegram.error.BadRequest:
         frontend_logger.error(context.error)
-        log_error.delay(str(context.error), 'frontend', 'badrequest')
+        log_error(str(context.error), 'frontend', 'badrequest')
     except telegram.error.TimedOut:
         frontend_logger.error(context.error)
-        log_error.delay(str(context.error), 'frontend', 'timeout')
+        log_error(str(context.error), 'frontend', 'timeout')
     except:
         error_message = '*Some Frontend Error*\n\n*Update*\n```\n%s\n```\n*Error*\n```\n%s\n```' % (update, context.error)
         send_message_to_admin(context.bot, error_message)
