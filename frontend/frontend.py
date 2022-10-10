@@ -31,6 +31,7 @@ from telegram import ChatAction, ParseMode
 from telegram.ext import (CommandHandler, Filters, MessageHandler,
                           RegexHandler, Updater)
 
+from frontend.schedule import schedule
 from frontend.strings import about_text, help_text
 
 logging.getLogger('JobQueue').setLevel(logging.INFO)
@@ -279,6 +280,9 @@ def main():
 
     # Handle group member changes
     dispatcher.add_handler(MessageHandler(Filters.chat_type.groups & (~ Filters.reply), group_message_handler), 3)
+
+    # Schedule canteen updates
+    schedule(updater.job_queue)
 
     send_message_to_admin.delay('*Bot Started*\n\nID: %s\nFirstname: %s\nLastname: %s\nUsername: %s\nName: %s' %
                                 (updater.bot.id, updater.bot.first_name, updater.bot.last_name,
