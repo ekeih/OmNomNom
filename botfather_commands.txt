@@ -1,56 +1,41 @@
 about - Über OmNomNom
 help - Hilfe zum Bot
 ash_hellersdorf - Mensa ASH Berlin Hellersdorf
-beuth_coffeebar - Coffeebar Beuth Hochschule
-beuth_coffeebar_haus_grashof - Coffeebar Beuth Hochschule Haus Grashof
-beuth_kurfuerstenstr - Mensa Beuth Hochschule für Technik Kurfürstenstraße
-beuth_luxembugerstr - Mensa Beuth Hochschule für Technik Luxemburger Straße
+bht_luxembugerstr - Mensa Berliner Hochschule für Technik Luxemburger Straße
+bht_luxemburgerstr_backshop - Backshop BHT Luxemburger Straße
 charite_zahnklinik - Mensa Charité Zahnklinik
 ehb_teltower_damm - Mensa EHB Teltower Damm
-ehb_teltower_damm_coffeebar - Coffeebar EHB Teltower Damm
-fu_2 - Mensa FU II Otto-von-Simson-Straße
-fu_2_coffeebar - Coffeebar Mensa FU II
+fu_1 - Mensa FU I
+fu_2 - Mensa FU II
 fu_dueppel - Mensa FU Herrenhaus Düppel
-fu_ihnestr - Cafeteria FU Ihnestraße
-fu_koserstr - Cafeteria FU Koserstraße
+fu_koserstr - Mensa FU Koserstraße
 fu_lankwitz - Mensa FU Lankwitz Malteserstraße
-fu_lankwitz_coffeebar - Coffeebar Mensa Lankwitz
-fu_pharmazie - Cafeteria FU Pharmazie
-fu_rechtswissenschaft - Cafeteria FU Rechtswissenschaft
-fu_veggie - Mensa Veggie N° 1 - Die grüne Mensa
-fu_wirtschaftswissenschaften - Cafeteria FU Wirtschaftswissenschaften
+fu_osi - Backshop FU OSI
+fu_pharmazie - Mensa FU Pharmazie
+fu_rechtswissenschaft - Backshop FU Rechtswissenschaften
 hfm_charlottenstr - Mensa HfM Charlottenstraße
-hfm_charlottenstr_coffeebar - Coffeebar HfM Charlottenstraße
-hfm_neuer_marstall - Coffeebar HfM „Neuer Marstall“
-hfs_schnellerstr - Mensa HfS Schnellerstraße
+hfm_charlottenstr_backshop - Backshop HfM Charlottenstraße
+hfm_neuer_marstall - Backshop HfM Neuer Marstall
+hfs_ernstbusch - Mensa HfS Ernst Busch
 htw_treskowallee - Mensa HTW Treskowallee
-htw_treskowallee_cafeteria - Cafeteria HTW Treskowallee
 htw_wilhelminenhof - Mensa HTW Wilhelminenhof
-htw_wilhelminenhof_coffeebar - Coffeebar HTW Wilhelminenhof
 hu_adlershof - Mensa HU Oase Adlershof
-hu_adlershof_coffeebar - Coffeebar HU Oase Adlershof
-hu_ct - Coffeebar HU „c.t“
+hu_ct - Backshop HU „c.t.“
 hu_nord - Mensa HU Nord
-hu_nord_coffeebar - Coffeebar HU Mensa Nord
-hu_spandauer - Mensa HU Spandauer Straße
+hu_spandauer - Backshop HU Spandauer Straße
 hu_sued - Mensa HU Süd
-hu_wilhelm_grimm_zentrum - Cafeteria HU „Jacob und Wilhelm Grimm Zentrum“
-hwr_alt_friedrichsfelde - Coffeebar HWR Alt-Friedrichsfelde
+hwr_alt_friedrichsfelde - Backshop HWR Alt-Friedrichsfelde
 hwr_badenschestr - Mensa HWR Badensche Straße
-hwr_badenschestr_coffeebar - Coffeebar HWR Badensche Straße
-khs_mensa - Mensa Katholische HS für Sozialwesen
+khs_backshop - Backshop KHSB
 khs_weissensee - Mensa KHS Weißensee
-tu_ackerstr - Cafeteria TU Ackerstraße
-tu_architektur - Cafeteria TU Architektur
+tu_architektur - Mensa Pastaria TU Architektur
 tu_cafenero - Cafeteria in der Volkswagen Bibliothek
 tu_en_kantine - TU EN Kantine
-tu_marchstr - Cafeteria TU Marchstraße
+tu_marchstr - Mensa TU Marchstraße
 tu_mensa - Mensa TU Hardenbergstraße
-tu_veggie - Mensa TU Veggie 2.0
-tu_mensa_coffeebar - Coffeebar TU Hardenbergstraße
+tu_mensa_backshop - Backshop TU Hardenbergstraße
 tu_personalkantine - TU Personalkantine
 tu_singh - TU Singh
-tu_skyline - Cafeteria TU „Skyline“
-tu_wetterleuchten - Cafeteria TU Hauptgebäude „Wetterleuchten“
-udk_jazz_cafe - Cafeteria UdK „Jazz-Cafe“
-udk_lietzenburgerstr - Cafeteria UdK Lietzenburger Straße
+tu_skyline - Mensa TU „Skyline“
+tu_veggie - Mensa Pasteria TU Veggie 2.0 – Die vegane Mensa
+tu_wetterleuchten - Backshop TU Wetterleuchten

@@ -2,131 +2,119 @@
 
 import bs4
 import requests
-import textwrap
 
 HEADERS = {'user-agent': 'User-Agent: Mozilla'}
-PARAMS = {'resources_id': 534}
-URL = 'https://www.stw.berlin/xhr/speiseplan-und-standortdaten.html'
+URL = 'https://www.stw.berlin/mensen/'
 
-request = requests.post(URL, headers=HEADERS, data=PARAMS)
+command_map = {
+    147: "hu_nord",
+    191: "hu_adlershof",
+    270: "hu_spandauer",
+    271: "fu_dueppel",
+    277: "fu_rechtswissenschaft",
+    319: "htw_wilhelminenhof",
+    320: "htw_treskowallee",
+    321: "tu_mensa",
+    322: "fu_2",
+    323: "fu_1",
+    367: "hu_sued",
+    368: "fu_osi",
+    526: "hwr_badenschestr",
+    527: "bht_luxembugerstr",
+    528: "fu_lankwitz",
+    529: "ehb_teltower_damm",
+    530: "khs_weissensee",
+    531: "hfm_charlottenstr",
+    532: "khs_backshop",
+    533: "hfs_ernstbusch",
+    534: "ash_hellersdorf",
+    537: "charite_zahnklinik",
+    538: "tu_marchstr",
+    540: "tu_architektur",
+    541: "tu_wetterleuchten",
+    542: "fu_pharmazie",
+    631: "tu_veggie",
+    657: "tu_skyline",
+    660: "fu_koserstr",
+    661: "hu_ct",
+    723: "hfm_neuer_marstall",
+    727: "hwr_alt_friedrichsfelde",
+    5477: "bht_luxemburgerstr_backshop",
+    5501: "hfm_charlottenstr_backshop",
+    5302: "tu_mensa_backshop"
+}
+
+parsed_canteens = {}
+unknown_canteens = {}
+removed_canteens = {}
+botfather_commands = []
+
+
+request = requests.get(URL, headers=HEADERS) #, data=PARAMS)
 
 if request.status_code == requests.codes.ok:
+    checked_urls = []
     soup = bs4.BeautifulSoup(request.text, 'html.parser')
-    listbox = soup.find('select', class_='listboxStandorte')
-    options = listbox.findAll('option')
+    overview = soup.find(text="Übersicht").parent.parent
+    canteens = overview.findAll("div", class_="addrcard")
+    for canteen in canteens:
+        url = "https://www.stw.berlin/%s" % canteen.a.attrs["href"]
+        name = canteen.a.text
+        if url in checked_urls:
+            print("Skipping duplicate: %s (%s)" % (name, url))
+        else:
+            print("Inspecting canteen: %s (%s)" % (name, url))
+            checked_urls.append(url)
+            canteen_request = requests.get(url, headers=HEADERS)
+            if canteen_request.status_code == requests.codes.ok:
+                canteen_soup = bs4.BeautifulSoup(canteen_request.text, 'html.parser')
+                canteen_favorite = canteen_soup.find("div", id="favoriteMensa").attrs["onclick"]
+                canteen_id = int(canteen_favorite.removeprefix("mensaFavorite(").split(",")[0])
+                if command_map.get(canteen_id):
+                    parsed_canteens[canteen_id] = {
+                        "name": name,
+                        "command": command_map.get(canteen_id),
+                        # "url": url
+                    }
+                    botfather_commands.append("%s - %s" % (command_map.get(canteen_id), name))
+                else:
+                    unknown_canteens[canteen_id] = {
+                        "name": name,
+                        "url": url
+                    }
 
-    # Prepare Mapping
-    # print('mapping = {')
-    # for option in options:
-    #     id_ = option.attrs['value']
-    #     name = option.get_text()
-    #     print('%s: "%s",' % (id_, name))
-    # print('}')
+for canteen_id, command in command_map.items():
+    if not parsed_canteens.get(canteen_id):
+        removed_canteens[canteen_id] = {
+            "command": command
+        }
 
-    mapping = {
-        534: "ash_hellersdorf",
-        535: "beuth_kurfuerstenstr",
-        527: "beuth_luxembugerstr",
-        537: "charite_zahnklinik",
-        529: "ehb_teltower_damm",
-        271: "fu_dueppel",
-        322: "fu_2",
-        528: "fu_lankwitz",
-        531: "hfm_charlottenstr",
-        533: "hfs_schnellerstr",
-        320: "htw_treskowallee",
-        319: "htw_wilhelminenhof",
-        147: "hu_nord",
-        191: "hu_adlershof",
-        367: "hu_sued",
-        270: "hu_spandauer",
-        526: "hwr_badenschestr",
-        532: "khs_mensa",
-        530: "khs_weissensee",
-        321: "tu_mensa",
-        323: "fu_veggie",
-        368: "fu_ihnestr",
-        660: "fu_koserstr",
-        542: "fu_pharmazie",
-        277: "fu_rechtswissenschaft",
-        543: "fu_wirtschaftswissenschaften",
-        726: "htw_treskowallee_cafeteria",
-        659: "hu_wilhelm_grimm_zentrum",
-        539: "tu_ackerstr",
-        540: "tu_architektur",
-        657: "tu_skyline",
-        631: "tu_veggie",
-        541: "tu_wetterleuchten",
-        538: "tu_marchstr",
-        722: "udk_jazz_cafe",
-        658: "udk_lietzenburgerstr",
-        647: "beuth_coffeebar",
-        648: "beuth_coffeebar_haus_grashof",
-        1407: "ehb_teltower_damm_coffeebar",
-        723: "hfm_neuer_marstall",
-        724: "hfm_charlottenstr_coffeebar",
-        725: "htw_wilhelminenhof_coffeebar",
-        661: "hu_ct",
-        721: "hu_nord_coffeebar",
-        720: "hu_adlershof_coffeebar",
-        727: "hwr_alt_friedrichsfelde",
-        728: "hwr_badenschestr_coffeebar",
-        649: "fu_2_coffeebar",
-        650: "fu_lankwitz_coffeebar",
-        632: "tu_mensa_coffeebar",
-    }
+print("\n=== Found canteens ===")
+for canteen_id, canteen in parsed_canteens.items():
+    print("%s: %s" % (canteen_id, canteen))
 
-    # Generate Celery Tasks
-    # for option in options:
-    #     id_ = int(option.attrs['value'])
-    #     name = option.get_text()
-    #     func = """\
-    #     # %s
-    #     @app.task(bind=True, default_retry_delay=30)
-    #     def update_%s(self):
-    #         try:
-    #             logger.info('[Update] %s')
-    #             menu = __parse_menu(%s)
-    #             if menu:
-    #                 cache.set("%s", menu, ex=cache_interval * 4)
-    #         except Exception as ex:
-    #             raise self.retry(exc=ex)
-    #
-    #     """ % (name, mapping[id_], name, id_, mapping[id_])
-    #     print(textwrap.dedent(func))
+print("\n=== Unknwon canteens ===")
+for canteen_id, canteen in unknown_canteens.items():
+    print("%s: %s" % (canteen_id, canteen))
 
-    # BotFather
-    # for option in options:
-    #     id_ = int(option.attrs['value'])
-    #     name = option.get_text()
-    #     print('%s - %s' % (mapping[id_], name))
-    # print('about - Über OmNomNom')
-    # print('tu_personalkantine - TU Personalkantine')
-    # print('tu_singh - TU Singh')
 
-    # new mapping
-    # print('mapping = {')
-    # for option in options:
-    #     id_ = int(option.attrs['value'])
-    #     name = option.get_text()
-    #     canteen = '%s: { "name": "%s", "command": "%s"},' % (id_, name, mapping[id_])
-    #     print(textwrap.dedent(canteen))
-    # print('}')
+print("\n=== Removed canteens ===")
+for canteen_id, canteen in removed_canteens.items():
+    print("%s: %s" % (canteen_id, canteen))
 
-    # beat
-    for option in options:
-        id_ = int(option.attrs['value'])
-        name = option.get_text()
-        schedule = """\
-        'update %s': {
-            'task': 'canteens.studierendenwerk.update_studierendenwerk',
-            'args': [%s],
-            'schedule': cache_interval
-        },\
-        """ % (mapping[id_], id_)
-        print(textwrap.dedent(schedule))
+print("\n=== BotFather commands ===")
+botfather_commands_all = """
+about - Über OmNomNom
+help - Hilfe zum Bot
+"""
+botfather_commands.append("tu_personalkantine - TU Personalkantine")
+botfather_commands.append("tu_en_kantine - TU EN Kantine")
+botfather_commands.append("tu_singh - TU Singh")
+botfather_commands.append("tu_cafenero - Cafeteria in der Volkswagen Bibliothek")
+for command in sorted(botfather_commands):
+    botfather_commands_all += "%s\n" % command
+botfather_commands_all = botfather_commands_all.strip()
+print(botfather_commands_all)
 
-    # warmup
-    # for option in options:
-    #     id_ = int(option.attrs['value'])
-    #     print('update_studierendenwerk.delay(%s)' % id_)
+print("\n=== CANTEENS snippet ===")
+print(parsed_canteens)
