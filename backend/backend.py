@@ -25,7 +25,6 @@ app = Celery('backend',
                  'canteens.personalkantine',
                  'canteens.singh',
                  'canteens.studierendenwerk',
-                 'omnomgram.tasks',
                  'stats.tasks'
              ]
              )

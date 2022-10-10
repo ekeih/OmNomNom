@@ -25,11 +25,10 @@ import parsedatetime
 import redis
 import telegram.error
 from backend.backend import cache_date_format
-from omnomgram.tasks import send_message_to_admin
 from stats.tasks import log_error, log_to_influxdb
-from telegram import ChatAction, ParseMode
-from telegram.ext import (CommandHandler, Filters, MessageHandler,
-                          RegexHandler, Updater)
+from telegram import Bot, ChatAction, ParseMode, Update
+from telegram.ext import (CallbackContext, CommandHandler, Filters,
+                          MessageHandler, Updater)
 
 from frontend.schedule import schedule
 from frontend.strings import about_text, help_text
@@ -47,6 +46,10 @@ frontend_fh = None
 message_logger = logging.getLogger('frontend.messages')
 message_fh = None
 cache = None
+
+def send_message_to_admin(bot: Bot, message: str) -> None:
+    admin = os.environ.get('OMNOMNOM_ADMIN')
+    bot.send_message(chat_id=admin, text=message, parse_mode=ParseMode.MARKDOWN)
 
 
 def get_canteen_and_date(message):
@@ -101,7 +104,7 @@ def get_canteen_and_date(message):
         return canteen, datetime.date.today().strftime(cache_date_format)
 
 
-def log_incoming_messages(update, _):
+def log_incoming_messages(update: Update, _: CallbackContext) -> None:
     """Log incoming messages to a log file and influxdb."""
     frontend_logger.debug('incoming messages: %s' % update)
     chat = update.message.chat
@@ -121,26 +124,26 @@ def log_incoming_messages(update, _):
     log_to_influxdb.delay('messages', fields, tags)
 
 
-def send_typing_action(update, context):
+def send_typing_action(update: Update, context: CallbackContext) -> None:
     """Send 'typing...' message to chat as long as it is not a reply message."""
     if not update.message.reply_to_message:
         frontend_logger.debug("Send typing")
         context.bot.sendChatAction(chat_id=update.message.chat_id, action=ChatAction.TYPING)
 
 
-def about(update, _):
+def about(update: Update, _: CallbackContext) -> None:
     """Send the 'About' text about the bot."""
     message_logger.info('Out: Sending <about> message')
     update.message.reply_text(text=about_text, parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
 
 
-def help_message(update, _):
+def help_message(update: Update, _: CallbackContext) -> None:
     """Send a help message with usage instructions."""
     message_logger.info('Send <help> message')
     update.message.reply_text(text=help_text, parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
 
 
-def menu(update, context):
+def menu(update: Update, context: CallbackContext) -> None:
     """
     Process the message and reply with the menu or error messages.
 
@@ -171,7 +174,7 @@ def menu(update, context):
                 else:
                     error_message = "\n*Chat*\n```\n%s\n```\n*Message*\n```\n%s\n```\n*User*\n```\n%s\n```" % \
                                     (update.effective_chat, update.effective_message, update.effective_user)
-                    send_message_to_admin.delay(error_message)
+                    send_message_to_admin(context.bot, error_message)
                     reply = 'Leider kenne ich keinen passenden Speiseplan. ' \
                             'Wenn das ein Fehler ist, wende dich an @ekeih.'
                     update.message.reply_text(text=reply, parse_mode=ParseMode.MARKDOWN)
@@ -187,7 +190,7 @@ def menu(update, context):
             message_logger.debug('Out: %s' % reply)
 
 
-def group_message_handler(update, context):
+def group_message_handler(update: Update, context: CallbackContext) -> None:
     """
     Handle events that are specific for groups. Currently it only sends a help message when the bot is invited to a new
     group.
@@ -202,7 +205,7 @@ def group_message_handler(update, context):
                 help_message(context.bot, update)
 
 
-def error_handler(update, context):
+def error_handler(update: Update, context: CallbackContext) -> None:
     """
     Handle errors in the dispatcher and decide which errors are just logged and which errors are important enough to
     trigger a message to the admin.
@@ -218,11 +221,11 @@ def error_handler(update, context):
         log_error.delay(str(context.error), 'frontend', 'timeout')
     except:
         error_message = '*Some Frontend Error*\n\n*Update*\n```\n%s\n```\n*Error*\n```\n%s\n```' % (update, context.error)
-        send_message_to_admin.delay(error_message)
+        send_message_to_admin(context.bot, error_message)
         frontend_logger.error(context.error)
 
 
-def main():
+def main() -> None:
     """
     The entrypoint for omnbot-frontend. The main function adds all handlers to the telegram dispatcher, informs the
     admin about the startup and runs the dispatcher forever.
@@ -284,9 +287,9 @@ def main():
     # Schedule canteen updates
     schedule(updater.job_queue)
 
-    send_message_to_admin.delay('*Bot Started*\n\nID: %s\nFirstname: %s\nLastname: %s\nUsername: %s\nName: %s' %
-                                (updater.bot.id, updater.bot.first_name, updater.bot.last_name,
-                                 updater.bot.username, updater.bot.name))
+    send_message_to_admin(updater.bot, '*Bot Started*\n\nID: %s\nFirstname: %s\nLastname: %s\nUsername: %s\nName: %s' %
+                            (updater.bot.id, updater.bot.first_name, updater.bot.last_name,
+                             updater.bot.username, updater.bot.name))
 
     frontend_logger.info('Start polling')
     updater.start_polling()

@@ -4,7 +4,6 @@ import requests
 from backend.backend import app, cache, cache_date_format, cache_ttl
 from bs4 import BeautifulSoup
 from celery.utils.log import get_task_logger
-from omnomgram.tasks import send_message_to_admin
 
 from canteens.canteen import (MEAT, VEGAN, VEGGIE, get_current_week,
                               get_next_week)
@@ -35,7 +34,6 @@ def get_menu():
         request = requests.get(URL)
         request.raise_for_status()
     except (requests.exceptions.ConnectionError, requests.exceptions.HTTPError) as ex:
-        send_message_to_admin('```\n%s\n```' % ex)
         raise ex
     if request.status_code == requests.codes.ok:
         date_range = get_date_range()
@@ -61,7 +59,7 @@ def get_menu():
         }
         return menu
     else:
-        send_message_to_admin('Could not update Singh with status code %s' % request.status_code)
+        logger.error('Could not update Singh with status code %s' % request.status_code)
         raise Exception
 
 
