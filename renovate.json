@@ -4,11 +4,10 @@
     "config:base",
     ":docker",
     "docker:enableMajor",
-    ":disableDependencyDashboard",
     ":prHourlyLimitNone",
     ":rebaseStalePrs",
     ":label(renovate)",
-    ":assignee(max)"
+    ":assignee(ekeih)"
   ],
   "recreateClosed": true,
   "pip_requirements": {
