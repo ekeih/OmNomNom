@@ -1,0 +1,15 @@
+services:
+  redis:
+    image: redis
+  worker:
+    build: .
+    entrypoint: omnbot-worker
+    env_file: .env
+    environment:
+      OMNOMNOM_REDIS_HOST: redis
+  frontend:
+    build: .
+    entrypoint: omnbot-frontend
+    env_file: .env
+    environment:
+      OMNOMNOM_REDIS_HOST: redis
