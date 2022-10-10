@@ -1,10 +1,9 @@
 import pytest
-
 from frontend import frontend
 
 
 @pytest.mark.freeze_time('2017-09-28')
-@pytest.mark.parametrize('test_input, canteen,date', [
+@pytest.mark.parametrize('test_input, canteen, date', [
     ('/tu_marchstr morgen', 'tu_marchstr', '2017-09-29'),
     ('/fu_2', 'fu_2', '2017-09-28'),
     ('/fu_veggie next monday', 'fu_veggie', '2017-10-02'),
