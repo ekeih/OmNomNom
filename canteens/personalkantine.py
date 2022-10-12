@@ -20,10 +20,9 @@ def update_personalkantine(self):
     try:
         logger.info('[Update] TU Personalkantine')
         for day in get_date_range():
-            if menu:
-                menu = 'Die Personalkantine hat leider bis auf weiteres geschlossen. (https://personalkantine.personalabteilung.tu-berlin.de)'
-                cache.hset(day.strftime(cache_date_format), 'tu_personalkantine', menu)
-                cache.expire(day.strftime(cache_date_format), cache_ttl)
+            menu = 'Die Personalkantine hat leider bis auf weiteres geschlossen. (https://personalkantine.personalabteilung.tu-berlin.de)'
+            cache.hset(day.strftime(cache_date_format), 'tu_personalkantine', menu)
+            cache.expire(day.strftime(cache_date_format), cache_ttl)
     except Exception as ex:
         raise self.retry(exc=ex)
 
@@ -33,9 +32,8 @@ def update_en_canteen(self):
     try:
         logger.info('[Update] TU EN Canteen')
         for day in get_date_range():
-            if menu:
-                menu = 'Die EN-Kantine hat ihren Speiseplan leider nicht mehr online. (https://personalkantine.personalabteilung.tu-berlin.de)'
-                cache.hset(day.strftime(cache_date_format), 'tu_en_kantine', menu)
-                cache.expire(day.strftime(cache_date_format), cache_ttl)
+            menu = 'Die EN-Kantine hat ihren Speiseplan leider nicht mehr online. (https://personalkantine.personalabteilung.tu-berlin.de)'
+            cache.hset(day.strftime(cache_date_format), 'tu_en_kantine', menu)
+            cache.expire(day.strftime(cache_date_format), cache_ttl)
     except Exception as ex:
         raise self.retry(exc=ex)
