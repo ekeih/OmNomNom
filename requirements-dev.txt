@@ -8,4 +8,4 @@ python-magic==0.4.27
 requests-mock==1.10.0
 tox==3.27.0
 twine==4.0.1
-wheel==0.38.2
+wheel==0.38.3
