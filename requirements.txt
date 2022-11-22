@@ -6,5 +6,5 @@ fake-useragent==1.0.1
 influxdb==5.3.1
 parsedatetime==2.6
 python-telegram-bot==13.14
-redis==4.3.4
+redis==4.3.5
 requests==2.28.1
