@@ -1,4 +1,4 @@
-beautifulsoup4==4.11.1
+beautifulsoup4==4.11.2
 celery[redis]==5.2.7
 dateparser==1.1.6
 emoji==2.2.0
