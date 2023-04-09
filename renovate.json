@@ -7,9 +7,10 @@
     ":prHourlyLimitNone",
     ":rebaseStalePrs",
     ":label(renovate)",
-    ":assignee(ekeih)"
+    ":assignee(ekeih)",
+    ":automergeMinor"
   ],
-  "recreateClosed": true,
+  "platformAutomerge": true,
   "pip_requirements": {
     "fileMatch": ["requirements-dev\\.txt"]
   }
