@@ -6,6 +6,6 @@ pytest==7.4.0
 pytest-freezegun==0.4.2
 python-magic==0.4.27
 requests-mock==1.11.0
-tox==4.9.0
+tox==4.10.0
 twine==4.0.2
 wheel==0.41.1
