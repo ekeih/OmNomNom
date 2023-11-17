@@ -1,6 +1,6 @@
 beautifulsoup4==4.12.2
 celery[redis]==5.3.5
-dateparser==1.1.8
+dateparser==1.2.0
 emoji==2.8.0
 fake-useragent==1.3.0
 influxdb==5.3.1
