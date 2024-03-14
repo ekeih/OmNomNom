@@ -24,18 +24,19 @@ import dateparser
 import parsedatetime
 import redis
 import telegram.error
-from backend.backend import cache_date_format
-from stats.tasks import log_error, log_to_influxdb
-from telegram import Bot, ChatAction, ParseMode, Update
-from telegram.ext import (CallbackContext, CommandHandler, Filters,
-                          MessageHandler, Updater)
+from telegram import Bot, Update
+from telegram.constants import ChatAction, ParseMode
+from telegram.ext import (Application, CallbackContext, CommandHandler,
+                          MessageHandler, filters)
 
+from backend.backend import cache_date_format
 from frontend.schedule import schedule
 from frontend.strings import about_text, help_text
+from stats.tasks import log_error, log_to_influxdb
 
 logging.getLogger('JobQueue').setLevel(logging.INFO)
 logging.getLogger('telegram').setLevel(logging.INFO)
-logging.getLogger('requests').setLevel(logging.INFO)
+logging.getLogger('httpx').setLevel(logging.WARNING)
 
 logging_format = '[%(asctime)s: %(levelname)s/%(name)s] %(message)s'
 formatter = logging.Formatter(logging_format)
@@ -47,9 +48,9 @@ message_logger = logging.getLogger('frontend.messages')
 message_fh = None
 cache = None
 
-def send_message_to_admin(bot: Bot, message: str) -> None:
+async def send_message_to_admin(bot: Bot, message: str) -> None:
     admin = os.environ.get('OMNOMNOM_ADMIN')
-    bot.send_message(chat_id=admin, text=message, parse_mode=ParseMode.MARKDOWN)
+    await bot.send_message(chat_id=admin, text=message, parse_mode=ParseMode.MARKDOWN)
 
 
 def get_canteen_and_date(message):
@@ -104,7 +105,7 @@ def get_canteen_and_date(message):
         return canteen, datetime.date.today().strftime(cache_date_format)
 
 
-def log_incoming_messages(update: Update, _: CallbackContext) -> None:
+async def log_incoming_messages(update: Update, _: CallbackContext) -> None:
     """Log incoming messages to a log file and influxdb."""
     frontend_logger.debug('incoming messages: %s' % update)
     chat = update.message.chat
@@ -124,26 +125,26 @@ def log_incoming_messages(update: Update, _: CallbackContext) -> None:
     log_to_influxdb('messages', fields, tags)
 
 
-def send_typing_action(update: Update, context: CallbackContext) -> None:
+async def send_typing_action(update: Update, context: CallbackContext) -> None:
     """Send 'typing...' message to chat as long as it is not a reply message."""
     if not update.message.reply_to_message:
         frontend_logger.debug("Send typing")
-        context.bot.sendChatAction(chat_id=update.message.chat_id, action=ChatAction.TYPING)
+        await context.bot.sendChatAction(chat_id=update.message.chat_id, action=ChatAction.TYPING)
 
 
-def about(update: Update, _: CallbackContext) -> None:
+async def about(update: Update, _: CallbackContext) -> None:
     """Send the 'About' text about the bot."""
     message_logger.info('Out: Sending <about> message')
-    update.message.reply_text(text=about_text, parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
+    await update.message.reply_text(text=about_text, parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
 
 
-def help_message(update: Update, _: CallbackContext) -> None:
+async def help_message(update: Update, _: CallbackContext) -> None:
     """Send a help message with usage instructions."""
     message_logger.info('Send <help> message')
-    update.message.reply_text(text=help_text, parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
+    await update.message.reply_text(text=help_text, parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
 
 
-def menu(update: Update, context: CallbackContext) -> None:
+async def menu(update: Update, context: CallbackContext) -> None:
     """
     Process the message and reply with the menu or error messages.
 
@@ -163,34 +164,34 @@ def menu(update: Update, context: CallbackContext) -> None:
                     possible_canteens.append((canteen, canteen_menu))
                 if len(possible_canteens) == 1:
                     reply = possible_canteens.pop()[1]
-                    update.message.reply_text(text=reply, parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
+                    await update.message.reply_text(text=reply, parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
                     message_logger.debug('Out: %s' % reply)
                 elif len(possible_canteens) > 1:
                     reply = 'Meintest du vielleicht:\n'
                     for canteen in possible_canteens:
                         reply += '\n /%s' % canteen[0]
-                    update.message.reply_text(text=reply)
+                    await update.message.reply_text(text=reply)
                     message_logger.debug('Out: %s' % reply)
                 else:
                     error_message = "\n*Chat*\n```\n%s\n```\n*Message*\n```\n%s\n```\n*User*\n```\n%s\n```" % \
                                     (update.effective_chat, update.effective_message, update.effective_user)
-                    send_message_to_admin(context.bot, error_message)
+                    await send_message_to_admin(context.bot, error_message)
                     reply = 'Leider kenne ich keinen passenden Speiseplan. ' \
                             'Wenn das ein Fehler ist, wende dich an @ekeih.'
-                    update.message.reply_text(text=reply, parse_mode=ParseMode.MARKDOWN)
+                    await update.message.reply_text(text=reply, parse_mode=ParseMode.MARKDOWN)
                     message_logger.debug('Out: %s' % reply)
             else:
-                update.message.reply_text(text=reply, parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
+                await update.message.reply_text(text=reply, parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
                 message_logger.debug('Out: %s' % reply)
         else:
             reply = 'Sorry, leider habe ich das Datum nicht verstanden. Probier es doch einmal mit `/%s morgen`, ' \
                     '`/%s dienstag`, `/%s yesterday` oder `/%s next friday`.' % (requested_canteen, requested_canteen,
                                                                                  requested_canteen, requested_canteen)
-            update.message.reply_text(text=reply, parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
+            await update.message.reply_text(text=reply, parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
             message_logger.debug('Out: %s' % reply)
 
 
-def group_message_handler(update: Update, context: CallbackContext) -> None:
+async def group_message_handler(update: Update, context: CallbackContext) -> None:
     """
     Handle events that are specific for groups. Currently it only sends a help message when the bot is invited to a new
     group.
@@ -202,10 +203,10 @@ def group_message_handler(update: Update, context: CallbackContext) -> None:
         for member in update.message.new_chat_members:
             if member.id == my_id:
                 frontend_logger.info('I was invited to a group :)')
-                help_message(context.bot, update)
+                await help_message(context.bot, update)
 
 
-def error_handler(update: Update, context: CallbackContext) -> None:
+async def error_handler(update: Update, context: CallbackContext) -> None:
     """
     Handle errors in the dispatcher and decide which errors are just logged and which errors are important enough to
     trigger a message to the admin.
@@ -221,9 +222,13 @@ def error_handler(update: Update, context: CallbackContext) -> None:
         log_error(str(context.error), 'frontend', 'timeout')
     except:
         error_message = '*Some Frontend Error*\n\n*Update*\n```\n%s\n```\n*Error*\n```\n%s\n```' % (update, context.error)
-        send_message_to_admin(context.bot, error_message)
+        await send_message_to_admin(context.bot, error_message)
         frontend_logger.error(context.error)
 
+async def post_init(application: Application) -> None:
+    await send_message_to_admin(application.bot, '*Bot Started*\n\nID: %s\nFirstname: %s\nLastname: %s\nUsername: %s\nName: %s' %
+                                (application.bot.id, application.bot.first_name, application.bot.last_name,
+                                application.bot.username, application.bot.name))
 
 def main() -> None:
     """
@@ -260,37 +265,31 @@ def main() -> None:
         sys.exit()
     frontend_logger.debug('Admin ID: %s' % admin)
 
-    updater = Updater(token=token, use_context=True)
-    dispatcher = updater.dispatcher
+    application = Application.builder().token(token).post_init(post_init).build()
 
     # Add an error handler to log and report errors
-    dispatcher.add_error_handler(error_handler)
+    application.add_error_handler(error_handler)
 
     # React to /start, /about and /help messages
-    dispatcher.add_handler(CommandHandler('start', help_message), 2)
-    dispatcher.add_handler(CommandHandler('about', about), 2)
-    dispatcher.add_handler(CommandHandler('help', help_message), 2)
+    application.add_handler(CommandHandler('start', help_message), 2)
+    application.add_handler(CommandHandler('about', about), 2)
+    application.add_handler(CommandHandler('help', help_message), 2)
 
     # Send typing action and log incoming messages
-    dispatcher.add_handler(MessageHandler(Filters.regex('.*'), send_typing_action), 0)
-    dispatcher.add_handler(MessageHandler(Filters.regex('.*'), log_incoming_messages), 1)
+    application.add_handler(MessageHandler(filters.Regex('.*'), send_typing_action), 0)
+    application.add_handler(MessageHandler(filters.Regex('.*'), log_incoming_messages), 1)
 
     # Handle all messages beginning with a '/'
-    dispatcher.add_handler(MessageHandler(Filters.regex('/.*'), menu), 2)
+    application.add_handler(MessageHandler(filters.Regex('/.*'), menu), 2)
 
     # Handle normal text messages that are no reply and answer with a help_message
-    dispatcher.add_handler(MessageHandler(Filters.text & (~ Filters.reply), help_message), 2)
+    application.add_handler(MessageHandler(filters.TEXT & (~ filters.REPLY), help_message), 2)
 
     # Handle group member changes
-    dispatcher.add_handler(MessageHandler(Filters.chat_type.groups & (~ Filters.reply), group_message_handler), 3)
+    application.add_handler(MessageHandler(filters.ChatType.GROUPS & (~ filters.REPLY), group_message_handler), 3)
 
     # Schedule canteen updates
-    schedule(updater.job_queue)
-
-    send_message_to_admin(updater.bot, '*Bot Started*\n\nID: %s\nFirstname: %s\nLastname: %s\nUsername: %s\nName: %s' %
-                            (updater.bot.id, updater.bot.first_name, updater.bot.last_name,
-                             updater.bot.username, updater.bot.name))
+    schedule(application.job_queue)
 
     frontend_logger.info('Start polling')
-    updater.start_polling()
-    updater.idle()
+    application.run_polling()
