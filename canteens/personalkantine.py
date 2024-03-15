@@ -22,7 +22,7 @@ def get_date_range():
         return get_current_week()
 
 
-def get_menu() -> Dict[int, str]:
+def get_menu() -> Dict[datetime.datetime, str]:
     menu_str = download_menu()
     soup = BeautifulSoup(menu_str, 'html.parser')
 
@@ -49,8 +49,8 @@ def download_menu() -> str:
     return request.text
 
 
-def parse_menu(menu: Tag) -> Dict[int, str]:
-    i, parsed_menu = 0, {}
+def parse_menu(menu: Tag) -> Dict[datetime.datetime, str]:
+    parsed_menu = {}
 
     for day in menu.children:
         date_tag = day.find("h2")
@@ -58,14 +58,14 @@ def parse_menu(menu: Tag) -> Dict[int, str]:
             continue
 
         date_str = date_tag.text.split(" ")[1]
+        date_time = datetime.datetime.strptime(date_str, '%d.%m.%Y')
         dishlist = day.find("ul")
         if dishlist == -1:
             logger.warn('Could not find any dishes in EN Kantine for %s' % date_str)
             continue
 
         menu_str = "\n".join(parse_menu_items(dishlist.find_all("li")))
-        parsed_menu[i] = '[EN Kantine](%s) (%s)\n%s\n\n*Öffnungszeiten*\nMo - Fr: 11 - 15 Uhr' % (URL, date_str, menu_str)
-        i += 1
+        parsed_menu[date_time] = '[EN Kantine](%s) (%s)\n%s\n\n*Öffnungszeiten*\nMo - Fr: 11 - 15 Uhr' % (URL, date_str, menu_str)
 
     return parsed_menu
 
@@ -118,7 +118,7 @@ def update_en_canteen(self):
         logger.info('[Update] TU EN Canteen')
         menu = get_menu()
         for day in get_date_range():
-            day_menu = menu.get(day.weekday())
+            day_menu = menu.get(day)
             if day_menu:
                 cache.hset(day.strftime(cache_date_format), 'tu_en_kantine', day_menu)
                 cache.expire(day.strftime(cache_date_format), cache_ttl)
