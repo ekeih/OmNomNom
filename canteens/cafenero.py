@@ -46,7 +46,7 @@ def extract_dropbox_link(html):
         The link as string.
     """
     soup = bs4.BeautifulSoup(html, 'html.parser')
-    link = [a for a in soup.find_all('a', href=True) if 'dropbox' in a.get('href') and 'speisekarte.pdf' in a.get('href')][0].get('href')
+    link = [a for a in soup.find_all('a', href=True) if 'Speisekarte als' in a.text and 'dropbox' in a.get('href') and 'speisekarte.pdf' in a.get('href')][0].get('href')
     return link
 
 
