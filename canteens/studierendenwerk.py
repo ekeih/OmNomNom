@@ -4,9 +4,9 @@ import time
 
 import bs4
 import requests
-from backend.backend import app, cache, cache_date_format, cache_ttl
 from celery.utils.log import get_task_logger
 
+from backend.backend import app, cache, cache_date_format, cache_ttl
 from canteens.canteen import (FISH, MEAT, VEGAN, VEGGIE, get_current_week,
                               get_next_week, get_useragent)
 
@@ -119,6 +119,9 @@ def parse_notes(notes_html):
     popup_note = soup.find(text=re.compile('Diese Anzeige wird'))
     if popup_note:
         popup_note.parent.decompose()
+    duplicate_notes = soup.findAll('div', class_='visible-xs-block')
+    for n in duplicate_notes:
+        n.decompose()
     notes = soup.get_text().strip()
     if notes == '':
         return ''
