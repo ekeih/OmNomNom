@@ -1,5 +1,5 @@
 beautifulsoup4==4.12.3
-celery[redis]==5.3.6
+celery[redis]==5.4.0
 dateparser==1.2.0
 emoji==2.11.0
 fake-useragent==1.5.1
