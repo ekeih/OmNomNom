@@ -2,7 +2,7 @@ flaky==3.8.1
 freezegun==1.5.0
 ipdb==0.13.13
 ipython==8.24.0
-pytest==8.1.2
+pytest==8.2.0
 pytest-freezegun==0.4.2
 python-magic==0.4.27
 requests-mock==1.12.1
