@@ -32,7 +32,7 @@ from telegram.ext import (Application, CallbackContext, CommandHandler,
                           MessageHandler, filters)
 
 from frontend.schedule import schedule
-from frontend.strings import about_text, help_text
+from frontend.strings import about_text, goodbye, help_text
 
 logging.getLogger('JobQueue').setLevel(logging.INFO)
 logging.getLogger('telegram').setLevel(logging.INFO)
@@ -166,6 +166,7 @@ async def menu(update: Update, context: CallbackContext) -> None:
                     reply = possible_canteens.pop()[1]
                     await update.message.reply_text(text=reply, parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
                     message_logger.debug('Out: %s' % reply)
+                    await update.message.reply_text(text=goodbye, parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
                 elif len(possible_canteens) > 1:
                     reply = 'Meintest du vielleicht:\n'
                     for canteen in possible_canteens:
@@ -176,14 +177,13 @@ async def menu(update: Update, context: CallbackContext) -> None:
                     error_message = "\n*Chat*\n```\n%s\n```\n*Message*\n```\n%s\n```\n*User*\n```\n%s\n```" % \
                                     (update.effective_chat, update.effective_message, update.effective_user)
                     await send_message_to_admin(context.bot, error_message)
-                    reply = 'Leider kenne ich keinen passenden Speiseplan. ' \
-                            'Wenn das ein Fehler ist, wende dich an @ekeih.'
+                    reply = 'Leider kenne ich keinen passenden Speiseplan.'
                     await update.message.reply_text(text=reply, parse_mode=ParseMode.MARKDOWN)
                     message_logger.debug('Out: %s' % reply)
             else:
                 await update.message.reply_text(text=reply, parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
                 message_logger.debug('Out: %s' % reply)
-                await update.message.reply_text(text="Der Betrieb des OmNomNom Bots wird demnächst eingestellt. Falls du den Bot selber betreiben möchtest, findest du den Source Code unter https://github.com/ekeih/OmNomNom. Vielen Dank an alle, die den Bot in den letzten fast 10 Jahren genutzt haben oder sogar zum Code beigetragen haben!", parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
+                await update.message.reply_text(text=goodbye, parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
         else:
             reply = 'Sorry, leider habe ich das Datum nicht verstanden. Probier es doch einmal mit `/%s morgen`, ' \
                     '`/%s dienstag`, `/%s yesterday` oder `/%s next friday`.' % (requested_canteen, requested_canteen,
