@@ -6,7 +6,7 @@ in Berlin (Germany). You can invite the bot to a group or ask it directly.
 Usually you do not need to run the bot yourself. You can just talk to the
 @OmnBot in Telegram. Feel free to invite it to your groups.
 
-The project was originally created by (Max)[https://github.com/ekeih] but is now maintained by members of the Freitagsrunde, a student organization at TU Berlin.
+The project was originally created by [ekeih/OmNomNom](https://github.com/ekeih/OmNomNom) but is now maintained by members of the Freitagsrunde, a student organization at TU Berlin.
 
 > [!IMPORTANT]
 > This repository is not under active development anymore. The recommended fork is [Freitagsrunde/OmNomNom](https://github.com/Freitagsrunde).
