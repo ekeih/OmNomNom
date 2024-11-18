@@ -9,8 +9,8 @@ Usually you do not need to run the bot yourself. You can just talk to the
 The project was originally created by [ekeih/OmNomNom](https://github.com/ekeih/OmNomNom) but is now maintained by members of the Freitagsrunde, a student organization at TU Berlin.
 
 > [!IMPORTANT]
-> This repository is not under active development anymore. The recommended fork is [Freitagsrunde/OmNomNom](https://github.com/Freitagsrunde).
-> The official bot instance @OmnBot is also using the code of the fork.**
+> This repository is not under active development anymore. The recommended fork is [Freitagsrunde/OmNomNom](https://github.com/Freitagsrunde/OmNomNom).
+> The official bot instance @OmnBot is also using the code of the fork.
 
 ## License
 
