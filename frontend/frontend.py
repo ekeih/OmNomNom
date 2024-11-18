@@ -32,7 +32,7 @@ from telegram.ext import (Application, CallbackContext, CommandHandler,
                           MessageHandler, filters)
 
 from frontend.schedule import schedule
-from frontend.strings import about_text, goodbye, help_text
+from frontend.strings import about_text, help_text
 
 logging.getLogger('JobQueue').setLevel(logging.INFO)
 logging.getLogger('telegram').setLevel(logging.INFO)
@@ -166,7 +166,6 @@ async def menu(update: Update, context: CallbackContext) -> None:
                     reply = possible_canteens.pop()[1]
                     await update.message.reply_text(text=reply, parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
                     message_logger.debug('Out: %s' % reply)
-                    await update.message.reply_text(text=goodbye, parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
                 elif len(possible_canteens) > 1:
                     reply = 'Meintest du vielleicht:\n'
                     for canteen in possible_canteens:
@@ -183,7 +182,6 @@ async def menu(update: Update, context: CallbackContext) -> None:
             else:
                 await update.message.reply_text(text=reply, parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
                 message_logger.debug('Out: %s' % reply)
-                await update.message.reply_text(text=goodbye, parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
         else:
             reply = 'Sorry, leider habe ich das Datum nicht verstanden. Probier es doch einmal mit `/%s morgen`, ' \
                     '`/%s dienstag`, `/%s yesterday` oder `/%s next friday`.' % (requested_canteen, requested_canteen,
