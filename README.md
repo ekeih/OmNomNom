@@ -1,13 +1,16 @@
 # OmNomNom
 
-This bot is not under active development anymore.
-There is no official instance of this bot anymore. If you want to use it you
-have to take the code from this repository and host it as a new bot instance.
-
 OmNomNom is a Telegram bot that can tell you what you can eat in some canteens
-in Berlin (Germany). I would like to support more canteens in other towns or
-countries in the future. If you have any suggestions let me now.
-You can invite the bot to a group or ask it directly.
+in Berlin (Germany). You can invite the bot to a group or ask it directly.
+
+Usually you do not need to run the bot yourself. You can just talk to the
+@OmnBot in Telegram. Feel free to invite it to your groups.
+
+The project was originally created by (Max)[https://github.com/ekeih] but is now maintained by members of the Freitagsrunde, a student organization at TU Berlin.
+
+> [!IMPORTANT]
+> This repository is not under active development anymore. The recommended fork is [Freitagsrunde/OmNomNom](https://github.com/Freitagsrunde).
+> The official bot instance @OmnBot is also using the code of the fork.**
 
 ## License
 
